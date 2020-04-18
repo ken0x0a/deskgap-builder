@@ -1,6 +1,6 @@
 import { FileTransformer } from "builder-util/out/fs"
 import { AsarIntegrity } from "./asar/integrity"
-import { Platform, PlatformPackager, ElectronPlatformName, AfterPackContext } from "./index"
+import { Platform, PlatformPackager, DeskGapPlatformName, AfterPackContext } from "./index"
 
 export interface Framework {
   readonly name: string
@@ -34,7 +34,7 @@ export interface BeforeCopyExtraFilesOptions {
 
   asarIntegrity: AsarIntegrity | null
 
-  // ElectronPlatformName
+  // DeskGapPlatformName
   platformName: string
 }
 
@@ -44,11 +44,11 @@ export interface PrepareApplicationStageDirectoryOptions {
    * Platform doesn't process application output directory in any way. Unpack implementation must create or empty dir if need.
    */
   readonly appOutDir: string
-  readonly platformName: ElectronPlatformName
+  readonly platformName: DeskGapPlatformName
   readonly arch: string
   readonly version: string
 }
 
-export function isElectronBased(framework: Framework): boolean {
-  return framework.name === "electron"
+export function isDeskGapBased(framework: Framework): boolean {
+  return framework.name === "deskgap"
 }

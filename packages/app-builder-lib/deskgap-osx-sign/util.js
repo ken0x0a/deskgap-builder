@@ -17,11 +17,11 @@ const debug = require('debug')
  */
 
 /** @function */
-const debuglog = module.exports.debuglog = debug('electron-osx-sign')
+const debuglog = module.exports.debuglog = debug('deskgap-osx-sign')
 debuglog.log = console.log.bind(console)
 
 /** @function */
-const debugwarn = module.exports.debugwarn = debug('electron-osx-sign:warn')
+const debugwarn = module.exports.debugwarn = debug('deskgap-osx-sign:warn')
 debugwarn.log = console.warn.bind(console)
 
 /** @function */
@@ -118,10 +118,10 @@ module.exports.copyFileAsync = function (source, target) {
  * @param {Object} opts - Options.
  * @returns {Promise} Promise resolving platform.
  */
-var detectElectronPlatformAsync = module.exports.detectElectronPlatformAsync = function (opts) {
+var detectDeskGapPlatformAsync = module.exports.detectDeskGapPlatformAsync = function (opts) {
   return new Promise(function (resolve) {
     var appFrameworksPath = getAppFrameworksPath(opts)
-    // The presence of Squirrel.framework identifies a Mac App Store build as used in https://github.com/atom/electron/blob/master/docs/tutorial/mac-app-store-submission-guide.md
+    // The presence of Squirrel.framework identifies a Mac App Store build as used in https://github.com/atom/deskgap/blob/master/docs/tutorial/mac-app-store-submission-guide.md
     return fs.lstat(path.join(appFrameworksPath, 'Squirrel.framework'))
       .then(function () {
         resolve('darwin')
@@ -164,7 +164,7 @@ module.exports.validateOptsAppAsync = async function (opts) {
 }
 
 /**
- * This function returns a promise validating opts.platform, the platform of Electron build. It allows auto-discovery if no opts.platform is specified.
+ * This function returns a promise validating opts.platform, the platform of DeskGap build. It allows auto-discovery if no opts.platform is specified.
  * @function
  * @param {Object} opts - Options.
  * @returns {Promise} Promise.
@@ -174,13 +174,13 @@ module.exports.validateOptsPlatformAsync = function (opts) {
     if (opts.platform === 'mas' || opts.platform === 'darwin') {
       return Promise.resolve()
     } else {
-      debugwarn('`platform` passed in arguments not supported, checking Electron platform...')
+      debugwarn('`platform` passed in arguments not supported, checking DeskGap platform...')
     }
   } else {
-    debugwarn('No `platform` passed in arguments, checking Electron platform...')
+    debugwarn('No `platform` passed in arguments, checking DeskGap platform...')
   }
 
-  return detectElectronPlatformAsync(opts)
+  return detectDeskGapPlatformAsync(opts)
     .then(function (platform) {
       opts.platform = platform
     })

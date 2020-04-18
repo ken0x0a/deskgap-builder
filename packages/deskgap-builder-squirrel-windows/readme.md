@@ -1,3 +1,3 @@
-# electron-builder-squirrel-windows
+# deskgap-builder-squirrel-windows
 
-Plugin for [electron-builder](https://github.com/electron-userland/electron-builder) to build Squirrel.Windows installer.
+Plugin for [deskgap-builder](https://github.com/deskgap-userland/deskgap-builder) to build Squirrel.Windows installer.

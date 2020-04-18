@@ -1,6 +1,6 @@
 import BluebirdPromise from "bluebird-lst"
 import { deepAssign, Arch, AsyncTaskManager, exec, InvalidConfigurationError, log, use } from "builder-util"
-import { signAsync, SignOptions } from "../electron-osx-sign"
+import { signAsync, SignOptions } from "../deskgap-osx-sign"
 import { mkdirs, readdir } from "fs-extra"
 import { Lazy } from "lazy-val"
 import * as path from "path"
@@ -9,7 +9,7 @@ import { orIfFileNotExist } from "builder-util/out/promise"
 import { AppInfo } from "./appInfo"
 import { CertType, CodeSigningInfo, createKeychain, findIdentity, Identity, isSignAllowed, removeKeychain, reportError } from "./codeSign/macCodeSign"
 import { DIR_TARGET, Platform, Target } from "./core"
-import { AfterPackContext, ElectronPlatformName } from "./index"
+import { AfterPackContext, DeskGapPlatformName } from "./index"
 import { MacConfiguration, MasConfiguration } from "./options/macOptions"
 import { Packager } from "./packager"
 import { chooseNotNull, PlatformPackager } from "./platformPackager"
@@ -76,7 +76,7 @@ export default class MacPackager extends PlatformPackager<MacConfiguration> {
         }
 
         case "zip":
-          // https://github.com/electron-userland/electron-builder/issues/2313
+          // https://github.com/deskgap-userland/deskgap-builder/issues/2313
           mapper(name, outDir => new ArchiveTarget(name, outDir, this, true))
           break
 
@@ -99,7 +99,7 @@ export default class MacPackager extends PlatformPackager<MacConfiguration> {
 
     if (!hasMas || targets.length > 1) {
       const appPath = prepackaged == null ? path.join(this.computeAppOutDir(outDir, arch), `${this.appInfo.productFilename}.app`) : prepackaged
-      nonMasPromise = (prepackaged ? Promise.resolve() : this.doPack(outDir, path.dirname(appPath), this.platform.nodeName as ElectronPlatformName, arch, this.platformSpecificBuildOptions, targets))
+      nonMasPromise = (prepackaged ? Promise.resolve() : this.doPack(outDir, path.dirname(appPath), this.platform.nodeName as DeskGapPlatformName, arch, this.platformSpecificBuildOptions, targets))
         .then(() => this.packageInDistributableFormat(appPath, Arch.x64, targets, taskManager))
     }
 
@@ -174,22 +174,22 @@ export default class MacPackager extends PlatformPackager<MacConfiguration> {
 
     const signOptions: any = {
       "identity-validation": false,
-      // https://github.com/electron-userland/electron-builder/issues/1699
+      // https://github.com/deskgap-userland/deskgap-builder/issues/1699
       // kext are signed by the chipset manufacturers. You need a special certificate (only available on request) from Apple to be able to sign kext.
       ignore: (file: string) => {
         return file.endsWith(".kext") || file.startsWith("/Contents/PlugIns", appPath.length) ||
-          // https://github.com/electron-userland/electron-builder/issues/2010
+          // https://github.com/deskgap-userland/deskgap-builder/issues/2010
           file.includes("/node_modules/puppeteer/.local-chromium")
       },
       identity: identity!,
       type,
       platform: isMas ? "mas" : "darwin",
-      version: this.config.electronVersion,
+      version: this.config.deskgapVersion,
       app: appPath,
       keychain: keychainFile || undefined,
       binaries: options.binaries || undefined,
       requirements: isMas || this.platformSpecificBuildOptions.requirements == null ? undefined : await this.getResource(this.platformSpecificBuildOptions.requirements),
-      // https://github.com/electron-userland/electron-osx-sign/issues/196
+      // https://github.com/deskgap-userland/deskgap-osx-sign/issues/196
       // will fail on 10.14.5+ because a signed but unnotarized app is also rejected.
       "gatekeeper-assess": options.gatekeeperAssess === true,
       hardenedRuntime: isMas ? masOptions && masOptions.hardenedRuntime === true : options.hardenedRuntime !== false,
@@ -204,12 +204,12 @@ export default class MacPackager extends PlatformPackager<MacConfiguration> {
     }, "signing")
     await this.doSign(signOptions)
 
-    // https://github.com/electron-userland/electron-builder/issues/1196#issuecomment-312310209
+    // https://github.com/deskgap-userland/deskgap-builder/issues/1196#issuecomment-312310209
     if (masOptions != null && !isDevelopment) {
       const certType = isDevelopment ? "Mac Developer" : "3rd Party Mac Developer Installer"
       const masInstallerIdentity = await findIdentity(certType, masOptions.identity, keychainFile)
       if (masInstallerIdentity == null) {
-        throw new InvalidConfigurationError(`Cannot find valid "${certType}" identity to sign MAS installer, please see https://electron.build/code-signing`)
+        throw new InvalidConfigurationError(`Cannot find valid "${certType}" identity to sign MAS installer, please see https://deskgap.build/code-signing`)
       }
 
       // mas uploaded to AppStore, so, use "-" instead of space for name
@@ -270,11 +270,11 @@ export default class MacPackager extends PlatformPackager<MacConfiguration> {
     return await exec("productbuild", args)
   }
 
-  public getElectronSrcDir(dist: string) {
+  public getDeskGapSrcDir(dist: string) {
     return path.resolve(this.projectDir, dist, this.info.framework.distMacOsAppName)
   }
 
-  public getElectronDestinationDir(appOutDir: string) {
+  public getDeskGapDestinationDir(appOutDir: string) {
     return path.join(appOutDir, this.info.framework.distMacOsAppName)
   }
 
@@ -283,7 +283,7 @@ export default class MacPackager extends PlatformPackager<MacConfiguration> {
     const appInfo = this.appInfo
     const appFilename = appInfo.productFilename
 
-    // https://github.com/electron-userland/electron-builder/issues/1278
+    // https://github.com/deskgap-userland/deskgap-builder/issues/1278
     appPlist.CFBundleExecutable = appFilename.endsWith(" Helper") ? appFilename.substring(0, appFilename.length - " Helper".length) : appFilename
 
     const icon = await this.getIconPath()

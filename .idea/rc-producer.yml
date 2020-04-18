@@ -11,5 +11,5 @@
   scriptArgs: ["-i", "-t", "${0regExp}", *filePattern]
   rcName: "${fileNameWithoutExt}.${0}"
   env:
-    TEST_APP_TMP_DIR: /tmp/electron-builder-test
-    DEBUG: electron-builder
+    TEST_APP_TMP_DIR: /tmp/deskgap-builder-test
+    DEBUG: deskgap-builder

@@ -1,6 +1,6 @@
 "use strict"
 
-const { app, ipcMain, BrowserWindow, Menu, Tray } = require("electron")
+const { app, ipcMain, BrowserWindow, Menu, Tray } = require("deskgap")
 const fs = require("fs")
 const path = require("path")
 
@@ -108,7 +108,7 @@ function main() {
     return;
   }
 
-  // This method will be called when Electron has finished
+  // This method will be called when DeskGap has finished
   // initialization and is ready to create browser windows.
   app.on('ready', createWindow);
 
@@ -129,7 +129,7 @@ function main() {
 
   ipcMain.on("saveAppData", () => {
     try {
-      // electron doesn't escape / in the product name
+      // deskgap doesn't escape / in the product name
       fs.writeFileSync(path.join(app.getPath("appData"), "Test App ßW", "testFile"), "test")
     }
     catch (e) {

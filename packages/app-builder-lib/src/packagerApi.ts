@@ -4,7 +4,7 @@ import { Configuration } from "./configuration"
 import { Platform, Target } from "./core"
 import { Packager } from "./packager"
 import { PlatformPackager } from "./platformPackager"
-import { UploadTask } from "electron-publish"
+import { UploadTask } from "deskgap-publish"
 
 export interface PackagerOptions {
   targets?: Map<Platform, Map<Arch, Array<string>>>

@@ -25,7 +25,7 @@ import { NsisOptions, PortableOptions } from "./nsisOptions"
 import { NsisScriptGenerator } from "./nsisScriptGenerator"
 import { AppPackageHelper, NSIS_PATH, nsisTemplatesDir, UninstallerReader } from "./nsisUtil"
 
-const debug = _debug("electron-builder:nsis")
+const debug = _debug("deskgap-builder:nsis")
 
 // noinspection SpellCheckingInspection
 const ELECTRON_BUILDER_NS_UUID = UUID.parse("50e065bc-3134-11e6-9bab-38c9862bdaf3")
@@ -56,8 +56,8 @@ export class NsisTarget extends Target {
     }
 
     const deps = packager.info.metadata.dependencies
-    if (deps != null && deps["electron-squirrel-startup"] != null) {
-      log.warn('"electron-squirrel-startup" dependency is not required for NSIS')
+    if (deps != null && deps["deskgap-squirrel-startup"] != null) {
+      log.warn('"deskgap-squirrel-startup" dependency is not required for NSIS')
     }
   }
 
@@ -327,11 +327,11 @@ export class NsisTarget extends Target {
     const script = await readFile(customScriptPath || path.join(nsisTemplatesDir, "installer.nsi"), "utf8")
 
     if (customScriptPath != null) {
-      log.info({reason: "custom NSIS script is used"}, "uninstaller is not signed by electron-builder")
+      log.info({reason: "custom NSIS script is used"}, "uninstaller is not signed by deskgap-builder")
       return script
     }
 
-    // https://github.com/electron-userland/electron-builder/issues/2103
+    // https://github.com/deskgap-userland/deskgap-builder/issues/2103
     // it is more safe and reliable to write uninstaller to our out dir
     const uninstallerPath = path.join(this.outDir, `__uninstaller-${this.name}-${this.packager.appInfo.sanitizedName}.exe`)
     const isWin = process.platform === "win32"
@@ -496,7 +496,7 @@ export class NsisTarget extends Target {
       defines.COMPANY_NAME = companyName
     }
 
-    // electron uses product file name as app data, define it as well to remove on uninstall
+    // deskgap uses product file name as app data, define it as well to remove on uninstall
     if (defines.APP_FILENAME !== appInfo.productFilename) {
       defines.APP_PRODUCT_FILENAME = appInfo.productFilename
     }

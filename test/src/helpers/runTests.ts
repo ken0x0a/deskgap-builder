@@ -3,7 +3,7 @@ import { emptyDir, readJson, realpathSync } from "fs-extra"
 import { isCI as isCi } from "ci-info"
 import { tmpdir } from "os"
 import * as path from "path"
-import { deleteOldElectronVersion, downloadAllRequiredElectronVersions } from "./downloadElectron"
+import { deleteOldDeskGapVersion, downloadAllRequiredDeskGapVersions } from "./downloadDeskGap"
 import { promises as fs } from "fs"
 
 const baseDir = process.env.APP_BUILDER_TMP_DIR || realpathSync(tmpdir())
@@ -23,8 +23,8 @@ async function runTests() {
   }
   else {
     await Promise.all([
-      deleteOldElectronVersion(),
-      downloadAllRequiredElectronVersions(),
+      deleteOldDeskGapVersion(),
+      downloadAllRequiredDeskGapVersions(),
       emptyDir(APP_BUILDER_TMP_DIR),
     ])
   }
@@ -85,7 +85,7 @@ async function runTests() {
 
   const config = (await readJson(path.join(rootDir, "package.json"))).jest
   // use custom cache dir to avoid https://github.com/facebook/jest/issues/1903#issuecomment-261212137
-  config.cacheDirectory = process.env.JEST_CACHE_DIR || "/tmp/jest-electron-builder-tests"
+  config.cacheDirectory = process.env.JEST_CACHE_DIR || "/tmp/jest-deskgap-builder-tests"
   config.bail = process.env.TEST_BAIL === "true"
 
   let runInBand = false

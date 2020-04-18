@@ -267,7 +267,7 @@ function identifierToLink(id, root) {
 
   let linked = resolveById(id)
   if (linked == null) {
-    if (id === "module:electron-builder/out/core.Arch" || id === "module:builder-util/out/arch.Arch" || id === "Arch") {
+    if (id === "module:deskgap-builder/out/core.Arch" || id === "module:builder-util/out/arch.Arch" || id === "Arch") {
       id = "module:builder-util.Arch"
     }
     else if (id === "module:builder-util-runtime/out/CancellationToken.CancellationToken") {

@@ -1,4 +1,4 @@
-import { Platform } from "electron-builder"
+import { Platform } from "deskgap-builder"
 import * as path from "path"
 import { CheckingMacPackager } from "../helpers/CheckingPackager"
 import { assertPack, createMacTargetTest, signed } from "../helpers/packTester"

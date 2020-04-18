@@ -1,4 +1,4 @@
-FROM electronuserland/builder:wine
+FROM deskgapuserland/builder:wine
 
 # since mono is required only for deprecated target Squirrel.Windows, extracted to separate docker image to reduce size
 

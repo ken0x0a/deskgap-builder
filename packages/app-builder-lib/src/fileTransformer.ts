@@ -9,13 +9,13 @@ import { Packager } from "./packager"
 export const NODE_MODULES_PATTERN = `${path.sep}node_modules${path.sep}`
 
 /** @internal */
-export function isElectronCompileUsed(info: Packager): boolean {
-  if (info.config.electronCompile != null) {
-    return info.config.electronCompile
+export function isDeskGapCompileUsed(info: Packager): boolean {
+  if (info.config.deskgapCompile != null) {
+    return info.config.deskgapCompile
   }
 
-  // if in devDependencies - it means that babel is used for precompilation or for some reason user decided to not use electron-compile for production
-  return hasDep("electron-compile", info)
+  // if in devDependencies - it means that babel is used for precompilation or for some reason user decided to not use deskgap-compile for production
+  return hasDep("deskgap-compile", info)
 }
 
 /** @internal */
@@ -59,9 +59,9 @@ export interface CompilerHost {
 }
 
 /** @internal */
-export function createElectronCompilerHost(projectDir: string, cacheDir: string): Promise<CompilerHost> {
-  const electronCompilePath = path.join(projectDir, "node_modules", "electron-compile", "lib")
-  return require(path.join(electronCompilePath, "config-parser")).createCompilerHostFromProjectRoot(projectDir, cacheDir)
+export function createDeskGapCompilerHost(projectDir: string, cacheDir: string): Promise<CompilerHost> {
+  const deskgapCompilePath = path.join(projectDir, "node_modules", "deskgap-compile", "lib")
+  return require(path.join(deskgapCompilePath, "config-parser")).createCompilerHostFromProjectRoot(projectDir, cacheDir)
 }
 
 const ignoredPackageMetadataProperties = new Set(["dist", "gitHead", "keywords", "build", "jspm", "ava", "xo", "nyc", "eslintConfig", "contributors", "bundleDependencies", "tags"])
@@ -73,12 +73,12 @@ interface CleanupPackageFileOptions {
 
 function cleanupPackageJson(data: any, options: CleanupPackageFileOptions): any {
   const deps = data.dependencies
-  // https://github.com/electron-userland/electron-builder/issues/507#issuecomment-312772099
+  // https://github.com/deskgap-userland/deskgap-builder/issues/507#issuecomment-312772099
   const isRemoveBabel = deps != null && typeof deps === "object" && !Object.getOwnPropertyNames(deps).some(it => it.startsWith("babel"))
   try {
     let changed = false
     for (const prop of Object.getOwnPropertyNames(data)) {
-      // removing devDependencies from package.json breaks levelup in electron, so, remove it only from main package.json
+      // removing devDependencies from package.json breaks levelup in deskgap, so, remove it only from main package.json
       if (prop[0] === "_" ||
         ignoredPackageMetadataProperties.has(prop) ||
         (options.isRemovePackageScripts && prop === "scripts") ||
@@ -107,7 +107,7 @@ async function modifyMainPackageJson(file: string, extraMetadata: any, isRemoveP
     deepAssign(mainPackageData, extraMetadata)
   }
 
-  // https://github.com/electron-userland/electron-builder/issues/1212
+  // https://github.com/deskgap-userland/deskgap-builder/issues/1212
   const serializedDataIfChanged = cleanupPackageJson(mainPackageData, {
     isMain: true,
     isRemovePackageScripts,

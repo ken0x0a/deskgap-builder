@@ -15,6 +15,6 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "../typings/electron.d.ts"
+    "../typings/deskgap.d.ts"
   ]
 }

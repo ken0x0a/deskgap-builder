@@ -2,10 +2,10 @@ import BluebirdPromise from "bluebird-lst"
 import { Arch, asArray, AsyncTaskManager, InvalidConfigurationError, isEmptyOrSpaces, isPullRequest, log, safeStringifyJson, serializeToYaml } from "builder-util"
 import { BintrayOptions, CancellationToken, GenericServerOptions, getS3LikeProviderBaseUrl, GithubOptions, githubUrl, PublishConfiguration, PublishProvider } from "builder-util-runtime"
 import _debug from "debug"
-import { getCiTag, PublishContext, Publisher, PublishOptions, UploadTask } from "electron-publish"
+import { getCiTag, PublishContext, Publisher, PublishOptions, UploadTask } from "deskgap-publish"
 import { BintrayPublisher } from "./BintrayPublisher"
-import { GitHubPublisher } from "electron-publish/out/gitHubPublisher"
-import { MultiProgress } from "electron-publish/out/multiProgress"
+import { GitHubPublisher } from "deskgap-publish/out/gitHubPublisher"
+import { MultiProgress } from "deskgap-publish/out/multiProgress"
 import S3Publisher from "./s3/s3Publisher"
 import SpacesPublisher from "./s3/spacesPublisher"
 import { writeFile } from "fs-extra"
@@ -24,7 +24,7 @@ import { createUpdateInfoTasks, UpdateInfoFileTask, writeUpdateInfoFiles } from 
 const publishForPrWarning = "There are serious security concerns with PUBLISH_FOR_PULL_REQUEST=true (see the  CircleCI documentation (https://circleci.com/docs/1.0/fork-pr-builds/) for details)" +
   "\nIf you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and untrusted forks can make pull requests against your repo, then this option isn't for you."
 
-const debug = _debug("electron-builder:publish")
+const debug = _debug("deskgap-builder:publish")
 
 function checkOptions(publishPolicy: any) {
   if (publishPolicy != null && publishPolicy !== "onTag" && publishPolicy !== "onTagOrDraft" && publishPolicy !== "always" && publishPolicy !== "never") {
@@ -84,7 +84,7 @@ export class PublishManager implements PublishContext {
 
     packager.addAfterPackHandler(async event => {
       const packager = event.packager
-      if (event.electronPlatformName === "darwin") {
+      if (event.deskgapPlatformName === "darwin") {
         if (!event.targets.some(it => it.name === "dmg" || it.name === "zip")) {
           return
         }
@@ -247,7 +247,7 @@ export async function getPublishConfigsForUpdateInfo(packager: PlatformPackager<
 
   if (publishConfigs.length === 0) {
     log.debug(null, "getPublishConfigsForUpdateInfo: no publishConfigs, detect using repository info")
-    // https://github.com/electron-userland/electron-builder/issues/925#issuecomment-261732378
+    // https://github.com/deskgap-userland/deskgap-builder/issues/925#issuecomment-261732378
     // default publish config is github, file should be generated regardless of publish state (user can test installer locally or manage the release process manually)
     const repositoryInfo = await packager.info.repositoryInfo
     debug(`getPublishConfigsForUpdateInfo: ${safeStringifyJson(repositoryInfo)}`)
@@ -309,7 +309,7 @@ function requireProviderClass(provider: string, packager: Packager): any | null 
       return SpacesPublisher
 
     default: {
-      const name = `electron-publisher-${provider}`
+      const name = `deskgap-publisher-${provider}`
       let module: any = null
       try {
         module = require(path.join(packager.buildResourcesDir, name + ".js"))
@@ -406,7 +406,7 @@ async function resolvePublishConfigurations(publishers: any, platformPackager: P
 }
 
 function isSuitableWindowsTarget(target: Target) {
-  if (target.name === "appx" && target.options != null && (target.options as any).electronUpdaterAware) {
+  if (target.name === "appx" && target.options != null && (target.options as any).deskgapUpdaterAware) {
     return true
   }
   return target.name === "nsis" || target.name.startsWith("nsis-")
@@ -481,7 +481,7 @@ async function getResolvedPublishConfig(platformPackager: PlatformPackager<any> 
       return info
     }
 
-    const message = `Cannot detect repository by .git/config. Please specify "repository" in the package.json (https://docs.npmjs.com/files/package.json#repository).\nPlease see https://electron.build/configuration/publish`
+    const message = `Cannot detect repository by .git/config. Please specify "repository" in the package.json (https://docs.npmjs.com/files/package.json#repository).\nPlease see https://deskgap.build/configuration/publish`
     if (errorIfCannot) {
       throw new Error(message)
     }
@@ -508,7 +508,7 @@ async function getResolvedPublishConfig(platformPackager: PlatformPackager<any> 
 
   if (isGithub) {
     if ((options as GithubOptions).token != null && !(options as GithubOptions).private) {
-      log.warn('"token" specified in the github publish options. It should be used only for [setFeedURL](module:electron-updater/out/AppUpdater.AppUpdater+setFeedURL).')
+      log.warn('"token" specified in the github publish options. It should be used only for [setFeedURL](module:deskgap-updater/out/AppUpdater.AppUpdater+setFeedURL).')
     }
     //tslint:disable-next-line:no-object-literal-type-assertion
     return {owner, repo: project, ...options} as GithubOptions

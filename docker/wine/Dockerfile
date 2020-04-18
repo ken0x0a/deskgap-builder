@@ -1,4 +1,4 @@
-FROM electronuserland/builder:latest
+FROM deskgapuserland/builder:latest
 
 RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common && dpkg --add-architecture i386 && \
   curl -L https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key > winehq.key && apt-key add winehq.key && \
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
   # clean
   apt-get clean && rm -rf /var/lib/apt/lists/* && unlink winehq.key
 
-RUN curl -L https://github.com/electron-userland/electron-builder-binaries/releases/download/wine-2.0.3-mac-10.13/wine-home.zip > /tmp/wine-home.zip && unzip /tmp/wine-home.zip -d /root/.wine && unlink /tmp/wine-home.zip
+RUN curl -L https://github.com/deskgap-userland/deskgap-builder-binaries/releases/download/wine-2.0.3-mac-10.13/wine-home.zip > /tmp/wine-home.zip && unzip /tmp/wine-home.zip -d /root/.wine && unlink /tmp/wine-home.zip
 
 ENV WINEDEBUG -all,err+all
 ENV WINEDLLOVERRIDES winemenubuilder.exe=d

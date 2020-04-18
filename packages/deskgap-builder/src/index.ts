@@ -5,7 +5,7 @@ export {
   MacConfiguration, DmgOptions, MasConfiguration, MacOsTargetName, PkgOptions, DmgContent, DmgWindow,
   PlatformSpecificBuildOptions, AsarOptions, FileSet,
   LinuxConfiguration, DebOptions, CommonLinuxOptions, LinuxTargetSpecificOptions, AppImageOptions,
-  Configuration, AfterPackContext, MetadataDirectories, Protocol, ReleaseInfo, ElectronDownloadOptions,
+  Configuration, AfterPackContext, MetadataDirectories, Protocol, ReleaseInfo, DeskGapDownloadOptions,
   SnapOptions, CommonWindowsInstallerConfiguration, FileAssociation, MsiOptions, AppXOptions, WindowsConfiguration,
   Packager, BuildResult, PackagerOptions, ArtifactCreated, ArtifactBuildStarted,
   NsisOptions, NsisWebOptions, PortableOptions, CommonNsisOptions, SquirrelWindowsOptions,

@@ -35,7 +35,7 @@ async function check(projectDir: string, devPackageData: any): Promise<boolean> 
   })
 
   let unusedDependencies: any
-  if (packageName === "electron-builder") {
+  if (packageName === "deskgap-builder") {
     unusedDependencies = result.dependencies.filter(it => it !== "dmg-builder" && it !== "bluebird-lst" && it !== "@types/yargs")
   }
   else {
@@ -56,14 +56,14 @@ async function check(projectDir: string, devPackageData: any): Promise<boolean> 
     return false
   }
 
-  delete (result.missing as any).electron
+  delete (result.missing as any).deskgap
   const toml = (result.missing as any).toml
   if (toml != null && toml.length === 1 && toml[0].endsWith("config.js")) {
     delete (result.missing as any).toml
   }
 
   for (const name of Object.keys(result.missing)) {
-    if (name === "electron-builder-squirrel-windows" || name === "electron-webpack" ||
+    if (name === "deskgap-builder-squirrel-windows" || name === "deskgap-webpack" ||
       (packageName === "app-builder-lib" && (name === "dmg-builder" || knownMissedDependencies.has(name) || name.startsWith("@babel/"))) ||
       (packageName === "app-builder-lib" && (name === "dmg-builder" || knownMissedDependencies.has(name) || name.startsWith("@babel/")))) {
       delete (result.missing as any)[name]

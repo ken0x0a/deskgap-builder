@@ -194,19 +194,19 @@ Object {
 }
 `;
 
-exports[`electron version from build 1`] = `
+exports[`deskgap version from build 1`] = `
 Object {
   "linux": Array [],
 }
 `;
 
-exports[`electron version from electron dependency 1`] = `
+exports[`deskgap version from deskgap dependency 1`] = `
 Object {
   "linux": Array [],
 }
 `;
 
-exports[`electron version from electron-prebuilt dependency 1`] = `
+exports[`deskgap version from deskgap-prebuilt dependency 1`] = `
 Object {
   "linux": Array [],
 }
@@ -1712,7 +1712,7 @@ Object {
     },
     "node_modules": Object {
       "files": Object {
-        "@electron-builder": Object {
+        "@deskgap-builder": Object {
           "files": Object {
             "test-smart-unpack": Object {
               "files": Object {
@@ -1932,22 +1932,22 @@ Array [
   "app.asar.unpacked/node_modules/edge-cs/lib/edge-cs.js",
   "app.asar.unpacked/node_modules/edge-cs/lib/bootstrap/Dummy.cs",
   "app.asar.unpacked/node_modules/edge-cs/lib/bootstrap/project.json",
-  "app.asar.unpacked/node_modules/@electron-builder/test-smart-unpack/foo.dll",
+  "app.asar.unpacked/node_modules/@deskgap-builder/test-smart-unpack/foo.dll",
   Object {
     "content": "{
-  \\"name\\": \\"@electron-builder/test-smart-unpack\\",
+  \\"name\\": \\"@deskgap-builder/test-smart-unpack\\",
   \\"version\\": \\"1.0.0\\"
 }
 ",
-    "name": "app.asar.unpacked/node_modules/@electron-builder/test-smart-unpack/package.json",
+    "name": "app.asar.unpacked/node_modules/@deskgap-builder/test-smart-unpack/package.json",
   },
 ]
 `;
 
 exports[`win smart unpack 4`] = `
 Array [
-  "node_modules/@electron-builder/test-smart-unpack/package.json",
-  "node_modules/@electron-builder/test-smart-unpack-empty/package.json",
+  "node_modules/@deskgap-builder/test-smart-unpack/package.json",
+  "node_modules/@deskgap-builder/test-smart-unpack-empty/package.json",
   "node_modules/debug/.coveralls.yml",
   "node_modules/debug/.eslintrc",
   "node_modules/debug/.npmignore",

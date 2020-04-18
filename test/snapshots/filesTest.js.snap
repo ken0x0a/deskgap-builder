@@ -43,7 +43,7 @@ Array [
   "lib/net45/icudtl.dat",
   "lib/net45/libEGL.dll",
   "lib/net45/libGLESv2.dll",
-  "lib/net45/LICENSE.electron.txt",
+  "lib/net45/LICENSE.deskgap.txt",
   "lib/net45/LICENSES.chromium.html",
   "lib/net45/resources.pak",
   "lib/net45/snapshot_blob.bin",
@@ -87,7 +87,7 @@ Array [
   "index.js",
   "package.json",
   "test.h",
-  "dist/electron/foo.js",
+  "dist/deskgap/foo.js",
   "app/readme.md",
   "app/package.json/readme.md",
 ]

@@ -15,7 +15,7 @@ test.ifAll("snap full", app({
     extraMetadata: {
       name: "se-wo-template",
     },
-    productName: "Snap Electron App (full build)",
+    productName: "Snap DeskGap App (full build)",
     snap: {
       useTemplateApp: false,
     },
@@ -29,7 +29,7 @@ test.ifAll("snap full (armhf)", app({
     extraMetadata: {
       name: "se-wo-template",
     },
-    productName: "Snap Electron App (full build)",
+    productName: "Snap DeskGap App (full build)",
     snap: {
       useTemplateApp: false,
     },

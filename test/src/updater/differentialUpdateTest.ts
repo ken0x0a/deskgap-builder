@@ -2,10 +2,10 @@ import BluebirdPromise from "bluebird-lst"
 import { doSpawn } from "builder-util"
 import { GenericServerOptions, S3Options } from "builder-util-runtime"
 import { getBinFromUrl } from "app-builder-lib/out/binDownload"
-import { Arch, Configuration, Platform } from "electron-builder"
-import { AppImageUpdater } from "electron-updater/out/AppImageUpdater"
-import { MacUpdater } from "electron-updater/out/MacUpdater"
-import { NsisUpdater } from "electron-updater/out/NsisUpdater"
+import { Arch, Configuration, Platform } from "deskgap-builder"
+import { AppImageUpdater } from "deskgap-updater/out/AppImageUpdater"
+import { MacUpdater } from "deskgap-updater/out/MacUpdater"
+import { NsisUpdater } from "deskgap-updater/out/NsisUpdater"
 import { EventEmitter } from "events"
 import { move } from "fs-extra"
 import * as path from "path"
@@ -17,7 +17,7 @@ import { TestAppAdapter } from "../helpers/TestAppAdapter"
 
 /*
 
-rm -rf ~/Documents/onshape-desktop-shell/node_modules/electron-updater && cp -R ~/Documents/electron-builder/packages/electron-updater ~/Documents/onshape-desktop-shell/node_modules/electron-updater && rm -rf ~/Documents/onshape-desktop-shell/node_modules/electron-updater/src && rm -rf ~/Documents/onshape-desktop-shell/node_modules/builder-util-runtime && cp -R ~/Documents/electron-builder/packages/builder-util-runtime ~/Documents/onshape-desktop-shell/node_modules/builder-util-runtime && rm -rf ~/Documents/onshape-desktop-shell/node_modules/builder-util-runtime/src
+rm -rf ~/Documents/onshape-desktop-shell/node_modules/deskgap-updater && cp -R ~/Documents/deskgap-builder/packages/deskgap-updater ~/Documents/onshape-desktop-shell/node_modules/deskgap-updater && rm -rf ~/Documents/onshape-desktop-shell/node_modules/deskgap-updater/src && rm -rf ~/Documents/onshape-desktop-shell/node_modules/builder-util-runtime && cp -R ~/Documents/deskgap-builder/packages/builder-util-runtime ~/Documents/onshape-desktop-shell/node_modules/builder-util-runtime && rm -rf ~/Documents/onshape-desktop-shell/node_modules/builder-util-runtime/src
 
 */
 // %USERPROFILE%\AppData\Roaming\Onshape
@@ -180,7 +180,7 @@ test.skip("dmg", async () => {
   if (process.env.__SKIP_BUILD == null) {
     await doBuild(outDirs, Platform.MAC.createTarget(), tmpDir, {
       mac: {
-        electronUpdaterCompatibility: ">=2.17.0",
+        deskgapUpdaterCompatibility: ">=2.17.0",
       },
     })
   }
@@ -289,7 +289,7 @@ async function testBlockMap(oldDir: string, newDir: string, updaterClass: any, a
     "-listdir=true",
   ])
   const mockNativeUpdater = new TestNativeUpdater()
-  jest.mock("electron", () => {
+  jest.mock("deskgap", () => {
     return {
       autoUpdater: mockNativeUpdater,
     }

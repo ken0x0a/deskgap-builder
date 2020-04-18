@@ -1,5 +1,5 @@
 import { copyOrLinkFile } from "builder-util/out/fs"
-import { createTargets, DIR_TARGET, Platform } from "electron-builder"
+import { createTargets, DIR_TARGET, Platform } from "deskgap-builder"
 import { promises as fs } from "fs"
 import * as path from "path"
 import { assertThat } from "../helpers/fileAssert"
@@ -12,8 +12,8 @@ test.ifMac.ifAll("two-package", () => assertPack("test-app", {
       repository: "foo/bar"
     },
     mac: {
-      electronUpdaterCompatibility: ">=2.16",
-      electronLanguages: ["bn", "en"]
+      deskgapUpdaterCompatibility: ">=2.16",
+      deskgapLanguages: ["bn", "en"]
     },
     //tslint:disable-next-line:no-invalid-template-strings
     artifactName: "${name}-${version}-${os}.${ext}",
@@ -77,10 +77,10 @@ test.ifMac("one-package", app({
   },
 }))
 
-test.ifMac.ifAll("electronDist", appThrows({
+test.ifMac.ifAll("deskgapDist", appThrows({
   targets: Platform.MAC.createTarget(DIR_TARGET),
   config: {
-    electronDist: "foo",
+    deskgapDist: "foo",
   }
 }))
 

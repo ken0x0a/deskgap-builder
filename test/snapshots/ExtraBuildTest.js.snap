@@ -41,7 +41,7 @@ Object {
 }
 `;
 
-exports[`electronDist as path to local folder with electron builds zipped  1`] = `
+exports[`deskgapDist as path to local folder with deskgap builds zipped  1`] = `
 Object {
   "linux": Array [],
 }
@@ -122,13 +122,13 @@ Object {
 }
 `;
 
-exports[`retrieve latest electron version 1`] = `
+exports[`retrieve latest deskgap version 1`] = `
 Object {
   "linux": Array [],
 }
 `;
 
-exports[`retrieve latest electron-nightly version 1`] = `
+exports[`retrieve latest deskgap-nightly version 1`] = `
 Object {
   "linux": Array [],
 }

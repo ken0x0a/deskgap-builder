@@ -12,7 +12,7 @@ export function buildForge(forgeOptions: ForgeOptions, options: PackagerOptions)
     prepackaged: appDir,
     config: {
       directories: {
-        // https://github.com/electron-userland/electron-forge/blob/master/src/makers/generic/zip.js
+        // https://github.com/deskgap-userland/deskgap-forge/blob/master/src/makers/generic/zip.js
         output: path.resolve(appDir, "..", "make"),
       },
     },

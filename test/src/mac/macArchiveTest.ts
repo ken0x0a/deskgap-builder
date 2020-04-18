@@ -1,6 +1,6 @@
 import { exec } from "builder-util"
 import { parseXml } from "builder-util-runtime"
-import { Platform } from "electron-builder"
+import { Platform } from "deskgap-builder"
 import { outputFile } from "fs-extra"
 import { promises as fs } from "fs"
 import * as path from "path"
@@ -67,7 +67,7 @@ test.ifAll.ifMac("pkg extended configuration", app({
     const unpackedDir = path.join(context.outDir, "pkg-unpacked")
     await exec("pkgutil", ["--expand", pkgPath, unpackedDir])
 
-    const packageInfoFile = path.join(unpackedDir, "org.electron-builder.testApp.pkg", "PackageInfo")
+    const packageInfoFile = path.join(unpackedDir, "org.deskgap-builder.testApp.pkg", "PackageInfo")
     const info = parseXml(await fs.readFile(packageInfoFile, "utf8"))
 
     const relocateElement = info.elementOrNull("relocate")
@@ -122,7 +122,7 @@ test.ifAll.ifMac("pkg scripts", app({
 
     expect(info).toMatchSnapshot()
 
-    const scriptDir = path.join(unpackedDir, "org.electron-builder.testApp.pkg", "Scripts")
+    const scriptDir = path.join(unpackedDir, "org.deskgap-builder.testApp.pkg", "Scripts")
     await Promise.all([
       assertThat(path.join(scriptDir, "postinstall")).isFile(),
       assertThat(path.join(scriptDir, "preinstall")).isFile(),

@@ -1,4 +1,4 @@
-site_name: electron-builder
+site_name: deskgap-builder
 use_directory_urls: false
 theme:
   feature:
@@ -10,8 +10,8 @@ theme:
     primary: 'blue'
     accent: 'blue'
 
-repo_name: electron-userland/electron-builder
-repo_url: 'https://github.com/electron-userland/electron-builder'
+repo_name: deskgap-userland/deskgap-builder
+repo_url: 'https://github.com/deskgap-userland/deskgap-builder'
 edit_uri: ""
 dev_addr: 0.0.0.0:8000
 strict: true
@@ -33,12 +33,12 @@ markdown_extensions:
 
 google_analytics:
   - 'UA-105592680-1'
-  - www.electron.build
+  - www.deskgap.build
 
 nav:
   - Introduction: index.md
   - Command Line Interface (CLI): cli.md
-  - Programmatic API: api/electron-builder.md
+  - Programmatic API: api/deskgap-builder.md
   - Donate: donate.md
 
   - Configuration:

@@ -23,9 +23,9 @@ cache:
   yarn: true
   directories:
     - .yarn
-    - $HOME/Library/Caches/electron
-    - $HOME/Library/Caches/electron-builder
-    - /tmp/jest-electron-builder-tests
+    - $HOME/Library/Caches/deskgap
+    - $HOME/Library/Caches/deskgap-builder
+    - /tmp/jest-deskgap-builder-tests
 
 install:
   - YARN_CHECKSUM_BEHAVIOR=ignore node .yarn/releases/yarn-sources.js install

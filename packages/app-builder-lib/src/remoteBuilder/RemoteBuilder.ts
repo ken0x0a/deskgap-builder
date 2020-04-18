@@ -1,11 +1,11 @@
 import BluebirdPromise from "bluebird-lst"
 import { Arch, isEnvTrue, log, InvalidConfigurationError } from "builder-util"
 import * as path from "path"
-import { UploadTask } from "electron-publish/out/publisher"
+import { UploadTask } from "deskgap-publish/out/publisher"
 import { Platform, Target, TargetSpecificOptions } from "../core"
 import { LinuxPackager } from "../linuxPackager"
 import { ArtifactCreated } from "../packagerApi"
-import { isSafeToUnpackElectronOnRemoteBuildServer, PlatformPackager } from "../platformPackager"
+import { isSafeToUnpackDeskGapOnRemoteBuildServer, PlatformPackager } from "../platformPackager"
 import { executeAppBuilderAsJson } from "../util/appBuilder"
 import { ProjectInfoManager } from "./ProjectInfoManager"
 
@@ -25,7 +25,7 @@ export class RemoteBuilder {
 
   scheduleBuild(target: Target, arch: Arch, unpackedDirectory: string) {
     if (!isEnvTrue(process.env._REMOTE_BUILD) && this.packager.config.remoteBuild === false) {
-      throw new InvalidConfigurationError("Target is not supported on your OS and using of Electron Build Service is disabled (\"remoteBuild\" option)")
+      throw new InvalidConfigurationError("Target is not supported on your OS and using of DeskGap Build Service is disabled (\"remoteBuild\" option)")
     }
 
     let list = this.toBuild.get(arch)
@@ -73,8 +73,8 @@ export class RemoteBuilder {
       platform: packager.platform.buildConfigurationKey,
     }
 
-    if (isSafeToUnpackElectronOnRemoteBuildServer(packager)) {
-      buildRequest.electronDownload = {
+    if (isSafeToUnpackDeskGapOnRemoteBuildServer(packager)) {
+      buildRequest.deskgapDownload = {
         version: packager.info.framework.version,
         platform: Platform.LINUX.nodeName,
         arch: targets[0].arch,
@@ -100,7 +100,7 @@ export class RemoteBuilder {
 
     const result: any = await executeAppBuilderAsJson(args)
     if (result.error != null) {
-      throw new InvalidConfigurationError(`Remote builder error (if you think that it is not your application misconfiguration issue, please file issue to https://github.com/electron-userland/electron-builder/issues):\n\n${result.error}`, "REMOTE_BUILDER_ERROR")
+      throw new InvalidConfigurationError(`Remote builder error (if you think that it is not your application misconfiguration issue, please file issue to https://github.com/deskgap-userland/deskgap-builder/issues):\n\n${result.error}`, "REMOTE_BUILDER_ERROR")
     }
     else if (result.files != null) {
       for (const artifact of result.files) {

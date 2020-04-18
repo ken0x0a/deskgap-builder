@@ -72,7 +72,7 @@ Object {
     },
     "node_modules": Object {
       "files": Object {
-        "electron-log": Object {
+        "deskgap-log": Object {
           "files": Object {
             "LICENSE": Object {
               "offset": "7962",
@@ -381,7 +381,7 @@ Object {
             },
           },
         },
-        "electron-log": Object {
+        "deskgap-log": Object {
           "files": Object {
             "LICENSE": Object {
               "offset": "126282",

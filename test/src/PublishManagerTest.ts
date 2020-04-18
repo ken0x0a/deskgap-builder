@@ -1,4 +1,4 @@
-import { createTargets, Platform } from "electron-builder"
+import { createTargets, Platform } from "deskgap-builder"
 import { outputFile } from "fs-extra"
 import * as path from "path"
 import { GithubOptions, GenericServerOptions, SpacesOptions } from "builder-util-runtime"
@@ -10,7 +10,7 @@ test.ifNotWindows.ifDevOrLinuxCi("generic, github and spaces", app({
   config: {
     generateUpdatesFilesForAllChannels: true,
     mac: {
-      electronUpdaterCompatibility: ">=2.16",
+      deskgapUpdaterCompatibility: ">=2.16",
     },
     publish: [
       genericPublisher("https://example.com/downloads"),
@@ -47,7 +47,7 @@ test.ifNotWindows.ifDevOrLinuxCi("github and spaces (publishAutoUpdate)", app({
   targets: Platform.LINUX.createTarget("AppImage"),
   config: {
     mac: {
-      electronUpdaterCompatibility: ">=2.16",
+      deskgapUpdaterCompatibility: ">=2.16",
     },
     publish: [
       githubPublisher("foo/foo"),
@@ -62,7 +62,7 @@ test.ifAll("mac artifactName ", app({
     // tslint:disable-next-line:no-invalid-template-strings
     artifactName: "${productName}_${version}_${os}.${ext}",
     mac: {
-      electronUpdaterCompatibility: ">=2.16",
+      deskgapUpdaterCompatibility: ">=2.16",
     },
     publish: [
       spacesPublisher(),
@@ -99,7 +99,7 @@ test.ifAll.ifNotWindows("os macro", app({
 
 // disable on ifNotCi for now - slow on CircleCI
 // error should be ignored because publish: never
-// https://github.com/electron-userland/electron-builder/issues/2670
+// https://github.com/deskgap-userland/deskgap-builder/issues/2670
 test.ifAll.ifNotCi("dotted s3 bucket", app({
   targets: createTargets([Platform.LINUX], "zip"),
   config: {
@@ -112,7 +112,7 @@ test.ifAll.ifNotCi("dotted s3 bucket", app({
   publish: "never"
 }))
 
-// https://github.com/electron-userland/electron-builder/issues/3261
+// https://github.com/deskgap-userland/deskgap-builder/issues/3261
 test.ifAll.ifNotWindows("custom provider", app({
   targets: createTargets([Platform.LINUX], "zip"),
   config: {
@@ -123,7 +123,7 @@ test.ifAll.ifNotWindows("custom provider", app({
   },
 }, {
   publish: "never",
-  projectDirCreated: projectDir => outputFile(path.join(projectDir, "build/electron-publisher-custom.js"), `class Publisher {
+  projectDirCreated: projectDir => outputFile(path.join(projectDir, "build/deskgap-publisher-custom.js"), `class Publisher {
     async upload(task) {
     }
   }

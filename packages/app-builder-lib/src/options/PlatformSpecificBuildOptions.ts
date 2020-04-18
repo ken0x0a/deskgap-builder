@@ -31,7 +31,7 @@ export interface PlatformSpecificBuildOptions extends TargetSpecificOptions {
   /**
    * The application id. Used as [CFBundleIdentifier](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070) for MacOS and as
    * [Application User Model ID](https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx) for Windows (NSIS target only, Squirrel.Windows not supported). It is strongly recommended that an explicit ID is set.
-   * @default com.electron.${name}
+   * @default com.deskgap.${name}
    */
   readonly appId?: string | null
 
@@ -51,7 +51,7 @@ export interface PlatformSpecificBuildOptions extends TargetSpecificOptions {
   extraFiles?: Array<FileSet | string> | FileSet | string | null
 
   /**
-   * Whether to package the application's source code into an archive, using [Electron's archive format](http://electron.atom.io/docs/tutorial/application-packaging/).
+   * Whether to package the application's source code into an archive, using [DeskGap's archive format](http://deskgap.atom.io/docs/tutorial/application-packaging/).
    *
    * Node modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work.
    * @default true
@@ -59,7 +59,7 @@ export interface PlatformSpecificBuildOptions extends TargetSpecificOptions {
   readonly asar?: AsarOptions | boolean | null
 
   /**
-   * A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://electron.atom.io/docs/tutorial/application-packaging/) archive.
+   * A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://deskgap.atom.io/docs/tutorial/application-packaging/) archive.
    */
   readonly asarUnpack?: Array<string> | string | null
 
@@ -81,9 +81,9 @@ export interface PlatformSpecificBuildOptions extends TargetSpecificOptions {
   readonly forceCodeSigning?: boolean
 
   /**
-   * The [electron-updater compatibility](/auto-update#compatibility) semver range.
+   * The [deskgap-updater compatibility](/auto-update#compatibility) semver range.
    */
-  readonly electronUpdaterCompatibility?: string | null
+  readonly deskgapUpdaterCompatibility?: string | null
 
   publish?: Publish
 
@@ -94,7 +94,7 @@ export interface PlatformSpecificBuildOptions extends TargetSpecificOptions {
   readonly detectUpdateChannel?: boolean
 
   /**
-   * Please see [Building and Releasing using Channels](https://github.com/electron-userland/electron-builder/issues/1182#issuecomment-324947139).
+   * Please see [Building and Releasing using Channels](https://github.com/deskgap-userland/deskgap-builder/issues/1182#issuecomment-324947139).
    * @default false
    */
   readonly generateUpdatesFilesForAllChannels?: boolean
@@ -142,7 +142,7 @@ export interface ReleaseInfo {
 /**
  * URL Protocol Schemes. Protocols to associate the app with. macOS only.
  *
- * Please note — on macOS [you need to register an `open-url` event handler](http://electron.atom.io/docs/api/app/#event-open-url-macos).
+ * Please note — on macOS [you need to register an `open-url` event handler](http://deskgap.atom.io/docs/api/app/#event-open-url-macos).
  */
 export interface Protocol {
   /**

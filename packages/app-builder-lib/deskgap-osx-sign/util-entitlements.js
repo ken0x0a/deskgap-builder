@@ -16,7 +16,7 @@ const getAppContentsPath = util.getAppContentsPath
 let tmpFileCounter = 0
 
 /**
- * This function returns a promise completing the entitlements automation: The process includes checking in `Info.plist` for `ElectronTeamID` or setting parsed value from identity, and checking in entitlements file for `com.apple.security.application-groups` or inserting new into array. A temporary entitlements file may be created to replace the input for any changes introduced.
+ * This function returns a promise completing the entitlements automation: The process includes checking in `Info.plist` for `DeskGapTeamID` or setting parsed value from identity, and checking in entitlements file for `com.apple.security.application-groups` or inserting new into array. A temporary entitlements file may be created to replace the input for any changes introduced.
  * @function
  * @param {Object} opts - Options.
  * @returns {Promise} Promise.
@@ -38,23 +38,23 @@ async function preAutoEntitlements(opts) {
 
   const appInfo = plistContent[1]
 
-  // Use ElectronTeamID in Info.plist if already specified
-  if (appInfo.ElectronTeamID) {
-    debuglog('`ElectronTeamID` found in `Info.plist`: ' + appInfo.ElectronTeamID)
+  // Use DeskGapTeamID in Info.plist if already specified
+  if (appInfo.DeskGapTeamID) {
+    debuglog('`DeskGapTeamID` found in `Info.plist`: ' + appInfo.DeskGapTeamID)
   } else {
     // The team identifier in signing identity should not be trusted
     if (opts['provisioning-profile']) {
-      appInfo.ElectronTeamID = opts['provisioning-profile'].message.Entitlements['com.apple.developer.team-identifier']
-      debuglog('`ElectronTeamID` not found in `Info.plist`, use parsed from provisioning profile: ' + appInfo.ElectronTeamID)
+      appInfo.DeskGapTeamID = opts['provisioning-profile'].message.Entitlements['com.apple.developer.team-identifier']
+      debuglog('`DeskGapTeamID` not found in `Info.plist`, use parsed from provisioning profile: ' + appInfo.DeskGapTeamID)
     } else {
-      appInfo.ElectronTeamID = opts.identity.name.substring(opts.identity.name.indexOf('(') + 1, opts.identity.name.lastIndexOf(')'))
-      debuglog('`ElectronTeamID` not found in `Info.plist`, use parsed from signing identity: ' + appInfo.ElectronTeamID)
+      appInfo.DeskGapTeamID = opts.identity.name.substring(opts.identity.name.indexOf('(') + 1, opts.identity.name.lastIndexOf(')'))
+      debuglog('`DeskGapTeamID` not found in `Info.plist`, use parsed from signing identity: ' + appInfo.DeskGapTeamID)
     }
     await executeAppBuilderAndWriteJson(["encode-plist"], {[appInfoPath]: appInfo})
     debuglog('`Info.plist` updated:', '\n', '> Info.plist:', appInfoPath)
   }
 
-  const appIdentifier = appInfo.ElectronTeamID + '.' + appInfo.CFBundleIdentifier
+  const appIdentifier = appInfo.DeskGapTeamID + '.' + appInfo.CFBundleIdentifier
   // Insert application identifier if not exists
   if (entitlements['com.apple.application-identifier']) {
     debuglog('`com.apple.application-identifier` found in entitlements file: ' + entitlements['com.apple.application-identifier'])
@@ -66,8 +66,8 @@ async function preAutoEntitlements(opts) {
   if (entitlements['com.apple.developer.team-identifier']) {
     debuglog('`com.apple.developer.team-identifier` found in entitlements file: ' + entitlements['com.apple.developer.team-identifier'])
   } else {
-    debuglog('`com.apple.developer.team-identifier` not found in entitlements file, new inserted: ' + appInfo.ElectronTeamID)
-    entitlements['com.apple.developer.team-identifier'] = appInfo.ElectronTeamID
+    debuglog('`com.apple.developer.team-identifier` not found in entitlements file, new inserted: ' + appInfo.DeskGapTeamID)
+    entitlements['com.apple.developer.team-identifier'] = appInfo.DeskGapTeamID
   }
   // Init entitlements app group key to array if not exists
   if (!entitlements['com.apple.security.application-groups']) {

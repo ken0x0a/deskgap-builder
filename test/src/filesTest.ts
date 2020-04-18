@@ -1,4 +1,4 @@
-import { DIR_TARGET, Platform } from "electron-builder"
+import { DIR_TARGET, Platform } from "deskgap-builder"
 import { TmpDir } from "builder-util"
 import { copyDir } from "builder-util/out/fs"
 import { outputFile } from "fs-extra"
@@ -24,14 +24,14 @@ test.ifDevOrLinuxCi("files", app({
   config: {
     asar: false,
     // tslint:disable:no-invalid-template-strings
-    files: ["**/*", "!ignoreMe${/*}", "${env.__NOT_BAR__}", "dist/electron/**/*"],
+    files: ["**/*", "!ignoreMe${/*}", "${env.__NOT_BAR__}", "dist/deskgap/**/*"],
   }
 }, {
   projectDirCreated: projectDir => Promise.all([
     outputFile(path.join(projectDir, "ignoreMe", "foo"), "data"),
     outputFile(path.join(projectDir, "ignoreEmptyDir", "bar"), "data"),
     outputFile(path.join(projectDir, "test.h"), "test that"),
-    outputFile(path.join(projectDir, "dist/electron/foo.js"), "data"),
+    outputFile(path.join(projectDir, "dist/deskgap/foo.js"), "data"),
   ]),
   packed: context => {
     const resources = path.join(context.getResources(Platform.LINUX), "app")
@@ -232,7 +232,7 @@ test.ifNotWindows.ifNotCiWin("extraResources - two-package", () => {
   })
 })
 
-// https://github.com/electron-userland/electron-builder/pull/998
+// https://github.com/deskgap-userland/deskgap-builder/pull/998
 // copyDir walks to a symlink referencing a file that has not yet been copied by postponing the linking step until after the full walk is complete
 test.ifNotWindows("postpone symlink", async () => {
   const tmpDir = new TmpDir("files-test")

@@ -1,12 +1,12 @@
 {
-  "name": "electron-forge-maker-snap",
+  "name": "deskgap-forge-maker-snap",
   "version": "22.4.0",
   "main": "main.js",
   "author": "Vladimir Krivosheev",
   "license": "MIT",
-  "repository": "electron-userland/electron-builder",
-  "bugs": "https://github.com/electron-userland/electron-builder/issues",
-  "homepage": "https://github.com/electron-userland/electron-builder",
+  "repository": "deskgap-userland/deskgap-builder",
+  "bugs": "https://github.com/deskgap-userland/deskgap-builder/issues",
+  "homepage": "https://github.com/deskgap-userland/deskgap-builder",
   "files": [
     "*.js"
   ],

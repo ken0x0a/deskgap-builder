@@ -1,5 +1,5 @@
-electronVersion: 8.2.0
-appId: org.electron-builder.testApp
+deskgapVersion: 8.2.0
+appId: org.deskgap-builder.testApp
 compression: store
 npmRebuild: false
 mac:

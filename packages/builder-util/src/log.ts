@@ -4,7 +4,7 @@ import WritableStream = NodeJS.WritableStream
 
 let printer: ((message: string) => void) | null = null
 
-export const debug = _debug("electron-builder")
+export const debug = _debug("deskgap-builder")
 
 export interface Fields {
   [index: string]: any

@@ -99,7 +99,7 @@ function doExecuteTasks(differentialDownloader: DifferentialDownloader, options:
 }
 
 export function checkIsRangesSupported(response: IncomingMessage, reject: (error: Error) => void): boolean {
-  // Electron net handles redirects automatically, our NodeJS test server doesn't use redirects - so, we don't check 3xx codes.
+  // DeskGap net handles redirects automatically, our NodeJS test server doesn't use redirects - so, we don't check 3xx codes.
   if (response.statusCode!! >= 400) {
     reject(createHttpError(response))
     return false

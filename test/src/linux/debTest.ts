@@ -1,4 +1,4 @@
-import { Arch, Platform } from "electron-builder"
+import { Arch, Platform } from "deskgap-builder"
 import { promises as fs } from "fs"
 import { app, execShell, getTarExecutable } from "../helpers/packTester"
 

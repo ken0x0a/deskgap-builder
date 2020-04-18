@@ -15,17 +15,17 @@ async function main() {
 
   const pages = [
     {
-      page: "api/electron-builder.md", pageUrl: "electron-builder",
+      page: "api/deskgap-builder.md", pageUrl: "deskgap-builder",
       files: [
         path.join(source, "util/builder-util.js"),
-        path.join(source, "builder/electron-builder.js"),
+        path.join(source, "builder/deskgap-builder.js"),
       ]
     },
 
     // {
     //   page: "auto-update.md", pageUrl: "auto-update", mainHeader: "API",
     //   files: [
-    //     path.join(source, "updater/electron-updater.js"),
+    //     path.join(source, "updater/deskgap-updater.js"),
     //     path.join(source, "builder-util-runtime/builder-util-runtime.js"),
     //   ]
     // },
@@ -39,7 +39,7 @@ async function main() {
     ],
   }
   await render2([
-    path.join(source, "builder", "electron-builder.js"),
+    path.join(source, "builder", "deskgap-builder.js"),
     path.join(source, "builder-lib", "app-builder-lib.js"),
     path.join(source, "builder-util-runtime", "builder-util-runtime.js")
   ], jsdoc2MdOptions)
@@ -270,7 +270,7 @@ async function render2(files, jsdoc2MdOptions) {
   }
 }
 
-const inlinedClasses = new Set(["AsarOptions", "ElectronDownloadOptions", "NsisWebOptions", "PortableOptions", "DmgContent"])
+const inlinedClasses = new Set(["AsarOptions", "DeskGapDownloadOptions", "NsisWebOptions", "PortableOptions", "DmgContent"])
 
 function isInlinedMember(member) {
   if (member.id.includes(".Dmg") && member.name !== "DmgOptions") {
@@ -280,10 +280,10 @@ function isInlinedMember(member) {
 }
 
 function sortOptions(pages) {
-  const electronBuilderApiPage = pages[0]
+  const deskgapBuilderApiPage = pages[0]
 
   const excluded = new Set(["CommonLinuxOptions", "CommonNsisOptions", "LinuxTargetSpecificOptions", "PlatformSpecificBuildOptions", "ForgeOptions", "FileSet"])
-  electronBuilderApiPage.data = electronBuilderApiPage.data.filter(member => {
+  deskgapBuilderApiPage.data = deskgapBuilderApiPage.data.filter(member => {
     if (member.kind === "module") {
       return true
     }
@@ -293,16 +293,16 @@ function sortOptions(pages) {
     return !(isInlinedMember(member) || member.name.endsWith("Options") || member.name.endsWith("Configuration") || member.name === "Configuration" || member.name.startsWith("Metadata") || member.name.startsWith("Dmg"))
   })
 
-  // move Arch from builder-util to electron-builder
-  electronBuilderApiPage.data = electronBuilderApiPage.data.filter(member => {
+  // move Arch from builder-util to deskgap-builder
+  deskgapBuilderApiPage.data = deskgapBuilderApiPage.data.filter(member => {
     if (!member.id.startsWith("module:builder-util")) {
       return true
     }
 
     if (member.name === "Arch") {
-      member.id = "module:electron-builder.Arch"
+      member.id = "module:deskgap-builder.Arch"
       member.longname = member.id
-      member.memberof = "module:electron-builder"
+      member.memberof = "module:deskgap-builder"
       return true
     }
 
@@ -330,7 +330,7 @@ function sortAutoUpdate(pages) {
     if (member.kind === "module" || included.has(member.name)) {
       return true
     }
-    const modulePrefix = "module:electron-updater."
+    const modulePrefix = "module:deskgap-updater."
     const parentClass = member.memberof
     if (member.kind === "function" && parentClass != null && parentClass.startsWith(modulePrefix) && included.has(parentClass.substring(modulePrefix.length))) {
       return true
@@ -348,9 +348,9 @@ function sortAutoUpdate(pages) {
     }
 
     if (member.name === "UpdateInfo") {
-      member.id = "module:electron-updater." + member.name
+      member.id = "module:deskgap-updater." + member.name
       member.longname = member.id
-      member.memberof = "module:electron-updater"
+      member.memberof = "module:deskgap-updater"
       // move to end
       member.order += pages[pageIndex].data.length + 22 // order started from 1
       return true

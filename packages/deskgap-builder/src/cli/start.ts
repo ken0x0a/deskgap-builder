@@ -1,4 +1,4 @@
 /** @internal */
 export async function start() {
-  require("electron-webpack/dev-runner")
+  require("deskgap-webpack/dev-runner")
 }

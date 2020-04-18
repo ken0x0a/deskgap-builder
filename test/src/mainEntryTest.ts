@@ -1,4 +1,4 @@
-import { createTargets, DIR_TARGET, Platform } from "electron-builder"
+import { createTargets, DIR_TARGET, Platform } from "deskgap-builder"
 import { promises as fs } from "fs"
 import * as path from "path"
 import { appTwoThrows, assertPack, modifyPackageJson } from "./helpers/packTester"

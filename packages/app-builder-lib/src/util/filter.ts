@@ -56,7 +56,7 @@ export function createFilter(src: string, patterns: Array<Minimatch>, excludePat
     }
 
     const relative = getRelativePath(file, srcWithEndSlash)
-    // https://github.com/electron-userland/electron-builder/issues/867
+    // https://github.com/deskgap-userland/deskgap-builder/issues/867
     return minimatchAll(relative, patterns, stat) && (excludePatterns == null || stat.isDirectory() || !minimatchAll(relative, excludePatterns, stat))
   }
 }
@@ -72,7 +72,7 @@ function minimatchAll(path: string, patterns: Array<Minimatch>, stat: Stats): bo
     }
 
     // partial match — pattern: foo/bar.txt path: foo — we must allow foo
-    // use it only for non-negate patterns: const m = new Minimatch("!node_modules/@(electron-download|electron)/**/*", {dot: true }); m.match("node_modules", true) will return false, but must be true
+    // use it only for non-negate patterns: const m = new Minimatch("!node_modules/@(deskgap-download|deskgap)/**/*", {dot: true }); m.match("node_modules", true) will return false, but must be true
     match = pattern.match(path, stat.isDirectory() && !pattern.negate)
   }
   return match

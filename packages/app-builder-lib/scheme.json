@@ -140,7 +140,7 @@
       "additionalProperties": false,
       "properties": {
         "addAutoLaunchExtension": {
-          "description": "Whether to add auto launch extension. Defaults to `true` if [electron-winstore-auto-launch](https://github.com/felixrieseberg/electron-winstore-auto-launch) in the dependencies.",
+          "description": "Whether to add auto launch extension. Defaults to `true` if [deskgap-winstore-auto-launch](https://github.com/felixrieseberg/deskgap-winstore-auto-launch) in the dependencies.",
           "type": "boolean"
         },
         "applicationId": {
@@ -173,7 +173,7 @@
             "string"
           ]
         },
-        "electronUpdaterAware": {
+        "deskgapUpdaterAware": {
           "default": false,
           "type": "boolean"
         },
@@ -292,7 +292,7 @@
         },
         "setBuildNumber": {
           "default": false,
-          "description": "Whether to set build number. See https://github.com/electron-userland/electron-builder/issues/3875",
+          "description": "Whether to set build number. See https://github.com/deskgap-userland/deskgap-builder/issues/3875",
           "type": "boolean"
         },
         "showNameOnTiles": {
@@ -857,7 +857,7 @@
         },
         "window": {
           "$ref": "#/definitions/DmgWindow",
-          "description": "The DMG window position and size. With y co-ordinates running from bottom to top.\n\nThe Finder makes sure that the window will be on the user’s display, so if you want your window at the top left of the display you could use `\"x\": 0, \"y\": 100000` as the x, y co-ordinates.\nIt is not to be possible to position the window relative to the [top left](https://github.com/electron-userland/electron-builder/issues/3990#issuecomment-512960957) or relative to the center of the user’s screen."
+          "description": "The DMG window position and size. With y co-ordinates running from bottom to top.\n\nThe Finder makes sure that the window will be on the user’s display, so if you want your window at the top left of the display you could use `\"x\": 0, \"y\": 100000` as the x, y co-ordinates.\nIt is not to be possible to position the window relative to the [top left](https://github.com/deskgap-userland/deskgap-builder/issues/3990#issuecomment-512960957) or relative to the center of the user’s screen."
         },
         "writeUpdateInfo": {
           "default": true,
@@ -890,14 +890,14 @@
       },
       "type": "object"
     },
-    "ElectronDownloadOptions": {
+    "DeskGapDownloadOptions": {
       "additionalProperties": false,
       "properties": {
         "arch": {
           "type": "string"
         },
         "cache": {
-          "description": "The [cache location](https://github.com/electron-userland/electron-download#cache-location).",
+          "description": "The [cache location](https://github.com/deskgap-userland/deskgap-download#cache-location).",
           "type": [
             "null",
             "string"
@@ -945,7 +945,7 @@
     },
     "FileAssociation": {
       "additionalProperties": false,
-      "description": "File associations.\n\nmacOS (corresponds to [CFBundleDocumentTypes](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-101685)) and NSIS only.\n\nOn Windows works only if [nsis.perMachine](https://electron.build/configuration/configuration#NsisOptions-perMachine) is set to `true`.",
+      "description": "File associations.\n\nmacOS (corresponds to [CFBundleDocumentTypes](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-101685)) and NSIS only.\n\nOn Windows works only if [nsis.perMachine](https://deskgap.build/configuration/configuration#NsisOptions-perMachine) is set to `true`.",
       "properties": {
         "description": {
           "description": "*windows-only.* The description.",
@@ -1217,7 +1217,7 @@
       "additionalProperties": false,
       "properties": {
         "appId": {
-          "default": "com.electron.${name}",
+          "default": "com.deskgap.${name}",
           "description": "The application id. Used as [CFBundleIdentifier](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070) for MacOS and as\n[Application User Model ID](https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx) for Windows (NSIS target only, Squirrel.Windows not supported). It is strongly recommended that an explicit ID is set.",
           "type": [
             "null",
@@ -1244,7 +1244,7 @@
             }
           ],
           "default": true,
-          "description": "Whether to package the application's source code into an archive, using [Electron's archive format](http://electron.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
+          "description": "Whether to package the application's source code into an archive, using [DeskGap's archive format](http://deskgap.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
         },
         "asarUnpack": {
           "anyOf": [
@@ -1261,7 +1261,7 @@
               ]
             }
           ],
-          "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://electron.atom.io/docs/tutorial/application-packaging/) archive."
+          "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://deskgap.atom.io/docs/tutorial/application-packaging/) archive."
         },
         "category": {
           "description": "The [application category](https://specifications.freedesktop.org/menu-spec/latest/apa.html#main-category-registry).",
@@ -1314,8 +1314,8 @@
           "description": "Whether to infer update channel from application version pre-release components. e.g. if version `0.12.1-alpha.1`, channel will be set to `alpha`. Otherwise to `latest`.",
           "type": "boolean"
         },
-        "electronUpdaterCompatibility": {
-          "description": "The [electron-updater compatibility](/auto-update#compatibility) semver range.",
+        "deskgapUpdaterCompatibility": {
+          "description": "The [deskgap-updater compatibility](/auto-update#compatibility) semver range.",
           "type": [
             "null",
             "string"
@@ -1440,7 +1440,7 @@
         },
         "generateUpdatesFilesForAllChannels": {
           "default": false,
-          "description": "Please see [Building and Releasing using Channels](https://github.com/electron-userland/electron-builder/issues/1182#issuecomment-324947139).",
+          "description": "Please see [Building and Releasing using Channels](https://github.com/deskgap-userland/deskgap-builder/issues/1182#issuecomment-324947139).",
           "type": "boolean"
         },
         "icon": {
@@ -1588,7 +1588,7 @@
             }
           ],
           "default": "AppImage",
-          "description": "Target package type: list of `AppImage`, `snap`, `deb`, `rpm`, `freebsd`, `pacman`, `p5p`, `apk`, `7z`, `zip`, `tar.xz`, `tar.lz`, `tar.gz`, `tar.bz2`, `dir`.\n\nelectron-builder [docker image](/multi-platform-build#docker) can be used to build Linux targets on any platform.\n\nPlease [do not put an AppImage into another archive](https://github.com/probonopd/AppImageKit/wiki/Creating-AppImages#common-mistake) like a .zip or .tar.gz."
+          "description": "Target package type: list of `AppImage`, `snap`, `deb`, `rpm`, `freebsd`, `pacman`, `p5p`, `apk`, `7z`, `zip`, `tar.xz`, `tar.lz`, `tar.gz`, `tar.bz2`, `dir`.\n\ndeskgap-builder [docker image](/multi-platform-build#docker) can be used to build Linux targets on any platform.\n\nPlease [do not put an AppImage into another archive](https://github.com/probonopd/AppImageKit/wiki/Creating-AppImages#common-mistake) like a .zip or .tar.gz."
         },
         "vendor": {
           "description": "The vendor. Defaults to [author](/configuration/configuration#Metadata-author).",
@@ -1810,7 +1810,7 @@
       "additionalProperties": false,
       "properties": {
         "appId": {
-          "default": "com.electron.${name}",
+          "default": "com.deskgap.${name}",
           "description": "The application id. Used as [CFBundleIdentifier](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070) for MacOS and as\n[Application User Model ID](https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx) for Windows (NSIS target only, Squirrel.Windows not supported). It is strongly recommended that an explicit ID is set.",
           "type": [
             "null",
@@ -1837,7 +1837,7 @@
             }
           ],
           "default": true,
-          "description": "Whether to package the application's source code into an archive, using [Electron's archive format](http://electron.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
+          "description": "Whether to package the application's source code into an archive, using [DeskGap's archive format](http://deskgap.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
         },
         "asarUnpack": {
           "anyOf": [
@@ -1854,7 +1854,7 @@
               ]
             }
           ],
-          "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://electron.atom.io/docs/tutorial/application-packaging/) archive."
+          "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://deskgap.atom.io/docs/tutorial/application-packaging/) archive."
         },
         "binaries": {
           "anyOf": [
@@ -1878,7 +1878,7 @@
           ]
         },
         "bundleVersion": {
-          "description": "The `CFBundleVersion`. Do not use it unless [you need to](https://github.com/electron-userland/electron-builder/issues/565#issuecomment-230678643).",
+          "description": "The `CFBundleVersion`. Do not use it unless [you need to](https://github.com/deskgap-userland/deskgap-builder/issues/565#issuecomment-230678643).",
           "type": [
             "null",
             "string"
@@ -1942,7 +1942,7 @@
           "description": "Whether to infer update channel from application version pre-release components. e.g. if version `0.12.1-alpha.1`, channel will be set to `alpha`. Otherwise to `latest`.",
           "type": "boolean"
         },
-        "electronLanguages": {
+        "deskgapLanguages": {
           "anyOf": [
             {
               "items": {
@@ -1954,10 +1954,10 @@
               "type": "string"
             }
           ],
-          "description": "The electron locales. By default Electron locales used as is."
+          "description": "The deskgap locales. By default DeskGap locales used as is."
         },
-        "electronUpdaterCompatibility": {
-          "description": "The [electron-updater compatibility](/auto-update#compatibility) semver range.",
+        "deskgapUpdaterCompatibility": {
+          "description": "The [deskgap-updater compatibility](/auto-update#compatibility) semver range.",
           "type": [
             "null",
             "string"
@@ -1971,7 +1971,7 @@
           ]
         },
         "entitlementsInherit": {
-          "description": "The path to child entitlements which inherit the security settings for signing frameworks and bundles of a distribution. `build/entitlements.mac.inherit.plist` will be used if exists (it is a recommended way to set).\nOtherwise [default](https://github.com/electron-userland/electron-osx-sign/blob/master/default.entitlements.darwin.inherit.plist).\n\nThis option only applies when signing with `entitlements` provided.",
+          "description": "The path to child entitlements which inherit the security settings for signing frameworks and bundles of a distribution. `build/entitlements.mac.inherit.plist` will be used if exists (it is a recommended way to set).\nOtherwise [default](https://github.com/deskgap-userland/deskgap-osx-sign/blob/master/default.entitlements.darwin.inherit.plist).\n\nThis option only applies when signing with `entitlements` provided.",
           "type": [
             "null",
             "string"
@@ -2095,12 +2095,12 @@
         },
         "gatekeeperAssess": {
           "default": false,
-          "description": "Whether to let electron-osx-sign validate the signing or not.",
+          "description": "Whether to let deskgap-osx-sign validate the signing or not.",
           "type": "boolean"
         },
         "generateUpdatesFilesForAllChannels": {
           "default": false,
-          "description": "Please see [Building and Releasing using Channels](https://github.com/electron-userland/electron-builder/issues/1182#issuecomment-324947139).",
+          "description": "Please see [Building and Releasing using Channels](https://github.com/deskgap-userland/deskgap-builder/issues/1182#issuecomment-324947139).",
           "type": "boolean"
         },
         "hardenedRuntime": {
@@ -2350,7 +2350,7 @@
       "additionalProperties": false,
       "properties": {
         "appId": {
-          "default": "com.electron.${name}",
+          "default": "com.deskgap.${name}",
           "description": "The application id. Used as [CFBundleIdentifier](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070) for MacOS and as\n[Application User Model ID](https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx) for Windows (NSIS target only, Squirrel.Windows not supported). It is strongly recommended that an explicit ID is set.",
           "type": [
             "null",
@@ -2377,7 +2377,7 @@
             }
           ],
           "default": true,
-          "description": "Whether to package the application's source code into an archive, using [Electron's archive format](http://electron.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
+          "description": "Whether to package the application's source code into an archive, using [DeskGap's archive format](http://deskgap.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
         },
         "asarUnpack": {
           "anyOf": [
@@ -2394,7 +2394,7 @@
               ]
             }
           ],
-          "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://electron.atom.io/docs/tutorial/application-packaging/) archive."
+          "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://deskgap.atom.io/docs/tutorial/application-packaging/) archive."
         },
         "binaries": {
           "anyOf": [
@@ -2418,7 +2418,7 @@
           ]
         },
         "bundleVersion": {
-          "description": "The `CFBundleVersion`. Do not use it unless [you need to](https://github.com/electron-userland/electron-builder/issues/565#issuecomment-230678643).",
+          "description": "The `CFBundleVersion`. Do not use it unless [you need to](https://github.com/deskgap-userland/deskgap-builder/issues/565#issuecomment-230678643).",
           "type": [
             "null",
             "string"
@@ -2482,7 +2482,7 @@
           "description": "Whether to infer update channel from application version pre-release components. e.g. if version `0.12.1-alpha.1`, channel will be set to `alpha`. Otherwise to `latest`.",
           "type": "boolean"
         },
-        "electronLanguages": {
+        "deskgapLanguages": {
           "anyOf": [
             {
               "items": {
@@ -2494,24 +2494,24 @@
               "type": "string"
             }
           ],
-          "description": "The electron locales. By default Electron locales used as is."
+          "description": "The deskgap locales. By default DeskGap locales used as is."
         },
-        "electronUpdaterCompatibility": {
-          "description": "The [electron-updater compatibility](/auto-update#compatibility) semver range.",
+        "deskgapUpdaterCompatibility": {
+          "description": "The [deskgap-updater compatibility](/auto-update#compatibility) semver range.",
           "type": [
             "null",
             "string"
           ]
         },
         "entitlements": {
-          "description": "The path to entitlements file for signing the app. `build/entitlements.mas.plist` will be used if exists (it is a recommended way to set).\nOtherwise [default](https://github.com/electron-userland/electron-osx-sign/blob/master/default.entitlements.mas.plist).",
+          "description": "The path to entitlements file for signing the app. `build/entitlements.mas.plist` will be used if exists (it is a recommended way to set).\nOtherwise [default](https://github.com/deskgap-userland/deskgap-osx-sign/blob/master/default.entitlements.mas.plist).",
           "type": [
             "null",
             "string"
           ]
         },
         "entitlementsInherit": {
-          "description": "The path to child entitlements which inherit the security settings for signing frameworks and bundles of a distribution. `build/entitlements.mas.inherit.plist` will be used if exists (it is a recommended way to set).\nOtherwise [default](https://github.com/electron-userland/electron-osx-sign/blob/master/default.entitlements.mas.inherit.plist).",
+          "description": "The path to child entitlements which inherit the security settings for signing frameworks and bundles of a distribution. `build/entitlements.mas.inherit.plist` will be used if exists (it is a recommended way to set).\nOtherwise [default](https://github.com/deskgap-userland/deskgap-osx-sign/blob/master/default.entitlements.mas.inherit.plist).",
           "type": [
             "null",
             "string"
@@ -2635,12 +2635,12 @@
         },
         "gatekeeperAssess": {
           "default": false,
-          "description": "Whether to let electron-osx-sign validate the signing or not.",
+          "description": "Whether to let deskgap-osx-sign validate the signing or not.",
           "type": "boolean"
         },
         "generateUpdatesFilesForAllChannels": {
           "default": false,
-          "description": "Please see [Building and Releasing using Channels](https://github.com/electron-userland/electron-builder/issues/1182#issuecomment-324947139).",
+          "description": "Please see [Building and Releasing using Channels](https://github.com/deskgap-userland/deskgap-builder/issues/1182#issuecomment-324947139).",
           "type": "boolean"
         },
         "hardenedRuntime": {
@@ -3186,7 +3186,7 @@
         },
         "packElevateHelper": {
           "default": true,
-          "description": "Whether to pack the elevate executable (required for electron-updater if per-machine installer used or can be used in the future). Ignored if `perMachine` is set to `true`.",
+          "description": "Whether to pack the elevate executable (required for deskgap-updater if per-machine installer used or can be used in the future). Ignored if `perMachine` is set to `true`.",
           "type": "boolean"
         },
         "perMachine": {
@@ -3354,7 +3354,7 @@
           "type": "boolean"
         },
         "appPackageUrl": {
-          "description": "The application package download URL. Optional — by default computed using publish configuration.\n\nURL like `https://example.com/download/latest` allows web installer to be version independent (installer will download latest application package).\nPlease note — it is [full URL](https://github.com/electron-userland/electron-builder/issues/1810#issuecomment-317650878).\n\nCustom `X-Arch` http header is set to `32` or `64`.",
+          "description": "The application package download URL. Optional — by default computed using publish configuration.\n\nURL like `https://example.com/download/latest` allows web installer to be version independent (installer will download latest application package).\nPlease note — it is [full URL](https://github.com/deskgap-userland/deskgap-builder/issues/1810#issuecomment-317650878).\n\nCustom `X-Arch` http header is set to `32` or `64`.",
           "type": [
             "null",
             "string"
@@ -3487,7 +3487,7 @@
         },
         "packElevateHelper": {
           "default": true,
-          "description": "Whether to pack the elevate executable (required for electron-updater if per-machine installer used or can be used in the future). Ignored if `perMachine` is set to `true`.",
+          "description": "Whether to pack the elevate executable (required for deskgap-updater if per-machine installer used or can be used in the future). Ignored if `perMachine` is set to `true`.",
           "type": "boolean"
         },
         "perMachine": {
@@ -4066,7 +4066,7 @@
     },
     "Protocol": {
       "additionalProperties": false,
-      "description": "URL Protocol Schemes. Protocols to associate the app with. macOS only.\n\nPlease note — on macOS [you need to register an `open-url` event handler](http://electron.atom.io/docs/api/app/#event-open-url-macos).",
+      "description": "URL Protocol Schemes. Protocols to associate the app with. macOS only.\n\nPlease note — on macOS [you need to register an `open-url` event handler](http://deskgap.atom.io/docs/api/app/#event-open-url-macos).",
       "properties": {
         "name": {
           "description": "The name. e.g. `IRC server URL`.",
@@ -4157,7 +4157,7 @@
             }
           ],
           "default": "public-read",
-          "description": "The ACL. Set to `null` to not [add](https://github.com/electron-userland/electron-builder/issues/1822).\n\nPlease see [required permissions for the S3 provider](https://github.com/electron-userland/electron-builder/issues/1618#issuecomment-314679128)."
+          "description": "The ACL. Set to `null` to not [add](https://github.com/deskgap-userland/deskgap-builder/issues/1822).\n\nPlease see [required permissions for the S3 provider](https://github.com/deskgap-userland/deskgap-builder/issues/1618#issuecomment-314679128)."
         },
         "bucket": {
           "description": "The bucket name.",
@@ -4628,7 +4628,7 @@
             }
           ],
           "default": "public-read",
-          "description": "The ACL. Set to `null` to not [add](https://github.com/electron-userland/electron-builder/issues/1822)."
+          "description": "The ACL. Set to `null` to not [add](https://github.com/deskgap-userland/deskgap-builder/issues/1822)."
         },
         "channel": {
           "default": "latest",
@@ -4708,14 +4708,14 @@
           ]
         },
         "iconUrl": {
-          "description": "A URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features). Defaults to the Electron icon.\n\nPlease note — [local icon file url is not accepted](https://github.com/atom/grunt-electron-installer/issues/73), must be https/http.\n\nIf you don't plan to build windows installer, you can omit it.\nIf your project repository is public on GitHub, it will be `https://github.com/${u}/${p}/blob/master/build/icon.ico?raw=true` by default.",
+          "description": "A URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features). Defaults to the DeskGap icon.\n\nPlease note — [local icon file url is not accepted](https://github.com/atom/grunt-deskgap-installer/issues/73), must be https/http.\n\nIf you don't plan to build windows installer, you can omit it.\nIf your project repository is public on GitHub, it will be `https://github.com/${u}/${p}/blob/master/build/icon.ico?raw=true` by default.",
           "type": [
             "null",
             "string"
           ]
         },
         "loadingGif": {
-          "description": "The path to a .gif file to display during install. `build/install-spinner.gif` will be used if exists (it is a recommended way to set)\n(otherwise [default](https://github.com/electron/windows-installer/blob/master/resources/install-spinner.gif)).",
+          "description": "The path to a .gif file to display during install. `build/install-spinner.gif` will be used if exists (it is a recommended way to set)\n(otherwise [default](https://github.com/deskgap/windows-installer/blob/master/resources/install-spinner.gif)).",
           "type": [
             "null",
             "string"
@@ -4726,7 +4726,7 @@
           "type": "boolean"
         },
         "name": {
-          "description": "https://github.com/electron-userland/electron-builder/issues/1743",
+          "description": "https://github.com/deskgap-userland/deskgap-builder/issues/1743",
           "type": "string"
         },
         "publish": {
@@ -4863,7 +4863,7 @@
           ]
         },
         "appId": {
-          "default": "com.electron.${name}",
+          "default": "com.deskgap.${name}",
           "description": "The application id. Used as [CFBundleIdentifier](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070) for MacOS and as\n[Application User Model ID](https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx) for Windows (NSIS target only, Squirrel.Windows not supported). It is strongly recommended that an explicit ID is set.",
           "type": [
             "null",
@@ -4890,7 +4890,7 @@
             }
           ],
           "default": true,
-          "description": "Whether to package the application's source code into an archive, using [Electron's archive format](http://electron.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
+          "description": "Whether to package the application's source code into an archive, using [DeskGap's archive format](http://deskgap.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
         },
         "asarUnpack": {
           "anyOf": [
@@ -4907,7 +4907,7 @@
               ]
             }
           ],
-          "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://electron.atom.io/docs/tutorial/application-packaging/) archive."
+          "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://deskgap.atom.io/docs/tutorial/application-packaging/) archive."
         },
         "certificateFile": {
           "description": "The path to the *.pfx certificate you want to sign with. Please use it only if you cannot use env variable `CSC_LINK` (`WIN_CSC_LINK`) for some reason.\nPlease see [Code Signing](/code-signing).",
@@ -4971,8 +4971,8 @@
           "description": "Whether to infer update channel from application version pre-release components. e.g. if version `0.12.1-alpha.1`, channel will be set to `alpha`. Otherwise to `latest`.",
           "type": "boolean"
         },
-        "electronUpdaterCompatibility": {
-          "description": "The [electron-updater compatibility](/auto-update#compatibility) semver range.",
+        "deskgapUpdaterCompatibility": {
+          "description": "The [deskgap-updater compatibility](/auto-update#compatibility) semver range.",
           "type": [
             "null",
             "string"
@@ -5076,7 +5076,7 @@
         },
         "generateUpdatesFilesForAllChannels": {
           "default": false,
-          "description": "Please see [Building and Releasing using Channels](https://github.com/electron-userland/electron-builder/issues/1182#issuecomment-324947139).",
+          "description": "Please see [Building and Releasing using Channels](https://github.com/deskgap-userland/deskgap-builder/issues/1182#issuecomment-324947139).",
           "type": "boolean"
         },
         "icon": {
@@ -5185,7 +5185,7 @@
               ]
             }
           ],
-          "description": "[The publisher name](https://github.com/electron-userland/electron-builder/issues/1187#issuecomment-278972073), exactly as in your code signed certificate. Several names can be provided.\nDefaults to common name from your code signing certificate."
+          "description": "[The publisher name](https://github.com/deskgap-userland/deskgap-builder/issues/1187#issuecomment-278972073), exactly as in your code signed certificate. Several names can be provided.\nDefaults to common name from your code signing certificate."
         },
         "releaseInfo": {
           "$ref": "#/definitions/ReleaseInfo",
@@ -5285,7 +5285,7 @@
             }
           ],
           "default": "nsis",
-          "description": "The target package type: list of `nsis`, `nsis-web` (Web installer), `portable` ([portable](/configuration/nsis#portable) app without installation), `appx`, `msi`, `squirrel`, `7z`, `zip`, `tar.xz`, `tar.lz`, `tar.gz`, `tar.bz2`, `dir`.\nAppX package can be built only on Windows 10.\n\nTo use Squirrel.Windows please install `electron-builder-squirrel-windows` dependency."
+          "description": "The target package type: list of `nsis`, `nsis-web` (Web installer), `portable` ([portable](/configuration/nsis#portable) app without installation), `appx`, `msi`, `squirrel`, `7z`, `zip`, `tar.xz`, `tar.lz`, `tar.gz`, `tar.bz2`, `dir`.\nAppX package can be built only on Windows 10.\n\nTo use Squirrel.Windows please install `deskgap-builder-squirrel-windows` dependency."
         },
         "timeStampServer": {
           "default": "http://timestamp.digicert.com",
@@ -5359,7 +5359,7 @@
       ]
     },
     "appId": {
-      "default": "com.electron.${name}",
+      "default": "com.deskgap.${name}",
       "description": "The application id. Used as [CFBundleIdentifier](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070) for MacOS and as\n[Application User Model ID](https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx) for Windows (NSIS target only, Squirrel.Windows not supported). It is strongly recommended that an explicit ID is set.",
       "type": [
         "null",
@@ -5449,7 +5449,7 @@
         }
       ],
       "default": true,
-      "description": "Whether to package the application's source code into an archive, using [Electron's archive format](http://electron.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
+      "description": "Whether to package the application's source code into an archive, using [DeskGap's archive format](http://deskgap.atom.io/docs/tutorial/application-packaging/).\n\nNode modules, that must be unpacked, will be detected automatically, you don't need to explicitly set [asarUnpack](#configuration-asarUnpack) - please file an issue if this doesn't work."
     },
     "asarUnpack": {
       "anyOf": [
@@ -5466,7 +5466,7 @@
           ]
         }
       ],
-      "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://electron.atom.io/docs/tutorial/application-packaging/) archive."
+      "description": "A [glob patterns](/file-patterns) relative to the [app directory](#MetadataDirectories-app), which specifies which files to unpack when creating the [asar](http://deskgap.atom.io/docs/tutorial/application-packaging/) archive."
     },
     "beforeBuild": {
       "anyOf": [
@@ -5568,27 +5568,27 @@
       ],
       "description": "macOS DMG options."
     },
-    "electronCompile": {
-      "description": "Whether to use [electron-compile](http://github.com/electron/electron-compile) to compile app. Defaults to `true` if `electron-compile` in the dependencies. And `false` if in the `devDependencies` or doesn't specified.",
+    "deskgapCompile": {
+      "description": "Whether to use [deskgap-compile](http://github.com/deskgap/deskgap-compile) to compile app. Defaults to `true` if `deskgap-compile` in the dependencies. And `false` if in the `devDependencies` or doesn't specified.",
       "type": "boolean"
     },
-    "electronDist": {
-      "description": "The path to custom Electron build (e.g. `~/electron/out/R`).",
+    "deskgapDist": {
+      "description": "The path to custom DeskGap build (e.g. `~/deskgap/out/R`).",
       "type": "string"
     },
-    "electronDownload": {
-      "$ref": "#/definitions/ElectronDownloadOptions",
-      "description": "The [electron-download](https://github.com/electron-userland/electron-download#usage) options."
+    "deskgapDownload": {
+      "$ref": "#/definitions/DeskGapDownloadOptions",
+      "description": "The [deskgap-download](https://github.com/deskgap-userland/deskgap-download#usage) options."
     },
-    "electronUpdaterCompatibility": {
-      "description": "The [electron-updater compatibility](/auto-update#compatibility) semver range.",
+    "deskgapUpdaterCompatibility": {
+      "description": "The [deskgap-updater compatibility](/auto-update#compatibility) semver range.",
       "type": [
         "null",
         "string"
       ]
     },
-    "electronVersion": {
-      "description": "The version of electron you are packaging for. Defaults to version of `electron`, `electron-prebuilt` or `electron-prebuilt-compile` dependency.",
+    "deskgapVersion": {
+      "description": "The version of deskgap you are packaging for. Defaults to version of `deskgap`, `deskgap-prebuilt` or `deskgap-prebuilt-compile` dependency.",
       "type": [
         "null",
         "string"
@@ -5702,7 +5702,7 @@
       "type": "boolean"
     },
     "framework": {
-      "description": "The framework name. One of `electron`, `proton`, `libui`. Defaults to `electron`.",
+      "description": "The framework name. One of `deskgap`, `proton`, `libui`. Defaults to `deskgap`.",
       "type": [
         "null",
         "string"
@@ -5720,7 +5720,7 @@
     },
     "generateUpdatesFilesForAllChannels": {
       "default": false,
-      "description": "Please see [Building and Releasing using Channels](https://github.com/electron-userland/electron-builder/issues/1182#issuecomment-324947139).",
+      "description": "Please see [Building and Releasing using Channels](https://github.com/deskgap-userland/deskgap-builder/issues/1182#issuecomment-324947139).",
       "type": "boolean"
     },
     "icon": {
@@ -5798,7 +5798,7 @@
     },
     "nodeGypRebuild": {
       "default": false,
-      "description": "Whether to execute `node-gyp rebuild` before starting to package the app.\n\nDon't [use](https://github.com/electron-userland/electron-builder/issues/683#issuecomment-241214075) [npm](http://electron.atom.io/docs/tutorial/using-native-node-modules/#using-npm) (neither `.npmrc`) for configuring electron headers. Use `electron-builder node-gyp-rebuild` instead.",
+      "description": "Whether to execute `node-gyp rebuild` before starting to package the app.\n\nDon't [use](https://github.com/deskgap-userland/deskgap-builder/issues/683#issuecomment-241214075) [npm](http://deskgap.atom.io/docs/tutorial/using-native-node-modules/#using-npm) (neither `.npmrc`) for configuring deskgap headers. Use `deskgap-builder node-gyp-rebuild` instead.",
       "type": "boolean"
     },
     "nodeVersion": {
@@ -5994,7 +5994,7 @@
     },
     "remoteBuild": {
       "default": true,
-      "description": "Whether to build using Electron Build Service if target not supported on current OS.",
+      "description": "Whether to build using DeskGap Build Service if target not supported on current OS.",
       "type": "boolean"
     },
     "removePackageScripts": {

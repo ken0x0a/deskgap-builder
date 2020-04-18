@@ -1,4 +1,4 @@
-FROM electronuserland/builder:base
+FROM deskgapuserland/builder:base
 
 ENV NODE_VERSION 12.16.1
 

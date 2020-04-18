@@ -32,7 +32,7 @@ export interface Metadata {
   readonly repository?: string | RepositoryInfo | null
 
   /**
-   * The electron-builder configuration.
+   * The deskgap-builder configuration.
    */
   readonly build?: Configuration
 

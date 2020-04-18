@@ -1,4 +1,4 @@
-import { Arch, build, Platform } from "electron-builder"
+import { Arch, build, Platform } from "deskgap-builder"
 import { outputFile } from "fs-extra"
 import * as path from "path"
 import { GenericServerOptions } from "builder-util-runtime"
@@ -125,7 +125,7 @@ test.ifNotWindows("icons from ICNS (mac)", app({
     mac: {
       icon: "resources/time.icns",
     },
-    // test https://github.com/electron-userland/electron-builder/issues/3510
+    // test https://github.com/deskgap-userland/deskgap-builder/issues/3510
     linux: {
       artifactName: "app-${version}-${arch}.${ext}",
     }
@@ -188,7 +188,7 @@ test.ifNotWindows("icons dir with images without size in the filename", app({
   },
 }))
 
-// test prepacked asar also https://github.com/electron-userland/electron-builder/issues/1102
+// test prepacked asar also https://github.com/deskgap-userland/deskgap-builder/issues/1102
 test.ifNotWindows("icons from ICNS", app({
   targets: appImageTarget,
   config: {
@@ -206,7 +206,7 @@ test.ifNotWindows("icons from ICNS", app({
       projectDir,
       publish: "never",
       config: {
-        electronVersion: ELECTRON_VERSION,
+        deskgapVersion: ELECTRON_VERSION,
         compression: "store",
         npmRebuild: false,
       }

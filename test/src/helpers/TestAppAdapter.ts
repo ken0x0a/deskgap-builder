@@ -1,7 +1,7 @@
-import { ElectronAppAdapter } from "electron-updater/out/ElectronAppAdapter"
+import { DeskGapAppAdapter } from "deskgap-updater/out/DeskGapAppAdapter"
 
-// do not implement AppAdapter directly, test that our ElectronAppAdapter implementation is correct
-export class TestAppAdapter extends ElectronAppAdapter {
+// do not implement AppAdapter directly, test that our DeskGapAppAdapter implementation is correct
+export class TestAppAdapter extends DeskGapAppAdapter {
   constructor(version: string, private _baseCachePath: string) {
     super(new MockApp(version))
   }

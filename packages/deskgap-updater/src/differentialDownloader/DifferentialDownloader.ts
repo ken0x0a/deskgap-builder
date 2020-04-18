@@ -196,7 +196,7 @@ export abstract class DifferentialDownloader {
         }
 
         const request = this.httpExecutor.createRequest(requestOptions, response => {
-          // Electron net handles redirects automatically, our NodeJS test server doesn't use redirects - so, we don't check 3xx codes.
+          // DeskGap net handles redirects automatically, our NodeJS test server doesn't use redirects - so, we don't check 3xx codes.
           if (response.statusCode >= 400) {
             reject(createHttpError(response))
           }

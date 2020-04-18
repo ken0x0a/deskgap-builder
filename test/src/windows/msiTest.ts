@@ -1,10 +1,10 @@
 import { app } from "../helpers/packTester"
-import { Platform } from "electron-builder"
+import { Platform } from "deskgap-builder"
 
 test.ifAll.ifDevOrWinCi("msi", app({
   targets: Platform.WINDOWS.createTarget("msi"),
   config: {
-    appId: "build.electron.test.msi.oneClick.perMachine",
+    appId: "build.deskgap.test.msi.oneClick.perMachine",
     extraMetadata: {
       // version: "1.0.0",
     },
@@ -17,7 +17,7 @@ test.ifAll.ifDevOrWinCi("msi", app({
 test.ifAll.ifDevOrWinCi("msi no asar", app({
   targets: Platform.WINDOWS.createTarget("msi"),
   config: {
-    appId: "build.electron.test.msi.oneClick.perMachine",
+    appId: "build.deskgap.test.msi.oneClick.perMachine",
     extraMetadata: {
       // version: "1.0.0",
     },
@@ -31,7 +31,7 @@ test.ifAll.ifDevOrWinCi("msi no asar", app({
 test.ifAll.ifDevOrWinCi("per-user", app({
   targets: Platform.WINDOWS.createTarget("msi"),
   config: {
-    appId: "build.electron.test.msi.oneClick.perUser",
+    appId: "build.deskgap.test.msi.oneClick.perUser",
     extraMetadata: {
       // version: "1.0.0",
     },
@@ -47,7 +47,7 @@ test.ifAll.ifDevOrWinCi("per-user", app({
 test.skip.ifAll("assisted", app({
   targets: Platform.WINDOWS.createTarget("msi"),
   config: {
-    appId: "build.electron.test.msi.assisted",
+    appId: "build.deskgap.test.msi.assisted",
     extraMetadata: {
       // version: "1.0.0",
     },

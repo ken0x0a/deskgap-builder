@@ -7,10 +7,10 @@ import { AppAdapter } from "./AppAdapter"
 import { AppUpdater, DownloadUpdateOptions } from "./AppUpdater"
 import { UpdateDownloadedEvent } from "./main"
 import { findFile } from "./providers/Provider"
-import AutoUpdater = Electron.AutoUpdater
+import AutoUpdater = DeskGap.AutoUpdater
 
 export class MacUpdater extends AppUpdater {
-  private readonly nativeUpdater: AutoUpdater = require("electron").autoUpdater
+  private readonly nativeUpdater: AutoUpdater = require("deskgap").autoUpdater
 
   private updateInfoForPendingUpdateDownloadedEvent: UpdateDownloadedEvent | null = null
 

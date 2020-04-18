@@ -38,7 +38,7 @@ export function isSignAllowed(isPrintWarn = true): boolean {
     }
     else {
       if (isPrintWarn) {
-        // https://github.com/electron-userland/electron-builder/issues/1524
+        // https://github.com/deskgap-userland/deskgap-builder/issues/1524
         log.warn("Current build is a part of pull request, code signing will be skipped." +
           "\nSet env CSC_FOR_PULL_REQUEST to true to force code signing." +
           `\n${buildForPrWarning}`)
@@ -56,7 +56,7 @@ export async function reportError(isMas: boolean, certificateType: CertType, qua
     if (isAutoDiscoveryCodeSignIdentity()) {
       logFields.reason += `cannot find valid "${certificateType}" identity${(isMas ? "" : ` or custom non-Apple code signing certificate`)}`
     }
-    logFields.reason += ", see https://electron.build/code-signing"
+    logFields.reason += ", see https://deskgap.build/code-signing"
     if (!isAutoDiscoveryCodeSignIdentity()) {
       logFields.CSC_IDENTITY_AUTO_DISCOVERY = false
     }
@@ -90,12 +90,12 @@ export async function reportError(isMas: boolean, certificateType: CertType, qua
 // "Note that filename will not be searched to resolve the signing identity's certificate chain unless it is also on the user's keychain search list."
 // but "security list-keychains" doesn't support add - we should 1) get current list 2) set new list - it is very bad http://stackoverflow.com/questions/10538942/add-a-keychain-to-search-list
 // "overly complicated and introduces a race condition."
-// https://github.com/electron-userland/electron-builder/issues/398
+// https://github.com/deskgap-userland/deskgap-builder/issues/398
 const bundledCertKeychainAdded = new Lazy<void>(async () => {
   // copy to temp and then atomic rename to final path
   const cacheDir = getCacheDirectory()
-  const tmpKeychainPath = path.join(cacheDir, getTempName("electron-builder-root-certs"))
-  const keychainPath = path.join(cacheDir, "electron-builder-root-certs.keychain")
+  const tmpKeychainPath = path.join(cacheDir, getTempName("deskgap-builder-root-certs"))
+  const keychainPath = path.join(cacheDir, "deskgap-builder-root-certs.keychain")
   const results = await Promise.all<any>([
     listUserKeychains(),
     copyFile(path.join(__dirname, "..", "..", "certs", "root_certs.keychain"), tmpKeychainPath)
@@ -109,7 +109,7 @@ const bundledCertKeychainAdded = new Lazy<void>(async () => {
 
 function getCacheDirectory(): string {
   const env = process.env.ELECTRON_BUILDER_CACHE
-  return isEmptyOrSpaces(env) ? path.join(homedir(), "Library", "Caches", "electron-builder") : path.resolve(env!!)
+  return isEmptyOrSpaces(env) ? path.join(homedir(), "Library", "Caches", "deskgap-builder") : path.resolve(env!!)
 }
 
 function listUserKeychains(): Promise<Array<string>> {
@@ -148,7 +148,7 @@ export async function createKeychain({tmpDir, cscLink, cscKeyPassword, cscILink,
     await bundledCertKeychainAdded.value
   }
 
-  // https://github.com/electron-userland/electron-builder/issues/3685
+  // https://github.com/deskgap-userland/deskgap-builder/issues/3685
   // use constant file
   const keychainFile = path.join(process.env.APP_BUILDER_TMP_DIR || tmpdir(), `${createHash("sha256").update(currentDir).update("app-builder").digest("hex")}.keychain`)
   // noinspection JSUnusedLocalSymbols
@@ -169,7 +169,7 @@ export async function createKeychain({tmpDir, cscLink, cscKeyPassword, cscILink,
   ]
 
   // https://stackoverflow.com/questions/42484678/codesign-keychain-gets-ignored
-  // https://github.com/electron-userland/electron-builder/issues/1457
+  // https://github.com/deskgap-userland/deskgap-builder/issues/1457
   const list = await listUserKeychains()
   if (!list.includes(keychainFile)) {
     securityCommands.push(["list-keychains", "-d", "user", "-s", keychainFile].concat(list))
@@ -189,7 +189,7 @@ async function importCerts(keychainFile: string, paths: Array<string>, keyPasswo
     await exec("security", ["import", paths[i], "-k", keychainFile, "-T", "/usr/bin/codesign", "-T", "/usr/bin/productbuild", "-P", password])
 
     // https://stackoverflow.com/questions/39868578/security-codesign-in-sierra-keychain-ignores-access-control-settings-and-ui-p
-    // https://github.com/electron-userland/electron-packager/issues/701#issuecomment-322315996
+    // https://github.com/deskgap-userland/deskgap-packager/issues/701#issuecomment-322315996
     await exec("security", ["set-key-partition-list", "-S", "apple-tool:,apple:", "-s", "-k", password, keychainFile])
   }
 
@@ -219,8 +219,8 @@ async function getValidIdentities(keychain?: string | null): Promise<Array<strin
 
   let result = findIdentityRawResult
   if (result == null || keychain != null) {
-    // https://github.com/electron-userland/electron-builder/issues/481
-    // https://github.com/electron-userland/electron-builder/issues/535
+    // https://github.com/deskgap-userland/deskgap-builder/issues/481
+    // https://github.com/deskgap-userland/deskgap-builder/issues/535
     result = Promise.all<Array<string>>([
       exec("security", addKeychain(["find-identity", "-v"]))
         .then(it => it.trim().split("\n").filter(it => {
@@ -250,7 +250,7 @@ async function getValidIdentities(keychain?: string | null): Promise<Array<strin
 }
 
 async function _findIdentity(type: CertType, qualifier?: string | null, keychain?: string | null): Promise<Identity | null> {
-  // https://github.com/electron-userland/electron-builder/issues/484
+  // https://github.com/deskgap-userland/deskgap-builder/issues/484
   //noinspection SpellCheckingInspection
   const lines = await getValidIdentities(keychain)
   const namePrefix = `${type}:`
@@ -266,7 +266,7 @@ async function _findIdentity(type: CertType, qualifier?: string | null, keychain
 
   if (type === "Developer ID Application") {
     // find non-Apple certificate
-    // https://github.com/electron-userland/electron-builder/issues/458
+    // https://github.com/deskgap-userland/deskgap-builder/issues/458
     l: for (const line of lines) {
       if (qualifier != null && !line.includes(qualifier)) {
         continue
@@ -295,7 +295,7 @@ export declare class Identity {
   constructor(name: string, hash: string)
 }
 
-const _Identity = require("../../electron-osx-sign/util-identities").Identity
+const _Identity = require("../../deskgap-osx-sign/util-identities").Identity
 
 function parseIdentity(line: string): Identity {
   const firstQuoteIndex = line.indexOf('"')

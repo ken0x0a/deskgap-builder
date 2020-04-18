@@ -1,5 +1,5 @@
 import { copyDir } from "builder-util/out/fs"
-import { Arch, Platform } from "electron-builder"
+import { Arch, Platform } from "deskgap-builder"
 import { app, AssertPackOptions } from "./helpers/packTester"
 
 const checkOptions: AssertPackOptions = {

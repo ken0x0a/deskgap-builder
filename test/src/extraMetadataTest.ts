@@ -1,6 +1,6 @@
-import { DIR_TARGET, Platform } from "electron-builder"
+import { DIR_TARGET, Platform } from "deskgap-builder"
 import { readAsarJson } from "app-builder-lib/out/asar/asar"
-import { coerceTypes } from "electron-builder/out/builder"
+import { coerceTypes } from "deskgap-builder/out/builder"
 import { readJson } from "fs-extra"
 import * as path from "path"
 import { assertThat } from "./helpers/fileAssert"
@@ -52,7 +52,7 @@ test.ifDevOrLinuxCi("extra metadata (no asar)", createExtraMetadataTest(false))
 
 test("cli", async () => {
   // because these methods are internal
-  const { configureBuildCommand, normalizeOptions } = require("electron-builder/out/builder")
+  const { configureBuildCommand, normalizeOptions } = require("deskgap-builder/out/builder")
   const yargs =
     require("yargs")
       .strict()

@@ -344,7 +344,7 @@ const signAsync = module.exports.signAsync = function (opts) {
         debuglog('Pre-sign operation enabled for entitlements automation with versions >= `1.1.1`:', '\n',
           '* Disable by setting `pre-auto-entitlements` to `false`.')
         if (opts.entitlements && (!opts.version || semver.gte(opts.version, '1.1.1') >= 0)) {
-          // Enable Mac App Store sandboxing without using temporary-exception, introduced in Electron v1.1.1. Relates to electron#5601
+          // Enable Mac App Store sandboxing without using temporary-exception, introduced in DeskGap v1.1.1. Relates to deskgap#5601
           preSignOperations.push(preAutoEntitlements)
         }
       }

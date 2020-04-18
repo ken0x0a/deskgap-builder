@@ -4,12 +4,12 @@ import { CancellationToken } from "builder-util-runtime"
 import { copyDir, FileCopier, USE_HARD_LINKS, walk } from "builder-util/out/fs"
 import { executeFinally } from "builder-util/out/promise"
 import DecompressZip from "decompress-zip"
-import { Arch, ArtifactCreated, Configuration, DIR_TARGET, getArchSuffix, MacOsTargetName, Packager, PackagerOptions, Platform, Target } from "electron-builder"
+import { Arch, ArtifactCreated, Configuration, DIR_TARGET, getArchSuffix, MacOsTargetName, Packager, PackagerOptions, Platform, Target } from "deskgap-builder"
 import { PublishManager } from "app-builder-lib"
 import { computeArchToTargetNamesMap } from "app-builder-lib/out/targets/targetFactory"
 import { getLinuxToolsPath } from "app-builder-lib/out/targets/tools"
-import { convertVersion } from "electron-builder-squirrel-windows/out/squirrelPack"
-import { PublishPolicy } from "electron-publish"
+import { convertVersion } from "deskgap-builder-squirrel-windows/out/squirrelPack"
+import { PublishPolicy } from "deskgap-publish"
 import { emptyDir, writeJson } from "fs-extra"
 import { promises as fs } from "fs"
 import { safeLoad } from "js-yaml"
@@ -321,7 +321,7 @@ async function checkMacResult(packager: Packager, packagerOptions: PackagerOptio
   delete info.DTSDKBuild
   delete info.DTSDKName
   delete info.DTCompiler
-  delete info.ElectronTeamID
+  delete info.DeskGapTeamID
   delete info.NSMainNibFile
   delete info.NSCameraUsageDescription
   delete info.NSMicrophoneUsageDescription
@@ -394,7 +394,7 @@ async function checkWindowsResult(packager: Packager, checkOptions: AssertPackOp
     <title>${appInfo.productName}</title>
     <authors>Foo Bar</authors>
     <owners>Foo Bar</owners>
-    <iconUrl>https://raw.githubusercontent.com/szwacz/electron-boilerplate/master/resources/windows/icon.ico</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/szwacz/deskgap-boilerplate/master/resources/windows/icon.ico</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Test Application (test quite “ #378)</description>
     <copyright>Copyright © ${new Date().getFullYear()} Foo Bar</copyright>

@@ -19,7 +19,7 @@ We use [semantic-release](https://github.com/semantic-release/semantic-release),
 To avoid google indexing, documentation files located in the branch `docs`. To clone:
 
 ```shell script
-git clone --single-branch -b docs git@github.com:electron-userland/electron-builder.git docs
+git clone --single-branch -b docs git@github.com:deskgap-userland/deskgap-builder.git docs
 ```
 
 Documentation files located in the `/docs`.
@@ -44,11 +44,11 @@ Or you can create Node.js run configuration manually:
   -t "extraResources - one-package" globTest.js
   ```
 * Set `Environment Variables`:
-  * Optionally, `TEST_APP_TMP_DIR` to some directory (e.g. `/tmp/electron-builder-test`) to inspect output if test uses temporary directory (only if `--match` is used). Specified directory will be used instead of random temporary directory and *cleared* on each run.
+  * Optionally, `TEST_APP_TMP_DIR` to some directory (e.g. `/tmp/deskgap-builder-test`) to inspect output if test uses temporary directory (only if `--match` is used). Specified directory will be used instead of random temporary directory and *cleared* on each run.
 
 ### Run Test using CLI
 ```sh
-TEST_APP_TMP_DIR=/tmp/electron-builder-test ./node_modules/.bin/jest --env jest-environment-node-debug -t 'assisted' '/oneClickInstallerTest\.\w+$'
+TEST_APP_TMP_DIR=/tmp/deskgap-builder-test ./node_modules/.bin/jest --env jest-environment-node-debug -t 'assisted' '/oneClickInstallerTest\.\w+$'
 ```
 
 where `TEST_APP_TMP_DIR` is specified to easily inspect and use test build, `assisted` is the test name and `/oneClickInstallerTest\.\w+$` is the path to test file.

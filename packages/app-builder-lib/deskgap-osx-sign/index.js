@@ -1,5 +1,5 @@
 /**
- * @module electron-osx-sign
+ * @module deskgap-osx-sign
  */
 
 'use strict'

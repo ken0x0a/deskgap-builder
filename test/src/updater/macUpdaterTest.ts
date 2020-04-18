@@ -1,5 +1,5 @@
 import { configureRequestOptionsFromUrl, GithubOptions } from "builder-util-runtime"
-import { MacUpdater } from "electron-updater/out/MacUpdater"
+import { MacUpdater } from "deskgap-updater/out/MacUpdater"
 import { EventEmitter } from "events"
 import { assertThat } from "../helpers/fileAssert"
 import { createTestAppAdapter, httpExecutor, trackEvents, tuneTestUpdater, writeUpdateConfig } from "../helpers/updaterTestUtil"
@@ -30,7 +30,7 @@ class TestNativeUpdater extends EventEmitter {
 
 test.ifAll.ifNotCi.ifMac("mac updates", async () => {
   const mockNativeUpdater = new TestNativeUpdater()
-  jest.mock("electron", () => {
+  jest.mock("deskgap", () => {
     return {
       autoUpdater: mockNativeUpdater,
     }

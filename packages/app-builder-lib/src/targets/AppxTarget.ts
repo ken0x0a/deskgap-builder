@@ -121,7 +121,7 @@ export default class AppXTarget extends Target {
       arch,
       safeArtifactName: packager.computeSafeArtifactName(artifactName, "appx"),
       target: this,
-      isWriteUpdateInfo: this.options.electronUpdaterAware,
+      isWriteUpdateInfo: this.options.deskgapUpdaterAware,
     })
   }
 
@@ -152,7 +152,7 @@ export default class AppXTarget extends Target {
     return {userAssets, mappings, allAssets}
   }
 
-  // https://github.com/electron-userland/electron-builder/issues/2108#issuecomment-333200711
+  // https://github.com/deskgap-userland/deskgap-builder/issues/2108#issuecomment-333200711
   private async computePublisherName() {
     if (await this.packager.cscInfo.value == null) {
       log.info({reason: "Windows Store only build"}, "AppX is not signed")
@@ -268,7 +268,7 @@ export default class AppXTarget extends Target {
     let isAddAutoLaunchExtension = this.options.addAutoLaunchExtension
     if (isAddAutoLaunchExtension === undefined) {
       const deps = this.packager.info.metadata.dependencies
-      isAddAutoLaunchExtension = deps != null && deps["electron-winstore-auto-launch"] != null
+      isAddAutoLaunchExtension = deps != null && deps["deskgap-winstore-auto-launch"] != null
     }
 
     if (!isAddAutoLaunchExtension

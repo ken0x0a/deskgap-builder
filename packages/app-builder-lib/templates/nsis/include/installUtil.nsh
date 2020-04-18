@@ -132,7 +132,7 @@ Function uninstallOldVersion
   !insertmacro readReg $installationDir "$rootKey" "${INSTALL_REGISTRY_KEY}" InstallLocation
   ${if} $installationDir == ""
   ${andIf} $uninstallerFileName != ""
-    # https://github.com/electron-userland/electron-builder/issues/735#issuecomment-246918567
+    # https://github.com/deskgap-userland/deskgap-builder/issues/735#issuecomment-246918567
     Push $uninstallerFileName
     Call GetFileParent
     Pop $installationDir

@@ -4,7 +4,7 @@ import { BintrayClient, Version } from "builder-util-runtime/out/bintray"
 import { httpExecutor } from "builder-util/out/nodeHttpExecutor"
 import { ClientRequest, RequestOptions } from "http"
 import { Lazy } from "lazy-val"
-import { HttpPublisher, PublishContext, PublishOptions } from "electron-publish"
+import { HttpPublisher, PublishContext, PublishOptions } from "deskgap-publish"
 
 export class BintrayPublisher extends HttpPublisher {
   private readonly _versionPromise = new Lazy(() => this.init())
@@ -20,7 +20,7 @@ export class BintrayPublisher extends HttpPublisher {
     if (isEmptyOrSpaces(token)) {
       token = process.env.BT_TOKEN
       if (isEmptyOrSpaces(token)) {
-        throw new InvalidConfigurationError(`Bintray token is not set, neither programmatically, nor using env "BT_TOKEN" (see https://www.electron.build/configuration/publish#bintrayoptions)`)
+        throw new InvalidConfigurationError(`Bintray token is not set, neither programmatically, nor using env "BT_TOKEN" (see https://www.deskgap.build/configuration/publish#bintrayoptions)`)
       }
 
       token = token.trim()

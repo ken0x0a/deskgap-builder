@@ -74,7 +74,7 @@
       fun_extract:
         !insertmacro extractUsing7za "$packageFile"
 
-        # electron always uses per user app data
+        # deskgap always uses per user app data
         ${if} $installMode == "all"
           SetShellVarContext current
         ${endif}
@@ -86,7 +86,7 @@
         ${endif}
     !else
       !insertmacro extractEmbeddedAppPackage
-      # electron always uses per user app data
+      # deskgap always uses per user app data
       ${if} $installMode == "all"
         SetShellVarContext current
       ${endif}
@@ -117,7 +117,7 @@
   ${endIf}
 
   WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" DisplayName "${UNINSTALL_DISPLAY_NAME}$1"
-  # https://github.com/electron-userland/electron-builder/issues/750
+  # https://github.com/deskgap-userland/deskgap-builder/issues/750
   StrCpy $2 "$INSTDIR\${UNINSTALL_FILENAME}"
   WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" UninstallString '"$2" $0'
   WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" QuietUninstallString '"$2" $0 /S'
@@ -195,7 +195,7 @@
 
 !macro addDesktopLink keepShortcuts
   !ifndef DO_NOT_CREATE_DESKTOP_SHORTCUT
-    # https://github.com/electron-userland/electron-builder/pull/1432
+    # https://github.com/deskgap-userland/deskgap-builder/pull/1432
     ${ifNot} ${isNoDesktopShortcut}
       # The keepShortcuts mechanism is NOT enabled.
       # Shortcuts will be recreated.

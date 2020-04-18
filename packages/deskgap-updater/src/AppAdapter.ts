@@ -30,7 +30,7 @@ export interface AppAdapter {
 
 export function getAppCacheDir() {
   const homedir = require("os").homedir()
-  // https://github.com/electron/electron/issues/1404#issuecomment-194391247
+  // https://github.com/deskgap/deskgap/issues/1404#issuecomment-194391247
   let result: string
   if (process.platform === "win32") {
     result = process.env.LOCALAPPDATA || path.join(homedir, "AppData", "Local")

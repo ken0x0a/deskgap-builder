@@ -3,7 +3,7 @@
 import { log, use, getArchCliNames } from "builder-util"
 import { printErrorAndExit } from "builder-util/out/promise"
 import { computeDefaultAppDirectory, getConfig } from "app-builder-lib/out/util/config"
-import { getElectronVersion } from "app-builder-lib/out/electron/electronVersion"
+import { getDeskGapVersion } from "app-builder-lib/out/deskgap/deskgapVersion"
 import { createLazyProductionDeps } from "app-builder-lib/out/util/packageDependencies"
 import { installOrRebuild } from "app-builder-lib/out/util/yarn"
 import { readJson } from "fs-extra"
@@ -37,7 +37,7 @@ export function configureInstallAppDepsCommand(yargs: yargs.Argv): yargs.Argv {
 /** @internal */
 export async function installAppDeps(args: any) {
   try {
-    log.info({version: PACKAGE_VERSION}, "electron-builder")
+    log.info({version: PACKAGE_VERSION}, "deskgap-builder")
   }
   catch (e) {
     // error in dev mode without babel
@@ -51,7 +51,7 @@ export async function installAppDeps(args: any) {
   const config = await getConfig(projectDir, null, null, packageMetadata)
   const results = await Promise.all<string>([
     computeDefaultAppDirectory(projectDir, use(config.directories, it => it!.app)),
-    getElectronVersion(projectDir, config, packageMetadata),
+    getDeskGapVersion(projectDir, config, packageMetadata),
   ])
 
   // if two package.json — force full install (user wants to install/update app deps in addition to dev)
@@ -68,7 +68,7 @@ function main() {
 }
 
 if (process.mainModule === module) {
-  log.warn("please use as subcommand: electron-builder install-app-deps")
+  log.warn("please use as subcommand: deskgap-builder install-app-deps")
   main()
     .catch(printErrorAndExit)
 }

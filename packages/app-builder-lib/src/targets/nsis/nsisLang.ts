@@ -9,7 +9,7 @@ import { NsisOptions } from "./nsisOptions"
 import { NsisScriptGenerator } from "./nsisScriptGenerator"
 import { nsisTemplatesDir } from "./nsisUtil"
 
-const debug = _debug("electron-builder:nsis")
+const debug = _debug("deskgap-builder:nsis")
 
 export class LangConfigurator {
   readonly isMultiLang: boolean

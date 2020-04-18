@@ -14,7 +14,7 @@ mkdir sponsor-logos || true
 cp ../scripts/sponsor-logos/*.svg sponsor-logos/
 
 # do not use force push - netlify doesn't trigger deploy for forced push
-git clone --no-checkout --branch en --single-branch git@github.com:develar/generated-gitbook-electron-builder.git ./repo.tmp
+git clone --no-checkout --branch en --single-branch git@github.com:develar/generated-gitbook-deskgap-builder.git ./repo.tmp
 mv ./repo.tmp/.git ./
 rmdir ./repo.tmp
 git add --all .

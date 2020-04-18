@@ -2,7 +2,7 @@ import { CancellationToken, PackageFileInfo, ProgressInfo, UpdateFileInfo, Updat
 import { EventEmitter } from "events"
 import { URL } from "url"
 import { AppUpdater } from "./AppUpdater"
-import { LoginCallback } from "./electronHttpExecutor"
+import { LoginCallback } from "./deskgapHttpExecutor"
 
 export { AppUpdater, NoOpLogger } from "./AppUpdater"
 export { UpdateInfo }
@@ -12,7 +12,7 @@ export { AppImageUpdater } from "./AppImageUpdater"
 export { MacUpdater } from "./MacUpdater"
 export { NsisUpdater } from "./NsisUpdater"
 
-// autoUpdater to mimic electron bundled autoUpdater
+// autoUpdater to mimic deskgap bundled autoUpdater
 let _autoUpdater: any
 
 // required for jsdoc
@@ -73,7 +73,7 @@ export class UpdaterSignal {
   }
 
   /**
-   * Emitted when an authenticating proxy is [asking for user credentials](https://github.com/electron/electron/blob/master/docs/api/client-request.md#event-login).
+   * Emitted when an authenticating proxy is [asking for user credentials](https://github.com/deskgap/deskgap/blob/master/docs/api/client-request.md#event-login).
    */
   login(handler: LoginHandler): void {
     addHandler(this.emitter, "login", handler)

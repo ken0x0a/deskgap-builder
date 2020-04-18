@@ -1459,9 +1459,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-builder/monorepo@workspace:.":
+"@deskgap-builder/monorepo@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@electron-builder/monorepo@workspace:."
+  resolution: "@deskgap-builder/monorepo@workspace:."
   dependencies:
     "@babel/core": ^7.9.0
     "@babel/plugin-transform-modules-commonjs": ^7.9.0
@@ -1471,7 +1471,7 @@ __metadata:
     babel-core: ^6.26.3
     babel-preset-jest: ^25.2.1
     bluebird-lst: ^1.0.9
-    electron-builder-tslint-config: ^1.1.0
+    deskgap-builder-tslint-config: ^1.1.0
     eslint: ^6.8.0
     fs-extra: ^9.0.0
     globby: ^11.0.0
@@ -1484,9 +1484,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-builder/test@workspace:test":
+"@deskgap-builder/test@workspace:test":
   version: 0.0.0-use.local
-  resolution: "@electron-builder/test@workspace:test"
+  resolution: "@deskgap-builder/test@workspace:test"
   dependencies:
     7zip-bin: ~5.0.3
     "@babel/core": ^7.9.0
@@ -1510,10 +1510,10 @@ __metadata:
     decompress-zip: ^0.2.2
     depcheck: ^0.9.2
     dmg-builder: "workspace:*"
-    electron-builder: "workspace:*"
-    electron-builder-squirrel-windows: "workspace:*"
-    electron-publish: "workspace:*"
-    electron-updater: "workspace:*"
+    deskgap-builder: "workspace:*"
+    deskgap-builder-squirrel-windows: "workspace:*"
+    deskgap-publish: "workspace:*"
+    deskgap-updater: "workspace:*"
     fs-extra: ^9.0.0
     jest: ^25.2.4
     jest-junit: ^10.0.0
@@ -2379,8 +2379,8 @@ __metadata:
     debug: ^4.1.1
     dmg-builder: "workspace:*"
     ejs: ^3.0.2
-    electron-builder-squirrel-windows: "workspace:*"
-    electron-publish: "workspace:*"
+    deskgap-builder-squirrel-windows: "workspace:*"
+    deskgap-publish: "workspace:*"
     fs-extra: ^9.0.0
     hosted-git-info: ^3.0.4
     is-ci: ^2.0.0
@@ -2971,7 +2971,7 @@ __metadata:
   resolution: "browserslist@npm:4.11.1"
   dependencies:
     caniuse-lite: ^1.0.30001038
-    electron-to-chromium: ^1.3.390
+    deskgap-to-chromium: ^1.3.390
     node-releases: ^1.1.53
     pkg-up: ^2.0.0
   bin:
@@ -3957,9 +3957,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder-squirrel-windows@workspace:*, electron-builder-squirrel-windows@workspace:packages/electron-builder-squirrel-windows":
+"deskgap-builder-squirrel-windows@workspace:*, deskgap-builder-squirrel-windows@workspace:packages/deskgap-builder-squirrel-windows":
   version: 0.0.0-use.local
-  resolution: "electron-builder-squirrel-windows@workspace:packages/electron-builder-squirrel-windows"
+  resolution: "deskgap-builder-squirrel-windows@workspace:packages/deskgap-builder-squirrel-windows"
   dependencies:
     7zip-bin: ~5.0.3
     "@types/archiver": ^3.1.0
@@ -3976,16 +3976,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"electron-builder-tslint-config@npm:^1.1.0":
+"deskgap-builder-tslint-config@npm:^1.1.0":
   version: 1.1.0
-  resolution: "electron-builder-tslint-config@npm:1.1.0"
+  resolution: "deskgap-builder-tslint-config@npm:1.1.0"
   checksum: 2/3daec0eb481d4639bea4313c1523b9157e5a6efb02ae1fb9d0865eafc1cc49eb6974c376ff9b860c50fafc7f43418d8e818489cfb4fa1455015be12ab469e391
   languageName: node
   linkType: hard
 
-"electron-builder@workspace:*, electron-builder@workspace:packages/electron-builder":
+"deskgap-builder@workspace:*, deskgap-builder@workspace:packages/deskgap-builder":
   version: 0.0.0-use.local
-  resolution: "electron-builder@workspace:packages/electron-builder"
+  resolution: "deskgap-builder@workspace:packages/deskgap-builder"
   dependencies:
     "@types/fs-extra": ^8.1.0
     "@types/is-ci": ^2.0.0
@@ -4004,46 +4004,46 @@ __metadata:
     update-notifier: ^4.1.0
     yargs: ^15.3.1
   bin:
-    electron-builder: ./out/cli/cli.js
+    deskgap-builder: ./out/cli/cli.js
     install-app-deps: ./out/cli/install-app-deps.js
   languageName: unknown
   linkType: soft
 
-"electron-forge-maker-appimage@workspace:packages/electron-forge-maker-appimage":
+"deskgap-forge-maker-appimage@workspace:packages/deskgap-forge-maker-appimage":
   version: 0.0.0-use.local
-  resolution: "electron-forge-maker-appimage@workspace:packages/electron-forge-maker-appimage"
+  resolution: "deskgap-forge-maker-appimage@workspace:packages/deskgap-forge-maker-appimage"
   dependencies:
     app-builder-lib: "workspace:*"
   languageName: unknown
   linkType: soft
 
-"electron-forge-maker-nsis-web@workspace:packages/electron-forge-maker-nsis-web":
+"deskgap-forge-maker-nsis-web@workspace:packages/deskgap-forge-maker-nsis-web":
   version: 0.0.0-use.local
-  resolution: "electron-forge-maker-nsis-web@workspace:packages/electron-forge-maker-nsis-web"
+  resolution: "deskgap-forge-maker-nsis-web@workspace:packages/deskgap-forge-maker-nsis-web"
   dependencies:
     app-builder-lib: "workspace:*"
   languageName: unknown
   linkType: soft
 
-"electron-forge-maker-nsis@workspace:packages/electron-forge-maker-nsis":
+"deskgap-forge-maker-nsis@workspace:packages/deskgap-forge-maker-nsis":
   version: 0.0.0-use.local
-  resolution: "electron-forge-maker-nsis@workspace:packages/electron-forge-maker-nsis"
+  resolution: "deskgap-forge-maker-nsis@workspace:packages/deskgap-forge-maker-nsis"
   dependencies:
     app-builder-lib: "workspace:*"
   languageName: unknown
   linkType: soft
 
-"electron-forge-maker-snap@workspace:packages/electron-forge-maker-snap":
+"deskgap-forge-maker-snap@workspace:packages/deskgap-forge-maker-snap":
   version: 0.0.0-use.local
-  resolution: "electron-forge-maker-snap@workspace:packages/electron-forge-maker-snap"
+  resolution: "deskgap-forge-maker-snap@workspace:packages/deskgap-forge-maker-snap"
   dependencies:
     app-builder-lib: "workspace:*"
   languageName: unknown
   linkType: soft
 
-"electron-publish@workspace:*, electron-publish@workspace:packages/electron-publish":
+"deskgap-publish@workspace:*, deskgap-publish@workspace:packages/deskgap-publish":
   version: 0.0.0-use.local
-  resolution: "electron-publish@workspace:packages/electron-publish"
+  resolution: "deskgap-publish@workspace:packages/deskgap-publish"
   dependencies:
     "@types/fs-extra": ^8.1.0
     bluebird-lst: ^1.0.9
@@ -4056,16 +4056,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"electron-to-chromium@npm:^1.3.390":
+"deskgap-to-chromium@npm:^1.3.390":
   version: 1.3.391
-  resolution: "electron-to-chromium@npm:1.3.391"
+  resolution: "deskgap-to-chromium@npm:1.3.391"
   checksum: 2/61b1d0d98a3636f56bfd0d7647ddc2c6ced84ba4ca5c6aca0329c316b2f668a70ae370d4542d3444510cf03d092d2c282e38341abe0a8ac98ba097d788e09b3f
   languageName: node
   linkType: hard
 
-"electron-updater@workspace:*, electron-updater@workspace:packages/electron-updater":
+"deskgap-updater@workspace:*, deskgap-updater@workspace:packages/deskgap-updater":
   version: 0.0.0-use.local
-  resolution: "electron-updater@workspace:packages/electron-updater"
+  resolution: "deskgap-updater@workspace:packages/deskgap-updater"
   dependencies:
     "@types/fs-extra": ^8.1.0
     "@types/js-yaml": ^3.12.3

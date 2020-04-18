@@ -9,7 +9,7 @@ import * as path from "path"
 import { getArtifactArchName } from "builder-util/out/arch"
 import { AppInfo } from "./appInfo"
 import { readAsarJson } from "./asar/asar"
-import { createElectronFrameworkSupport } from "./electron/ElectronFramework"
+import { createDeskGapFrameworkSupport } from "./deskgap/DeskGapFramework"
 import { LibUiFramework } from "./frameworks/LibUiFramework"
 import { AfterPackContext, Configuration, Framework, Platform, SourceRepositoryInfo, Target } from "./index"
 import MacPackager from "./macPackager"
@@ -39,8 +39,8 @@ async function createFrameworkInfo(configuration: Configuration, packager: Packa
   }
 
   let nodeVersion = configuration.nodeVersion
-  if (framework === "electron" || framework == null) {
-    return await createElectronFrameworkSupport(configuration, packager)
+  if (framework === "deskgap" || framework == null) {
+    return await createDeskGapFrameworkSupport(configuration, packager)
   }
 
   if (nodeVersion == null || nodeVersion === "current") {
@@ -237,7 +237,7 @@ export class Packager {
     }
 
     try {
-      log.info({version: PACKAGE_VERSION, os: require("os").release()}, "electron-builder")
+      log.info({version: PACKAGE_VERSION, os: require("os").release()}, "deskgap-builder")
     }
     catch (e) {
       // error in dev mode without babel
@@ -419,7 +419,7 @@ export class Packager {
       }
 
       if (platform === Platform.MAC && process.platform === Platform.WINDOWS.nodeName) {
-        throw new InvalidConfigurationError("Build for macOS is supported only on macOS, please see https://electron.build/multi-platform-build")
+        throw new InvalidConfigurationError("Build for macOS is supported only on macOS, please see https://deskgap.build/multi-platform-build")
       }
 
       const packager = this.createHelper(platform)
@@ -504,12 +504,12 @@ export class Packager {
     if (beforeBuild != null) {
       const performDependenciesInstallOrRebuild = await beforeBuild({
         appDir: this.appDir,
-        electronVersion: this.config.electronVersion!,
+        deskgapVersion: this.config.deskgapVersion!,
         platform,
         arch: Arch[arch]
       })
 
-      // If beforeBuild resolves to false, it means that handling node_modules is done outside of electron-builder.
+      // If beforeBuild resolves to false, it means that handling node_modules is done outside of deskgap-builder.
       this._nodeModulesHandledExternally = !performDependenciesInstallOrRebuild
       if (!performDependenciesInstallOrRebuild) {
         return

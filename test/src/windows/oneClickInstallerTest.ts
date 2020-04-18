@@ -1,4 +1,4 @@
-import { Arch, Platform } from "electron-builder"
+import { Arch, Platform } from "deskgap-builder"
 import { copyFile, writeFile } from "fs-extra"
 import * as path from "path"
 import { assertThat } from "../helpers/fileAssert"
@@ -109,7 +109,7 @@ test.ifDevOrLinuxCi("perMachine, no run after finish", app({
       url: "https://develar.s3.amazonaws.com/test/${os}/${arch}",
     },
     win: {
-      electronUpdaterCompatibility: ">=2.16",
+      deskgapUpdaterCompatibility: ">=2.16",
     },
   },
 }, {

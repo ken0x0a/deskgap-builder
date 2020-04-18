@@ -10,7 +10,7 @@
     "access": "public"
   },
   "files": [
-    "../../typings/electron.d.ts"
+    "../../typings/deskgap.d.ts"
   ],
   "include": [
     "src/**/*.ts"

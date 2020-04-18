@@ -7,8 +7,8 @@
   "author": "Foo Bar <foo@example.com>",
   "license": "MIT",
   "build": {
-    "electronVersion": "8.2.0",
-    "appId": "org.electron-builder.testApp",
+    "deskgapVersion": "8.2.0",
+    "appId": "org.deskgap-builder.testApp",
     "compression": "store",
     "npmRebuild": false,
     "mac": {
@@ -19,7 +19,7 @@
     }
   },
   "dependencies": {
-    "electron-log": "2.2.9",
+    "deskgap-log": "2.2.9",
     "@sentry/core": "0.5.4"
   },
   "optionalDependencies": {

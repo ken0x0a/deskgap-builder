@@ -71,8 +71,8 @@ export function checkMetadata(metadata: Metadata, devMetadata: any | null, appPa
   }
 
   const devDependencies = (metadata as any).devDependencies
-  if (devDependencies != null && "electron-rebuild" in devDependencies) {
-    log.info('electron-rebuild not required if you use electron-builder, please consider to remove excess dependency from devDependencies\n\nTo ensure your native dependencies are always matched electron version, simply add script `"postinstall": "electron-builder install-app-deps" to your `package.json`')
+  if (devDependencies != null && "deskgap-rebuild" in devDependencies) {
+    log.info('deskgap-rebuild not required if you use deskgap-builder, please consider to remove excess dependency from devDependencies\n\nTo ensure your native dependencies are always matched deskgap version, simply add script `"postinstall": "deskgap-builder install-app-deps" to your `package.json`')
   }
 
   if (errors.length > 0) {
@@ -98,20 +98,20 @@ function checkDependencies(dependencies: { [key: string]: string } | null | unde
     return
   }
 
-  const updaterVersion = dependencies["electron-updater"]
-  const requiredElectronUpdaterVersion = "4.0.0"
-  if (updaterVersion != null && !versionSatisfies(updaterVersion, `>=${requiredElectronUpdaterVersion}`)) {
-    errors.push(`At least electron-updater ${requiredElectronUpdaterVersion} is recommended by current electron-builder version. Please set electron-updater version to "^${requiredElectronUpdaterVersion}"`)
+  const updaterVersion = dependencies["deskgap-updater"]
+  const requiredDeskGapUpdaterVersion = "4.0.0"
+  if (updaterVersion != null && !versionSatisfies(updaterVersion, `>=${requiredDeskGapUpdaterVersion}`)) {
+    errors.push(`At least deskgap-updater ${requiredDeskGapUpdaterVersion} is recommended by current deskgap-builder version. Please set deskgap-updater version to "^${requiredDeskGapUpdaterVersion}"`)
   }
 
-  const swVersion = dependencies["electron-builder-squirrel-windows"]
+  const swVersion = dependencies["deskgap-builder-squirrel-windows"]
   if (swVersion != null && !versionSatisfies(swVersion, ">=20.32.0")) {
-    errors.push(`At least electron-builder-squirrel-windows 20.32.0 is required by current electron-builder version. Please set electron-builder-squirrel-windows to "^20.32.0"`)
+    errors.push(`At least deskgap-builder-squirrel-windows 20.32.0 is required by current deskgap-builder version. Please set deskgap-builder-squirrel-windows to "^20.32.0"`)
   }
 
-  const deps = ["electron", "electron-prebuilt", "electron-rebuild"]
+  const deps = ["deskgap", "deskgap-prebuilt", "deskgap-rebuild"]
   if (process.env.ALLOW_ELECTRON_BUILDER_AS_PRODUCTION_DEPENDENCY !== "true") {
-    deps.push("electron-builder")
+    deps.push("deskgap-builder")
   }
   for (const name of deps) {
     if (name in dependencies) {

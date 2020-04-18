@@ -68,7 +68,7 @@ export class ProtonFramework extends LibUiFramework {
 }
 
 function testOnlyBabel(babel: any, babelOptions: any, nodeVersion: string): any {
-  // out test dir can be located outside of electron-builder node_modules and babel cannot resolve string names of preset
+  // out test dir can be located outside of deskgap-builder node_modules and babel cannot resolve string names of preset
   babelOptions.presets = [
     [require("@babel/preset-env").default, {targets: {node: nodeVersion}}],
     require("@babel/preset-react"),

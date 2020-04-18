@@ -1,21 +1,21 @@
 {
   "name": "app-builder-lib",
-  "description": "electron-builder lib",
+  "description": "deskgap-builder lib",
   "version": "22.4.0",
   "main": "out/index.js",
   "files": [
     "out",
     "templates",
     "scheme.json",
-    "electron-osx-sign",
+    "deskgap-osx-sign",
     "certs/root_certs.keychain"
   ],
-  "repository": "electron-userland/electron-builder",
+  "repository": "deskgap-userland/deskgap-builder",
   "engines": {
     "node": ">=8.12.0"
   },
   "keywords": [
-    "electron",
+    "deskgap",
     "builder",
     "build",
     "installer",
@@ -39,8 +39,8 @@
   ],
   "author": "Vladimir Krivosheev",
   "license": "MIT",
-  "bugs": "https://github.com/electron-userland/electron-builder/issues",
-  "homepage": "https://github.com/electron-userland/electron-builder",
+  "bugs": "https://github.com/deskgap-userland/deskgap-builder/issues",
+  "homepage": "https://github.com/deskgap-userland/deskgap-builder",
   "dependencies": {
     "7zip-bin": "~5.0.3",
     "@develar/schema-utils": "~2.6.5",
@@ -51,7 +51,7 @@
     "chromium-pickle-js": "^0.2.0",
     "debug": "^4.1.1",
     "ejs": "^3.0.2",
-    "electron-publish": "workspace:*",
+    "deskgap-publish": "workspace:*",
     "fs-extra": "^9.0.0",
     "hosted-git-info": "^3.0.4",
     "is-ci": "^2.0.0",
@@ -94,8 +94,8 @@
     "@types/normalize-package-data": "^2.4.0",
     "@types/semver": "^7.1.0",
     "dmg-builder": "workspace:*",
-    "electron-builder-squirrel-windows": "workspace:*"
+    "deskgap-builder-squirrel-windows": "workspace:*"
   },
-  "//": "electron-builder-squirrel-windows and dmg-builder added as dev dep for tests (as otherwise `require` doesn't work using Yarn 2)",
+  "//": "deskgap-builder-squirrel-windows and dmg-builder added as dev dep for tests (as otherwise `require` doesn't work using Yarn 2)",
   "typings": "./out/index.d.ts"
 }

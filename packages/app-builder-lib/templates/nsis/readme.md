@@ -1,4 +1,4 @@
-It is developer documentation. See [user documentation](https://electron.build/configuration/nsis).
+It is developer documentation. See [user documentation](https://deskgap.build/configuration/nsis).
 
 http://www.mathiaswestin.net/2012/09/how-to-make-per-user-installation-with.html
 
@@ -13,7 +13,7 @@ http://stackoverflow.com/questions/2565215/checking-if-the-application-is-runnin
 One-click installer: http://forums.winamp.com/showthread.php?t=300479
 
 # GUID
-See [docs](https://electron.build/configuration/nsis).
+See [docs](https://deskgap.build/configuration/nsis).
 
 We use UUID v5 to generate sha-1 name-based UUID.
 

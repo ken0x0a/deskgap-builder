@@ -82,7 +82,7 @@ export class LinuxTargetHelper {
     if (exec != null && exec.length === 0) {
       throw new Error("Specified exec is empty")
     }
-    // https://github.com/electron-userland/electron-builder/issues/3418
+    // https://github.com/deskgap-userland/deskgap-builder/issues/3418
     if (targetSpecificOptions.desktop != null && targetSpecificOptions.desktop.Exec != null) {
       throw new Error("Please specify executable name as linux.executableName instead of linux.desktop.Exec")
     }
@@ -111,10 +111,10 @@ export class LinuxTargetHelper {
       Type: "Application",
       Icon: packager.executableName,
       // https://askubuntu.com/questions/367396/what-represent-the-startupwmclass-field-of-a-desktop-file
-      // must be set to package.json name (because it is Electron set WM_CLASS)
+      // must be set to package.json name (because it is DeskGap set WM_CLASS)
       // to get WM_CLASS of running window: xprop WM_CLASS
       // StartupWMClass doesn't work for unicode
-      // https://github.com/electron/electron/blob/2-0-x/atom/browser/native_window_views.cc#L226
+      // https://github.com/deskgap/deskgap/blob/2-0-x/atom/browser/native_window_views.cc#L226
       StartupWMClass: appInfo.productName,
       ...extra,
       ...targetSpecificOptions.desktop,
@@ -156,7 +156,7 @@ export class LinuxTargetHelper {
         }
         log.warn({
           reason: "linux.category is not set and cannot map from macOS",
-          docs: "https://www.electron.build/configuration/linux",
+          docs: "https://www.deskgap.build/configuration/linux",
         }, "application Linux category is set to default \"Utility\"")
         category = "Utility"
       }

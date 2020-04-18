@@ -77,7 +77,7 @@ Section "un.install"
   ${endIf}
 
   ${if} $isDeleteAppData == "1"
-    # electron always uses per user app data
+    # deskgap always uses per user app data
     ${if} $installMode == "all"
       SetShellVarContext current
     ${endif}
@@ -85,7 +85,7 @@ Section "un.install"
     !ifdef APP_PRODUCT_FILENAME
       RMDir /r "$APPDATA\${APP_PRODUCT_FILENAME}"
     !endif
-    # electron use package.json name for cache,indexdb etc.
+    # deskgap use package.json name for cache,indexdb etc.
     !ifdef APP_PACKAGE_NAME
       RMDir /r "$APPDATA\${APP_PACKAGE_NAME}"
     !endif

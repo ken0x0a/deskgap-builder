@@ -9,20 +9,20 @@ import { BeforeCopyExtraFilesOptions, Framework, PrepareApplicationStageDirector
 import { Packager, Platform } from "../index"
 import { LinuxPackager } from "../linuxPackager"
 import MacPackager from "../macPackager"
-import { isSafeToUnpackElectronOnRemoteBuildServer } from "../platformPackager"
+import { isSafeToUnpackDeskGapOnRemoteBuildServer } from "../platformPackager"
 import { getTemplatePath } from "../util/pathManager"
-import { createMacApp } from "./electronMac"
-import { computeElectronVersion, getElectronVersionFromInstalled } from "./electronVersion"
+import { createMacApp } from "./deskgapMac"
+import { computeDeskGapVersion, getDeskGapVersionFromInstalled } from "./deskgapVersion"
 
-export type ElectronPlatformName = "darwin" | "linux" | "win32" | "mas"
+export type DeskGapPlatformName = "darwin" | "linux" | "win32" | "mas"
 
-export interface ElectronDownloadOptions {
-  // https://github.com/electron-userland/electron-builder/issues/3077
+export interface DeskGapDownloadOptions {
+  // https://github.com/deskgap-userland/deskgap-builder/issues/3077
   // must be optional
   version?: string
 
   /**
-   * The [cache location](https://github.com/electron-userland/electron-download#cache-location).
+   * The [cache location](https://github.com/deskgap-userland/deskgap-download#cache-location).
    */
   cache?: string | null
 
@@ -39,16 +39,16 @@ export interface ElectronDownloadOptions {
   strictSSL?: boolean
   isVerifyChecksum?: boolean
 
-  platform?: ElectronPlatformName
+  platform?: DeskGapPlatformName
   arch?: string
 }
 
-function createDownloadOpts(opts: Configuration, platform: ElectronPlatformName, arch: string, electronVersion: string): ElectronDownloadOptions {
+function createDownloadOpts(opts: Configuration, platform: DeskGapPlatformName, arch: string, deskgapVersion: string): DeskGapDownloadOptions {
   return {
     platform,
     arch,
-    version: electronVersion,
-    ...opts.electronDownload,
+    version: deskgapVersion,
+    ...opts.deskgapDownload,
   }
 }
 
@@ -56,20 +56,20 @@ async function beforeCopyExtraFiles(options: BeforeCopyExtraFilesOptions) {
   const packager = options.packager
   const appOutDir = options.appOutDir
   if (packager.platform === Platform.LINUX) {
-    if (!isSafeToUnpackElectronOnRemoteBuildServer(packager)) {
+    if (!isSafeToUnpackDeskGapOnRemoteBuildServer(packager)) {
       const linuxPackager = (packager as LinuxPackager)
       const executable = path.join(appOutDir, linuxPackager.executableName)
-      await rename(path.join(appOutDir, "electron"), executable)
+      await rename(path.join(appOutDir, "deskgap"), executable)
     }
   }
   else if (packager.platform === Platform.WINDOWS) {
     const executable = path.join(appOutDir, `${packager.appInfo.productFilename}.exe`)
-    await rename(path.join(appOutDir, "electron.exe"), executable)
+    await rename(path.join(appOutDir, "deskgap.exe"), executable)
   }
   else {
-    await createMacApp(packager as MacPackager, appOutDir, options.asarIntegrity, (options.platformName as ElectronPlatformName) === "mas")
+    await createMacApp(packager as MacPackager, appOutDir, options.asarIntegrity, (options.platformName as DeskGapPlatformName) === "mas")
 
-    const wantedLanguages = asArray(packager.platformSpecificBuildOptions.electronLanguages)
+    const wantedLanguages = asArray(packager.platformSpecificBuildOptions.deskgapLanguages)
     if (wantedLanguages.length === 0) {
       return
     }
@@ -91,11 +91,11 @@ async function beforeCopyExtraFiles(options: BeforeCopyExtraFilesOptions) {
   }
 }
 
-class ElectronFramework implements Framework {
+class DeskGapFramework implements Framework {
   // noinspection JSUnusedGlobalSymbols
   readonly macOsDefaultTargets = ["zip", "dmg"]
   // noinspection JSUnusedGlobalSymbols
-  readonly defaultAppIdPrefix = "com.electron."
+  readonly defaultAppIdPrefix = "com.deskgap."
   // noinspection JSUnusedGlobalSymbols
   readonly isCopyElevateHelper = true
   // noinspection JSUnusedGlobalSymbols
@@ -106,7 +106,7 @@ class ElectronFramework implements Framework {
 
   getDefaultIcon(platform: Platform) {
     if (platform === Platform.LINUX) {
-      return path.join(getTemplatePath("icons"), "electron-linux")
+      return path.join(getTemplatePath("icons"), "deskgap-linux")
     }
     else {
       // default icon is embedded into app skeleton
@@ -123,32 +123,32 @@ class ElectronFramework implements Framework {
   }
 }
 
-export async function createElectronFrameworkSupport(configuration: Configuration, packager: Packager): Promise<Framework> {
-  let version = configuration.electronVersion
+export async function createDeskGapFrameworkSupport(configuration: Configuration, packager: Packager): Promise<Framework> {
+  let version = configuration.deskgapVersion
   if (version == null) {
     // for prepacked app asar no dev deps in the app.asar
     if (packager.isPrepackedAppAsar) {
-      version = await getElectronVersionFromInstalled(packager.projectDir)
+      version = await getDeskGapVersionFromInstalled(packager.projectDir)
       if (version == null) {
-        throw new Error(`Cannot compute electron version for prepacked asar`)
+        throw new Error(`Cannot compute deskgap version for prepacked asar`)
       }
     }
     else {
-      version = await computeElectronVersion(packager.projectDir, new Lazy(() => Promise.resolve(packager.metadata)))
+      version = await computeDeskGapVersion(packager.projectDir, new Lazy(() => Promise.resolve(packager.metadata)))
     }
-    configuration.electronVersion = version
+    configuration.deskgapVersion = version
   }
 
-  return new ElectronFramework("electron", version, "Electron.app")
+  return new DeskGapFramework("deskgap", version, "DeskGap.app")
 }
 
-async function unpack(prepareOptions: PrepareApplicationStageDirectoryOptions, options: ElectronDownloadOptions, distMacOsAppName: string) {
+async function unpack(prepareOptions: PrepareApplicationStageDirectoryOptions, options: DeskGapDownloadOptions, distMacOsAppName: string) {
   const packager = prepareOptions.packager
   const out = prepareOptions.appOutDir
 
-  let dist: string | null | undefined = packager.config.electronDist
+  let dist: string | null | undefined = packager.config.deskgapDist
   if (dist != null) {
-    const zipFile = `electron-v${options.version}-${prepareOptions.platformName}-${options.arch}.zip`
+    const zipFile = `deskgap-v${options.version}-${prepareOptions.platformName}-${options.arch}.zip`
     const resolvedDist = path.resolve(packager.projectDir, dist)
     if ((await statOrNull(path.join(resolvedDist, zipFile))) != null) {
       options.cache = resolvedDist
@@ -158,17 +158,17 @@ async function unpack(prepareOptions: PrepareApplicationStageDirectoryOptions, o
 
   let isFullCleanup = false
   if (dist == null) {
-    if (isSafeToUnpackElectronOnRemoteBuildServer(packager)) {
+    if (isSafeToUnpackDeskGapOnRemoteBuildServer(packager)) {
       return
     }
 
-    await executeAppBuilder(["unpack-electron", "--configuration", JSON.stringify([options]), "--output", out, "--distMacOsAppName", distMacOsAppName])
+    await executeAppBuilder(["unpack-deskgap", "--configuration", JSON.stringify([options]), "--output", out, "--distMacOsAppName", distMacOsAppName])
   }
   else {
     isFullCleanup = true
-    const source = packager.getElectronSrcDir(dist)
-    const destination = packager.getElectronDestinationDir(out)
-    log.info({source, destination}, "copying Electron")
+    const source = packager.getDeskGapSrcDir(dist)
+    const destination = packager.getDeskGapDestinationDir(out)
+    log.info({source, destination}, "copying DeskGap")
     await emptyDir(out)
     await copyDir(source, destination, {
       isUseHardLink: DO_NOT_USE_HARD_LINKS,
@@ -186,6 +186,6 @@ function cleanupAfterUnpack(prepareOptions: PrepareApplicationStageDirectoryOpti
   return Promise.all([
     isFullCleanup ? unlinkIfExists(path.join(resourcesPath, "default_app.asar")) : Promise.resolve(),
     isFullCleanup ? unlinkIfExists(path.join(out, "version")) : Promise.resolve(),
-    isMac ? Promise.resolve() : rename(path.join(out, "LICENSE"), path.join(out, "LICENSE.electron.txt")).catch(() => {/* ignore */}),
+    isMac ? Promise.resolve() : rename(path.join(out, "LICENSE"), path.join(out, "LICENSE.deskgap.txt")).catch(() => {/* ignore */}),
   ])
 }

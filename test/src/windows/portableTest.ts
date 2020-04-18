@@ -1,8 +1,8 @@
-import { Platform, Arch } from "electron-builder"
+import { Platform, Arch } from "deskgap-builder"
 import * as path from "path"
 import { app, copyTestAsset, getFixtureDir } from "../helpers/packTester"
 
-// build in parallel - https://github.com/electron-userland/electron-builder/issues/1340#issuecomment-286061789
+// build in parallel - https://github.com/deskgap-userland/deskgap-builder/issues/1340#issuecomment-286061789
 test.ifAll.ifNotCiMac("portable", app({
   targets: Platform.WINDOWS.createTarget(["portable", "nsis"]),
   config: {

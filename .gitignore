@@ -15,13 +15,16 @@ out/
 /test/test-report.xml
 
 /packages/dmg-builder/vendor/
-/packages/electron-builder/README.md
+/packages/deskgap-builder/README.md
 #/packages/app-builder-lib/scheme.json
+/packages/*/node_modules
+/test/node_modules
+
 
 /scripts/jsdoc/out/
 /scripts/renderer/out/
 
-electron-builder-*.d.ts
+deskgap-builder-*.d.ts
 
 /site/
 /docs/

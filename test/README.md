@@ -1,5 +1,5 @@
 # Inspect output if test uses temporary directory
-Set environment variable `TEST_APP_TMP_DIR` (e.g. `/tmp/electron-builder-test`).
+Set environment variable `TEST_APP_TMP_DIR` (e.g. `/tmp/deskgap-builder-test`).
 Specified directory will be used instead of random temporary directory and *cleared* on each run.
 
 # Test Code Signing Ceritificates

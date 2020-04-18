@@ -1,7 +1,7 @@
-# electron-publish
+# deskgap-publish
 
-Part of [electron-builder](https://github.com/electron-userland/electron-builder). 
+Part of [deskgap-builder](https://github.com/deskgap-userland/deskgap-builder). 
 
-See the [Publishing Artifacts](https://www.electron.build/configuration/publish) for more information.
+See the [Publishing Artifacts](https://www.deskgap.build/configuration/publish) for more information.
 
 Can be used standalone.

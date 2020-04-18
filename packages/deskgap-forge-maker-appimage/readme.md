@@ -1,9 +1,9 @@
-# electron-installer-appimage
+# deskgap-installer-appimage
 
-[electron-builder](https://github.com/electron-userland/electron-builder) [appimage](http://appimage.org) target for electron-forge.
+[deskgap-builder](https://github.com/deskgap-userland/deskgap-builder) [appimage](http://appimage.org) target for deskgap-forge.
 
-Recommended to build electron-forge project using electron-builder directly.
-[Publishing](https://www.electron.build/configuration/publish),
-[Auto Update](https://electron.build/auto-update)
-and [Code Signing](https://electron.build/code-signing) supported only in this case
-(including all other useful [packaging options](https://electron.build/configuration/configuration) like [files](https://electron.build/configuration/configuration#Config-files)). 
+Recommended to build deskgap-forge project using deskgap-builder directly.
+[Publishing](https://www.deskgap.build/configuration/publish),
+[Auto Update](https://deskgap.build/auto-update)
+and [Code Signing](https://deskgap.build/code-signing) supported only in this case
+(including all other useful [packaging options](https://deskgap.build/configuration/configuration) like [files](https://deskgap.build/configuration/configuration#Config-files)). 

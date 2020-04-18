@@ -11,7 +11,7 @@ jobs:
             - install-dep-cache-{{ checksum "yarn.lock" }}-{{ checksum ".yarn/releases/yarn-sources.js" }}
       - restore_cache:
           keys:
-            - v-8.2.0-electron
+            - v-8.2.0-deskgap
       - run:
           command: YARN_CHECKSUM_BEHAVIOR=ignore node .yarn/releases/yarn-sources.js install
       - run:
@@ -23,16 +23,16 @@ jobs:
           paths:
             - .yarn
       - run:
-          command: node .yarn/releases/yarn-sources.js node ./test/out/helpers/downloadElectron.js
+          command: node .yarn/releases/yarn-sources.js node ./test/out/helpers/downloadDeskGap.js
       - save_cache:
-          key: v-8.2.0-electron
+          key: v-8.2.0-deskgap
           paths:
-            - ~/.cache/electron
+            - ~/.cache/deskgap
 
   test:
     parallelism: 4
     docker:
-      - image: electronuserland/builder:wine-mono
+      - image: deskgapuserland/builder:wine-mono
         environment:
           JEST_JUNIT_OUTPUT_DIR: /tmp/test-reports/test.xml
           TZ: Europe/Berlin
@@ -43,7 +43,7 @@ jobs:
             - install-dep-cache-{{ checksum "yarn.lock" }}-{{ checksum ".yarn/releases/yarn-sources.js" }}
       - restore_cache:
           keys:
-            - v-8.2.0-electron
+            - v-8.2.0-deskgap
       # because in the build job we use circleci docker image and circleci restores cache to original user home
       - run:
           command: |
@@ -51,7 +51,7 @@ jobs:
             mv /home/circleci/project/.yarn .yarn
             mv .yarn/.pnp.js .pnp.js
             mkdir -p ~/.cache
-            mv /home/circleci/.cache/electron ~/.cache/electron
+            mv /home/circleci/.cache/deskgap ~/.cache/deskgap
       - run:
           # do not use yarn test because lint is done in the build job
           command: |

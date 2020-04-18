@@ -26,7 +26,7 @@ export { asArray } from "builder-util-runtime"
 
 export { deepAssign } from "./deepAssign"
 
-export const debug7z = _debug("electron-builder:7z")
+export const debug7z = _debug("deskgap-builder:7z")
 
 export function serializeToYaml(object: any, skipInvalid = false, noRefs = false) {
   return safeDump(object, {
@@ -56,7 +56,7 @@ function getProcessEnv(env: { [key: string]: string | undefined } | undefined | 
   }
 
   // without LC_CTYPE dpkg can returns encoded unicode symbols
-  // set LC_CTYPE to avoid crash https://github.com/electron-userland/electron-builder/issues/503 Even "en_DE.UTF-8" leads to error.
+  // set LC_CTYPE to avoid crash https://github.com/deskgap-userland/deskgap-builder/issues/503 Even "en_DE.UTF-8" leads to error.
   const locale = process.platform === "linux" ? (process.env.LANG || "C.UTF-8") : "en_US.UTF-8"
   finalEnv.LANG = locale
   finalEnv.LC_CTYPE = locale

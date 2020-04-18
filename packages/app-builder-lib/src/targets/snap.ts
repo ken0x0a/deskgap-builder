@@ -32,12 +32,12 @@ export default class SnapTarget extends Target {
   }
 
   private async createDescriptor(arch: Arch): Promise<any> {
-    if (!this.isElectronVersionGreaterOrEqualThen("4.0.0")) {
-      if (!this.isElectronVersionGreaterOrEqualThen("2.0.0-beta.1")) {
-        throw new InvalidConfigurationError("Electron 2 and higher is required to build Snap")
+    if (!this.isDeskGapVersionGreaterOrEqualThen("4.0.0")) {
+      if (!this.isDeskGapVersionGreaterOrEqualThen("2.0.0-beta.1")) {
+        throw new InvalidConfigurationError("DeskGap 2 and higher is required to build Snap")
       }
 
-      log.warn("Electron 4 and higher is highly recommended for Snap")
+      log.warn("DeskGap 4 and higher is highly recommended for Snap")
     }
 
     const appInfo = this.packager.appInfo
@@ -99,8 +99,8 @@ export default class SnapTarget extends Target {
     else {
       const archTriplet = archNameToTriplet(arch)
       appDescriptor.environment = {
-        // https://github.com/electron-userland/electron-builder/issues/4007
-        // https://github.com/electron/electron/issues/9056
+        // https://github.com/deskgap-userland/deskgap-builder/issues/4007
+        // https://github.com/deskgap/deskgap/issues/9056
         DISABLE_WAYLAND: "1",
         TMPDIR: "$XDG_RUNTIME_DIR",
         PATH: "$SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH",
@@ -184,7 +184,7 @@ export default class SnapTarget extends Target {
       Icon: "${SNAP}/meta/gui/icon.png"
     })
 
-    if (this.isElectronVersionGreaterOrEqualThen("5.0.0") && !isBrowserSandboxAllowed(snap)) {
+    if (this.isDeskGapVersionGreaterOrEqualThen("5.0.0") && !isBrowserSandboxAllowed(snap)) {
       args.push("--extraAppArgs=--no-sandbox")
       if (this.isUseTemplateApp) {
         args.push("--exclude", "chrome-sandbox")
@@ -203,7 +203,7 @@ export default class SnapTarget extends Target {
     }
 
     if (this.isUseTemplateApp) {
-      args.push("--template-url", `electron4:${snapArch}`)
+      args.push("--template-url", `deskgap4:${snapArch}`)
     }
     await executeAppBuilder(args)
 
@@ -217,8 +217,8 @@ export default class SnapTarget extends Target {
     })
   }
 
-  private isElectronVersionGreaterOrEqualThen(version: string) {
-    return semver.gte(this.packager.config.electronVersion || "7.0.0", version)
+  private isDeskGapVersionGreaterOrEqualThen(version: string) {
+    return semver.gte(this.packager.config.deskgapVersion || "7.0.0", version)
   }
 }
 

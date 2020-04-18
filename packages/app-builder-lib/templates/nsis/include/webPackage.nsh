@@ -40,7 +40,7 @@
   ${endif}
 
   download:
-  inetc::get /USERAGENT "electron-builder (Mozilla)" /HEADER "X-Arch: $packageArch" /RESUME "" "$packageUrl" "$PLUGINSDIR\package.7z" /END
+  inetc::get /USERAGENT "deskgap-builder (Mozilla)" /HEADER "X-Arch: $packageArch" /RESUME "" "$packageUrl" "$PLUGINSDIR\package.7z" /END
   Pop $0
 
   ${if} $0 == "Cancelled"
@@ -49,7 +49,7 @@
 
   ${if} $0 != "OK"
     # try without proxy
-    inetc::get /NOPROXY /USERAGENT "electron-builder (Mozilla)" /HEADER "X-Arch: $packageArch" /RESUME "" "$packageUrl" "$PLUGINSDIR\package.7z" /END
+    inetc::get /NOPROXY /USERAGENT "deskgap-builder (Mozilla)" /HEADER "X-Arch: $packageArch" /RESUME "" "$packageUrl" "$PLUGINSDIR\package.7z" /END
     Pop $0
   ${endif}
 

@@ -1,6 +1,6 @@
 import { AllPublishOptions, asArray, CancellationToken, newError, PublishConfiguration, UpdateInfo, UUID, DownloadOptions, CancellationError } from "builder-util-runtime"
 import { randomBytes } from "crypto"
-import { Notification } from "electron"
+import { Notification } from "deskgap"
 import { EventEmitter } from "events"
 import { ensureDir, outputFile, readFile, rename, unlink } from "fs-extra"
 import { OutgoingHttpHeaders } from "http"
@@ -10,13 +10,13 @@ import * as path from "path"
 import { eq as isVersionsEqual, gt as isVersionGreaterThan, lt as isVersionLessThan, parse as parseVersion, prerelease as getVersionPreleaseComponents, SemVer } from "semver"
 import { AppAdapter } from "./AppAdapter"
 import { createTempUpdateFile, DownloadedUpdateHelper } from "./DownloadedUpdateHelper"
-import { ElectronAppAdapter } from "./ElectronAppAdapter"
-import { ElectronHttpExecutor, getNetSession } from "./electronHttpExecutor"
+import { DeskGapAppAdapter } from "./DeskGapAppAdapter"
+import { DeskGapHttpExecutor, getNetSession } from "./deskgapHttpExecutor"
 import { GenericProvider } from "./providers/GenericProvider"
 import { DOWNLOAD_PROGRESS, Logger, Provider, ResolvedUpdateFileInfo, UPDATE_DOWNLOADED, UpdateCheckResult, UpdateDownloadedEvent, UpdaterSignal } from "./main"
 import { createClient, isUrlProbablySupportMultiRangeRequests } from "./providerFactory"
 import { ProviderPlatform } from "./providers/Provider"
-import Session = Electron.Session
+import Session = DeskGap.Session
 
 export abstract class AppUpdater extends EventEmitter {
   /**
@@ -102,7 +102,7 @@ export abstract class AppUpdater extends EventEmitter {
   }
 
   /**
-   * The logger. You can pass [electron-log](https://github.com/megahertz/electron-log), [winston](https://github.com/winstonjs/winston) or another logger with the following interface: `{ info(), warn(), error() }`.
+   * The logger. You can pass [deskgap-log](https://github.com/megahertz/deskgap-log), [winston](https://github.com/winstonjs/winston) or another logger with the following interface: `{ info(), warn(), error() }`.
    * Set it to `null` if you would like to disable a logging feature.
    */
   get logger(): Logger | null {
@@ -147,7 +147,7 @@ export abstract class AppUpdater extends EventEmitter {
   protected updateInfoAndProvider: UpdateInfoAndProvider | null = null
 
   /** @internal */
-  readonly httpExecutor: ElectronHttpExecutor
+  readonly httpExecutor: DeskGapHttpExecutor
 
   protected constructor(options: AllPublishOptions | null | undefined, app?: AppAdapter) {
     super()
@@ -157,8 +157,8 @@ export abstract class AppUpdater extends EventEmitter {
     })
 
     if (app == null) {
-      this.app = new ElectronAppAdapter()
-      this.httpExecutor = new ElectronHttpExecutor((authInfo, callback) => this.emit("login", authInfo, callback))
+      this.app = new DeskGapAppAdapter()
+      this.httpExecutor = new DeskGapHttpExecutor((authInfo, callback) => this.emit("login", authInfo, callback))
     }
     else {
       this.app = app
@@ -193,7 +193,7 @@ export abstract class AppUpdater extends EventEmitter {
    */
   setFeedURL(options: PublishConfiguration | AllPublishOptions | string) {
     const runtimeOptions = this.createProviderRuntimeOptions()
-    // https://github.com/electron-userland/electron-builder/issues/1105
+    // https://github.com/deskgap-userland/deskgap-builder/issues/1105
     let provider: Provider<any>
     if (typeof options === "string") {
       provider = new GenericProvider({provider: "generic", url: options}, this, {
@@ -318,8 +318,8 @@ export abstract class AppUpdater extends EventEmitter {
       return false
     }
 
-    // https://github.com/electron-userland/electron-builder/pull/3111#issuecomment-405033227
-    // https://github.com/electron-userland/electron-builder/pull/3111#issuecomment-405030797
+    // https://github.com/deskgap-userland/deskgap-builder/pull/3111#issuecomment-405033227
+    // https://github.com/deskgap-userland/deskgap-builder/pull/3111#issuecomment-405030797
     const isLatestVersionNewer = isVersionGreaterThan(latestVersion, currentVersion)
     const isLatestVersionOlder = isVersionLessThan(latestVersion, currentVersion)
 
@@ -400,7 +400,7 @@ export abstract class AppUpdater extends EventEmitter {
 
     this._logger.info(`Downloading update from ${asArray(updateInfoAndProvider.info.files).map(it => it.url).join(", ")}`)
     const errorHandler = (e: Error): Error => {
-      // https://github.com/electron-userland/electron-builder/issues/1150#issuecomment-436891159
+      // https://github.com/deskgap-userland/deskgap-builder/issues/1150#issuecomment-436891159
       if (!(e instanceof CancellationError)) {
         try {
           this.dispatchError(e)
@@ -500,7 +500,7 @@ export abstract class AppUpdater extends EventEmitter {
   /** @internal */
   get isAddNoCacheQuery(): boolean {
     const headers = this.requestHeaders
-    // https://github.com/electron-userland/electron-builder/issues/3021
+    // https://github.com/deskgap-userland/deskgap-builder/issues/3021
     if (headers == null) {
       return true
     }
@@ -526,7 +526,7 @@ export abstract class AppUpdater extends EventEmitter {
       const dirName = (await this.configOnDisk.value).updaterCacheDirName
       const logger = this._logger
       if (dirName == null) {
-        logger.error("updaterCacheDirName is not specified in app-update.yml Was app build using at least electron-builder 20.34.0?")
+        logger.error("updaterCacheDirName is not specified in app-update.yml Was app build using at least deskgap-builder 20.34.0?")
       }
       const cacheDir = path.join(this.app.baseCachePath, dirName || this.app.name)
       if (logger.debug != null) {

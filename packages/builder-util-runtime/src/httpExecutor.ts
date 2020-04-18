@@ -9,7 +9,7 @@ import { CancellationToken } from "./CancellationToken"
 import { newError } from "./index"
 import { ProgressCallbackTransform, ProgressInfo } from "./ProgressCallbackTransform"
 
-const debug = _debug("electron-builder")
+const debug = _debug("deskgap-builder")
 
 export interface RequestHeaders extends OutgoingHttpHeaders {
   [key: string]: string
@@ -255,7 +255,7 @@ Please double check that your authentication token is correct. Due to security r
       // response stream is in progress. Stop waiting and reject so consumer can catch the error.
       response.on("error", options.callback)
 
-      // this code not relevant for Electron (redirect event instead handled)
+      // this code not relevant for DeskGap (redirect event instead handled)
       const redirectUrl = safeGetHeader(response, "location")
       if (redirectUrl != null) {
         if (redirectCount < this.maxRedirects) {
@@ -403,7 +403,7 @@ export function safeGetHeader(response: any, headerKey: string) {
     return null
   }
   else if (Array.isArray(value)) {
-    // electron API
+    // deskgap API
     return value.length === 0 ? null : value[value.length - 1]
   }
   else {
@@ -462,7 +462,7 @@ export function configureRequestOptions(options: RequestOptions, token?: string 
     (headers as any).authorization = token.startsWith("Basic") ? token : `token ${token}`
   }
   if (headers["User-Agent"] == null) {
-    headers["User-Agent"] = "electron-builder"
+    headers["User-Agent"] = "deskgap-builder"
   }
 
   if ((method == null || method === "GET") || headers["Cache-Control"] == null) {
@@ -470,7 +470,7 @@ export function configureRequestOptions(options: RequestOptions, token?: string 
   }
 
   // do not specify for node (in any case we use https module)
-  if (options.protocol == null && (process.versions as any).electron != null) {
+  if (options.protocol == null && (process.versions as any).deskgap != null) {
     options.protocol = "https:"
   }
   return options

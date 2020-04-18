@@ -52,18 +52,18 @@ export async function createMacApp(packager: MacPackager, appOutDir: string, asa
   const loginItemPath = path.join(contentsPath, "Library", "LoginItems")
 
   const appPlistFilename = path.join(contentsPath, "Info.plist")
-  const helperPlistFilename = path.join(frameworksPath, "Electron Helper.app", "Contents", "Info.plist")
-  const helperEHPlistFilename = path.join(frameworksPath, "Electron Helper EH.app", "Contents", "Info.plist")
-  const helperNPPlistFilename = path.join(frameworksPath, "Electron Helper NP.app", "Contents", "Info.plist")
-  const helperRendererPlistFilename = path.join(frameworksPath, "Electron Helper (Renderer).app", "Contents", "Info.plist")
-  const helperPluginPlistFilename = path.join(frameworksPath, "Electron Helper (Plugin).app", "Contents", "Info.plist")
-  const helperGPUPlistFilename = path.join(frameworksPath, "Electron Helper (GPU).app", "Contents", "Info.plist")
-  const helperLoginPlistFilename = path.join(loginItemPath, "Electron Login Helper.app", "Contents", "Info.plist")
+  const helperPlistFilename = path.join(frameworksPath, "DeskGap Helper.app", "Contents", "Info.plist")
+  const helperEHPlistFilename = path.join(frameworksPath, "DeskGap Helper EH.app", "Contents", "Info.plist")
+  const helperNPPlistFilename = path.join(frameworksPath, "DeskGap Helper NP.app", "Contents", "Info.plist")
+  const helperRendererPlistFilename = path.join(frameworksPath, "DeskGap Helper (Renderer).app", "Contents", "Info.plist")
+  const helperPluginPlistFilename = path.join(frameworksPath, "DeskGap Helper (Plugin).app", "Contents", "Info.plist")
+  const helperGPUPlistFilename = path.join(frameworksPath, "DeskGap Helper (GPU).app", "Contents", "Info.plist")
+  const helperLoginPlistFilename = path.join(loginItemPath, "DeskGap Login Helper.app", "Contents", "Info.plist")
 
   const plistContent: Array<any> = await executeAppBuilderAsJson(["decode-plist", "-f", appPlistFilename, "-f", helperPlistFilename, "-f", helperEHPlistFilename, "-f", helperNPPlistFilename, "-f", helperRendererPlistFilename, "-f", helperPluginPlistFilename, "-f", helperGPUPlistFilename, "-f", helperLoginPlistFilename])
 
   if (plistContent[0] == null) {
-    throw new Error("corrupted Electron dist")
+    throw new Error("corrupted DeskGap dist")
   }
 
   const appPlist = plistContent[0]!!
@@ -83,9 +83,9 @@ export async function createMacApp(packager: MacPackager, appOutDir: string, asa
   const buildMetadata = packager.config!!
 
   /**
-   * Configure bundleIdentifier for the generic Electron Helper process
+   * Configure bundleIdentifier for the generic DeskGap Helper process
    *
-   * This was the only Helper in Electron 5 and before. Allow users to configure
+   * This was the only Helper in DeskGap 5 and before. Allow users to configure
    * the bundleIdentifier for continuity.
    */
 
@@ -97,7 +97,7 @@ export async function createMacApp(packager: MacPackager, appOutDir: string, asa
 
   await packager.applyCommonInfo(appPlist, contentsPath)
 
-  // required for electron-updater proxy
+  // required for deskgap-updater proxy
   if (!isMas) {
     configureLocalhostAts(appPlist)
   }
@@ -108,12 +108,12 @@ export async function createMacApp(packager: MacPackager, appOutDir: string, asa
   helperPlist.CFBundleVersion = appPlist.CFBundleVersion
 
   /**
-   * Configure bundleIdentifier for Electron 5+ Helper processes
+   * Configure bundleIdentifier for DeskGap 5+ Helper processes
    *
-   * In Electron 6, parts of the generic Electron Helper process were split into
+   * In DeskGap 6, parts of the generic DeskGap Helper process were split into
    * individual helper processes. Allow users to configure the bundleIdentifiers
    * for continuity, specifically because macOS keychain access relies on
-   * bundleIdentifiers not changing (i.e. across versions of Electron).
+   * bundleIdentifiers not changing (i.e. across versions of DeskGap).
    */
 
   function configureHelper(helper: any, postfix: string, userProvidedBundleIdentifier?: string | null) {
@@ -217,15 +217,15 @@ export async function createMacApp(packager: MacPackager, appOutDir: string, asa
 
   await Promise.all([
     executeAppBuilderAndWriteJson(["encode-plist"], plistDataToWrite),
-    doRename(path.join(contentsPath, "MacOS"), "Electron", appPlist.CFBundleExecutable),
+    doRename(path.join(contentsPath, "MacOS"), "DeskGap", appPlist.CFBundleExecutable),
     unlinkIfExists(path.join(appOutDir, "LICENSE")),
     unlinkIfExists(path.join(appOutDir, "LICENSES.chromium.html")),
   ])
 
-  await moveHelpers(getAvailableHelperSuffixes(helperEHPlist, helperNPPlist, helperRendererPlist, helperPluginPlist, helperGPUPlist), frameworksPath, appFilename, "Electron")
+  await moveHelpers(getAvailableHelperSuffixes(helperEHPlist, helperNPPlist, helperRendererPlist, helperPluginPlist, helperGPUPlist), frameworksPath, appFilename, "DeskGap")
 
   if (helperLoginPlist != null) {
-    const prefix = "Electron"
+    const prefix = "DeskGap"
     const suffix = " Login Helper"
     const executableBasePath = path.join(loginItemPath, `${prefix}${suffix}.app`, "Contents", "MacOS")
     await doRename(executableBasePath, `${prefix}${suffix}`, appFilename + suffix)
@@ -234,7 +234,7 @@ export async function createMacApp(packager: MacPackager, appOutDir: string, asa
 
   const appPath = path.join(appOutDir, `${appFilename}.app`)
   await rename(path.dirname(contentsPath), appPath)
-  // https://github.com/electron-userland/electron-builder/issues/840
+  // https://github.com/deskgap-userland/deskgap-builder/issues/840
   const now = Date.now() / 1000
   await utimes(appPath, now, now)
 }
@@ -248,7 +248,7 @@ function configureLocalhostAts(appPlist: any) {
   }
 
   ats.NSAllowsLocalNetworking = true
-  // https://github.com/electron-userland/electron-builder/issues/3377#issuecomment-446035814
+  // https://github.com/deskgap-userland/deskgap-builder/issues/3377#issuecomment-446035814
   ats.NSAllowsArbitraryLoads = true
 
   let exceptionDomains = ats.NSExceptionDomains

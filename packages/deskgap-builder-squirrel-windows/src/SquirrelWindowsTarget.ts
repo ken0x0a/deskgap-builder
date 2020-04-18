@@ -33,7 +33,7 @@ export default class SquirrelWindowsTarget extends Target {
     })
 
     if (arch === Arch.ia32) {
-      log.warn("For windows consider only distributing 64-bit or use nsis target, see https://github.com/electron-userland/electron-builder/issues/359#issuecomment-214851130")
+      log.warn("For windows consider only distributing 64-bit or use nsis target, see https://github.com/deskgap-userland/deskgap-builder/issues/359#issuecomment-214851130")
     }
 
     const distOptions = await this.computeEffectiveDistOptions()
@@ -86,7 +86,7 @@ export default class SquirrelWindowsTarget extends Target {
       }
 
       if (iconUrl == null) {
-        throw new InvalidConfigurationError("squirrelWindows.iconUrl is not specified, please see https://www.electron.build/configuration/squirrel-windows#SquirrelWindowsOptions-iconUrl")
+        throw new InvalidConfigurationError("squirrelWindows.iconUrl is not specified, please see https://www.deskgap.build/configuration/squirrel-windows#SquirrelWindowsOptions-iconUrl")
       }
     }
 

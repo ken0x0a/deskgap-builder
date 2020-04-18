@@ -1,9 +1,9 @@
 import { Arch, copyFile, TmpDir } from "builder-util"
 import { CancellationToken, HttpError, S3Options, SpacesOptions } from "builder-util-runtime"
 import { createPublisher } from "app-builder-lib/out/publish/PublishManager"
-import { PublishContext } from "electron-publish"
+import { PublishContext } from "deskgap-publish"
 import { BintrayPublisher } from "app-builder-lib/out/publish/BintrayPublisher"
-import { GitHubPublisher } from "electron-publish/out/gitHubPublisher"
+import { GitHubPublisher } from "deskgap-publish/out/gitHubPublisher"
 import { isCI as isCi } from "ci-info"
 import * as path from "path"
 
@@ -112,7 +112,7 @@ testAndIgnoreApiRate("GitHub upload", async () => {
 
 if (process.env.AWS_ACCESS_KEY_ID != null && process.env.AWS_SECRET_ACCESS_KEY != null) {
   test("S3 upload", async () => {
-    const publisher = createPublisher(publishContext, "0.0.1", {provider: "s3", bucket: "electron-builder-test"} as S3Options, {}, {} as any)!!
+    const publisher = createPublisher(publishContext, "0.0.1", {provider: "s3", bucket: "deskgap-builder-test"} as S3Options, {}, {} as any)!!
     await publisher.upload({file: iconPath, arch: Arch.x64})
     // test overwrite
     await publisher.upload({file: iconPath, arch: Arch.x64})
@@ -123,7 +123,7 @@ if (process.env.DO_KEY_ID != null && process.env.DO_SECRET_KEY != null) {
   test("DO upload", async () => {
     const configuration: SpacesOptions = {
       provider: "spaces",
-      name: "electron-builder-test",
+      name: "deskgap-builder-test",
       region: "nyc3",
     }
     const publisher = createPublisher(publishContext, "0.0.1", configuration, {}, {} as any)!!

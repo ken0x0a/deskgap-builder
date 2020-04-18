@@ -1,7 +1,7 @@
 import { addValue, Arch, archFromString, deepAssign } from "builder-util"
 import chalk from "chalk"
 import { build as _build, Configuration, DIR_TARGET, Packager, PackagerOptions, Platform } from "app-builder-lib"
-import { PublishOptions } from "electron-publish"
+import { PublishOptions } from "deskgap-publish"
 import yargs from "yargs"
 
 export function createYargs() {
@@ -128,7 +128,7 @@ export function normalizeOptions(args: CliOptions): BuildOptions {
   let config = result.config
 
   // config is array when combining dot-notation values with a config file value
-  // https://github.com/electron-userland/electron-builder/issues/2016
+  // https://github.com/deskgap-userland/deskgap-builder/issues/2016
   if (Array.isArray(config)) {
     const newConfig: Configuration = {}
     for (const configItem of config) {
@@ -287,12 +287,12 @@ export function configureBuildCommand(yargs: yargs.Argv): yargs.Argv {
     .option("config", {
       alias: ["c"],
       group: buildGroup,
-      description: "The path to an electron-builder config. Defaults to `electron-builder.yml` (or `json`, or `json5`), see " + chalk.underline("https://goo.gl/YFRJOM"),
+      description: "The path to an deskgap-builder config. Defaults to `deskgap-builder.yml` (or `json`, or `json5`), see " + chalk.underline("https://goo.gl/YFRJOM"),
     })
     .group(["help", "version"], "Other:")
-    .example("electron-builder -mwl", "build for macOS, Windows and Linux")
-    .example("electron-builder --linux deb tar.xz", "build deb and tar.xz for Linux")
-    .example("electron-builder --win --ia32", "build for Windows ia32")
-    .example("electron-builder -c.extraMetadata.foo=bar", "set package.json property `foo` to `bar`")
-    .example("electron-builder --config.nsis.unicode=false", "configure unicode options for NSIS")
+    .example("deskgap-builder -mwl", "build for macOS, Windows and Linux")
+    .example("deskgap-builder --linux deb tar.xz", "build deb and tar.xz for Linux")
+    .example("deskgap-builder --win --ia32", "build for Windows ia32")
+    .example("deskgap-builder -c.extraMetadata.foo=bar", "set package.json property `foo` to `bar`")
+    .example("deskgap-builder --config.nsis.unicode=false", "configure unicode options for NSIS")
 }

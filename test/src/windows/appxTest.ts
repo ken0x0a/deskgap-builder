@@ -1,4 +1,4 @@
-import { Arch, Platform } from "electron-builder"
+import { Arch, Platform } from "deskgap-builder"
 import { app, copyTestAsset } from "../helpers/packTester"
 import * as path from "path"
 import BluebirdPromise from "bluebird-lst"

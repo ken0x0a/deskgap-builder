@@ -1,4 +1,4 @@
-import { Arch, archFromString, Platform } from "electron-builder"
+import { Arch, archFromString, Platform } from "deskgap-builder"
 import { promises as fs } from "fs"
 import * as path from "path"
 import { app, assertPack, copyTestAsset } from "../helpers/packTester"

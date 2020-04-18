@@ -10,7 +10,7 @@ export class Node {
   unpacked?: boolean
 
   size?: number
-  // electron expects string
+  // deskgap expects string
   offset?: string
 
   executable?: boolean
@@ -77,7 +77,7 @@ export class AsarFilesystem {
       node.unpacked = true
     }
     else {
-      // electron expects string
+      // deskgap expects string
       node.offset = this.offset.toString()
       if (process.platform !== "win32" && (stat.mode & 0o100)) {
         node.executable = true

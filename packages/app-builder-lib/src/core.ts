@@ -106,7 +106,7 @@ export type CompressionLevel = "store" | "normal" | "maximum"
 
 export interface BeforeBuildContext {
   readonly appDir: string
-  readonly electronVersion: string
+  readonly deskgapVersion: string
   readonly platform: Platform
   readonly arch: string
 }

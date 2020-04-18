@@ -1,11 +1,11 @@
 import { DownloadOptions, HttpExecutor, configureRequestOptions, configureRequestUrl } from "builder-util-runtime"
-import { net, session } from "electron"
+import { net, session } from "deskgap"
 import { RequestOptions } from "http"
-import Session = Electron.Session
-import ClientRequest = Electron.ClientRequest
+import Session = DeskGap.Session
+import ClientRequest = DeskGap.ClientRequest
 
 export type LoginCallback = (username: string, password: string) => void
-export const NET_SESSION_NAME = "electron-updater"
+export const NET_SESSION_NAME = "deskgap-updater"
 
 export function getNetSession(): Session {
   return session.fromPartition(NET_SESSION_NAME, {
@@ -13,7 +13,7 @@ export function getNetSession(): Session {
   })
 }
 
-export class ElectronHttpExecutor extends HttpExecutor<Electron.ClientRequest> {
+export class DeskGapHttpExecutor extends HttpExecutor<DeskGap.ClientRequest> {
   private cachedSession: Session | null = null
 
   constructor(private readonly proxyLoginCallback?: (authInfo: any, callback: LoginCallback) => void) {
@@ -47,7 +47,7 @@ export class ElectronHttpExecutor extends HttpExecutor<Electron.ClientRequest> {
 
   createRequest(options: any, callback: (response: any) => void): any {
 
-    // fix (node 7+) for making electron updater work when using AWS private buckets, check if headers contain Host property
+    // fix (node 7+) for making deskgap updater work when using AWS private buckets, check if headers contain Host property
     if (options.headers && options.headers.Host){
       // set host value from headers.Host
       options.host = options.headers.Host
@@ -74,7 +74,7 @@ export class ElectronHttpExecutor extends HttpExecutor<Electron.ClientRequest> {
   protected addRedirectHandlers(request: ClientRequest, options: RequestOptions, reject: (error: Error) => void, redirectCount: number, handler: (options: RequestOptions) => void): void {
     request.on("redirect", (statusCode: number, method: string, redirectUrl: string) => {
       // no way to modify request options, abort old and make a new one
-      // https://github.com/electron/electron/issues/11505
+      // https://github.com/deskgap/deskgap/issues/11505
       request.abort()
 
       if (redirectCount > this.maxRedirects) {

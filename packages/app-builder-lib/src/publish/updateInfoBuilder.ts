@@ -76,7 +76,7 @@ export interface UpdateInfoFileTask {
   readonly packager: PlatformPackager<any>
 }
 
-function computeIsisElectronUpdater1xCompatibility(updaterCompatibility: string | null, publishConfiguration: PublishConfiguration, packager: Packager) {
+function computeIsisDeskGapUpdater1xCompatibility(updaterCompatibility: string | null, publishConfiguration: PublishConfiguration, packager: Packager) {
   if (updaterCompatibility != null) {
     return semver.satisfies("1.0.0", updaterCompatibility)
   }
@@ -86,7 +86,7 @@ function computeIsisElectronUpdater1xCompatibility(updaterCompatibility: string 
     return false
   }
 
-  const updaterVersion = packager.metadata.dependencies == null ? null : packager.metadata.dependencies["electron-updater"]
+  const updaterVersion = packager.metadata.dependencies == null ? null : packager.metadata.dependencies["deskgap-updater"]
   return updaterVersion == null || semver.lt(updaterVersion, "4.0.0")
 }
 
@@ -105,7 +105,7 @@ export async function createUpdateInfoTasks(event: ArtifactCreated, _publishConf
   const createdFiles = new Set<string>()
   const sharedInfo = await createUpdateInfo(version, event, await getReleaseInfo(packager))
   const tasks: Array<UpdateInfoFileTask> = []
-  const electronUpdaterCompatibility = packager.platformSpecificBuildOptions.electronUpdaterCompatibility || packager.config.electronUpdaterCompatibility || ">=2.15"
+  const deskgapUpdaterCompatibility = packager.platformSpecificBuildOptions.deskgapUpdaterCompatibility || packager.config.deskgapUpdaterCompatibility || ">=2.15"
   for (const publishConfiguration of publishConfigs) {
     const isBintray = publishConfiguration.provider === "bintray"
     let dir = outDir
@@ -114,11 +114,11 @@ export async function createUpdateInfoTasks(event: ArtifactCreated, _publishConf
       dir = path.join(outDir, publishConfiguration.provider)
     }
 
-    let isElectronUpdater1xCompatibility = computeIsisElectronUpdater1xCompatibility(electronUpdaterCompatibility, publishConfiguration, packager.info)
+    let isDeskGapUpdater1xCompatibility = computeIsisDeskGapUpdater1xCompatibility(deskgapUpdaterCompatibility, publishConfiguration, packager.info)
 
     let info = sharedInfo
     // noinspection JSDeprecatedSymbols
-    if (isElectronUpdater1xCompatibility && packager.platform === Platform.WINDOWS) {
+    if (isDeskGapUpdater1xCompatibility && packager.platform === Platform.WINDOWS) {
       info = {
         ...info,
       };
@@ -137,9 +137,9 @@ export async function createUpdateInfoTasks(event: ArtifactCreated, _publishConf
     }
 
     for (const channel of computeChannelNames(packager, publishConfiguration)) {
-      if (isMac && isElectronUpdater1xCompatibility && event.file.endsWith(".zip")) {
+      if (isMac && isDeskGapUpdater1xCompatibility && event.file.endsWith(".zip")) {
         // write only for first channel (generateUpdatesFilesForAllChannels is a new functionality, no need to generate old mac update info file)
-        isElectronUpdater1xCompatibility = false
+        isDeskGapUpdater1xCompatibility = false
         await writeOldMacInfo(publishConfiguration, outDir, dir, channel, createdFiles, version, packager)
       }
 
@@ -170,8 +170,8 @@ async function createUpdateInfo(version: string, event: ArtifactCreated, release
   const result: UpdateInfo = {
     version,
     files,
-    path: url /* backward compatibility, electron-updater 1.x - electron-updater 2.15.0 */,
-    sha512 /* backward compatibility, electron-updater 1.x - electron-updater 2.15.0 */,
+    path: url /* backward compatibility, deskgap-updater 1.x - deskgap-updater 2.15.0 */,
+    sha512 /* backward compatibility, deskgap-updater 1.x - deskgap-updater 2.15.0 */,
     ...releaseInfo as UpdateInfo,
   }
 
@@ -188,7 +188,7 @@ export async function writeUpdateInfoFiles(updateInfoFileTasks: Array<UpdateInfo
 
   const updateChannelFileToInfo = new Map<string, UpdateInfoFileTask>()
   for (const task of updateInfoFileTasks) {
-    // https://github.com/electron-userland/electron-builder/pull/2994
+    // https://github.com/deskgap-userland/deskgap-builder/pull/2994
     const key = `${task.file}@${safeStringifyJson(task.publishConfiguration, new Set(["releaseType"]))}`
     const existingTask = updateChannelFileToInfo.get(key)
     if (existingTask == null) {

@@ -1,8 +1,8 @@
 "use strict"
 
-const electron = require('electron')
-const app = electron.app
-const BrowserWindow = electron.BrowserWindow
+const deskgap = require('deskgap')
+const app = deskgap.app
+const BrowserWindow = deskgap.BrowserWindow
 
 let mainWindow
 

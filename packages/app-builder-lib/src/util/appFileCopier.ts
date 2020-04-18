@@ -6,7 +6,7 @@ import * as path from "path"
 import { isLibOrExe } from "../asar/unpackDetector"
 import { Platform } from "../core"
 import { excludedExts, FileMatcher } from "../fileMatcher"
-import { createElectronCompilerHost, NODE_MODULES_PATTERN } from "../fileTransformer"
+import { createDeskGapCompilerHost, NODE_MODULES_PATTERN } from "../fileTransformer"
 import { Packager } from "../packager"
 import { PlatformPackager } from "../platformPackager"
 import { AppFileWalker } from "./AppFileWalker"
@@ -49,7 +49,7 @@ export async function copyAppFiles(fileSet: ResolvedFileSet, packager: Packager,
   const createdParentDirs = new Set<string>()
 
   const fileCopier = new FileCopier(file => {
-    // https://github.com/electron-userland/electron-builder/issues/3038
+    // https://github.com/deskgap-userland/deskgap-builder/issues/3038
     return !(isLibOrExe(file) || file.endsWith(".node"))
   }, transformer)
   const links: Array<Link> = []
@@ -135,7 +135,7 @@ export async function transformFiles(transformer: FileTransformer, fileSet: Reso
   }, CONCURRENCY)
 }
 
-export async function computeFileSets(matchers: Array<FileMatcher>, transformer: FileTransformer | null, platformPackager: PlatformPackager<any>, isElectronCompile: boolean): Promise<Array<ResolvedFileSet>> {
+export async function computeFileSets(matchers: Array<FileMatcher>, transformer: FileTransformer | null, platformPackager: PlatformPackager<any>, isDeskGapCompile: boolean): Promise<Array<ResolvedFileSet>> {
   const fileSets: Array<ResolvedFileSet> = []
   const packager = platformPackager.info
 
@@ -153,21 +153,21 @@ export async function computeFileSets(matchers: Array<FileMatcher>, transformer:
     fileSets.push(validateFileSet({src: matcher.from, files, metadata, destination: matcher.to}))
   }
 
-  if (isElectronCompile) {
+  if (isDeskGapCompile) {
     // cache files should be first (better IO)
-    fileSets.unshift(await compileUsingElectronCompile(fileSets[0], packager))
+    fileSets.unshift(await compileUsingDeskGapCompile(fileSets[0], packager))
   }
   return fileSets
 }
 
 function getNodeModuleExcludedExts(platformPackager: PlatformPackager<any>) {
-  // do not exclude *.h files (https://github.com/electron-userland/electron-builder/issues/2852)
+  // do not exclude *.h files (https://github.com/deskgap-userland/deskgap-builder/issues/2852)
   const result = [".o", ".obj"].concat(excludedExts.split(",").map(it => `.${it}`))
   if (platformPackager.config.includePdb !== true) {
     result.push(".pdb")
   }
   if (platformPackager.platform !== Platform.WINDOWS) {
-    // https://github.com/electron-userland/electron-builder/issues/1738
+    // https://github.com/deskgap-userland/deskgap-builder/issues/1738
     result.push(".dll")
     result.push(".exe")
   }
@@ -202,16 +202,16 @@ export async function computeNodeModuleFileSets(platformPackager: PlatformPackag
   return result
 }
 
-async function compileUsingElectronCompile(mainFileSet: ResolvedFileSet, packager: Packager): Promise<ResolvedFileSet> {
-  log.info("compiling using electron-compile")
+async function compileUsingDeskGapCompile(mainFileSet: ResolvedFileSet, packager: Packager): Promise<ResolvedFileSet> {
+  log.info("compiling using deskgap-compile")
 
-  const electronCompileCache = await packager.tempDirManager.getTempDir({prefix: "electron-compile-cache"})
-  const cacheDir = path.join(electronCompileCache, ".cache")
+  const deskgapCompileCache = await packager.tempDirManager.getTempDir({prefix: "deskgap-compile-cache"})
+  const cacheDir = path.join(deskgapCompileCache, ".cache")
   // clear and create cache dir
   await ensureDir(cacheDir)
-  const compilerHost = await createElectronCompilerHost(mainFileSet.src, cacheDir)
+  const compilerHost = await createDeskGapCompilerHost(mainFileSet.src, cacheDir)
   const nextSlashIndex = mainFileSet.src.length + 1
-  // pre-compute electron-compile to cache dir - we need to process only subdirectories, not direct files of app dir
+  // pre-compute deskgap-compile to cache dir - we need to process only subdirectories, not direct files of app dir
   await BluebirdPromise.map(mainFileSet.files, file => {
     if (file.includes(NODE_MODULES_PATTERN) || file.includes(BOWER_COMPONENTS_PATTERN)
       || !file.includes(path.sep, nextSlashIndex) // ignore not root files
@@ -243,7 +243,7 @@ async function compileUsingElectronCompile(mainFileSet: ResolvedFileSet, package
   }
   mainFileSet.transformedFiles.set(mainFileSet.files.length - 1, `
 'use strict';
-require('electron-compile').init(__dirname, require('path').resolve(__dirname, '${packager.metadata.main || "index"}'), true);
+require('deskgap-compile').init(__dirname, require('path').resolve(__dirname, '${packager.metadata.main || "index"}'), true);
 `)
-  return {src: electronCompileCache, files: cacheFiles, metadata, destination: mainFileSet.destination}
+  return {src: deskgapCompileCache, files: cacheFiles, metadata, destination: mainFileSet.destination}
 }

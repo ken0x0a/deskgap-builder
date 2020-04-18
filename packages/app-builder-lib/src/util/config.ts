@@ -12,7 +12,7 @@ const validateSchema = require("@develar/schema-utils")
 
 declare const PACKAGE_VERSION: string
 
-// https://github.com/electron-userland/electron-builder/issues/1847
+// https://github.com/deskgap-userland/deskgap-builder/issues/1847
 function mergePublish(config: Configuration, configFromOptions: Configuration) {
   // if config from disk doesn't have publish (or object), no need to handle, it will be simply merged by deepAssign
   const publish = Array.isArray(config.publish) ? configFromOptions.publish : null
@@ -40,7 +40,7 @@ export async function getConfig(projectDir: string,
                                 configPath: string | null,
                                 configFromOptions: Configuration | null | undefined,
                                 packageMetadata: Lazy<{ [key: string]: any } | null> = new Lazy(() => orNullIfFileNotExist(readJson(path.join(projectDir, "package.json"))))): Promise<Configuration> {
-  const configRequest: ReadConfigRequest = {packageKey: "build", configFilename: "electron-builder", projectDir, packageMetadata}
+  const configRequest: ReadConfigRequest = {packageKey: "build", configFilename: "deskgap-builder", projectDir, packageMetadata}
   const configAndEffectiveFile = await _getConfig<Configuration>(configRequest, configPath)
   const config = configAndEffectiveFile == null ? {} : configAndEffectiveFile.result
   if (configFromOptions != null) {
@@ -58,13 +58,13 @@ export async function getConfig(projectDir: string,
     if ((dependencies != null && "react-scripts" in dependencies) || (devDependencies != null && "react-scripts" in devDependencies)) {
       config.extends = "react-cra"
     }
-    else if (devDependencies != null && "electron-webpack" in devDependencies) {
-      let file = "electron-webpack/out/electron-builder.js"
+    else if (devDependencies != null && "deskgap-webpack" in devDependencies) {
+      let file = "deskgap-webpack/out/deskgap-builder.js"
       try {
         file = require.resolve(file)
       }
       catch (ignore) {
-        file = require.resolve("electron-webpack/electron-builder.yml")
+        file = require.resolve("deskgap-webpack/deskgap-builder.yml")
       }
       config.extends = `file:${file}`
     }
@@ -228,13 +228,13 @@ export async function validateConfig(config: Configuration, debugLogger: DebugLo
 
   // noinspection JSUnusedGlobalSymbols
   validateSchema(await schemeDataPromise.value, config, {
-    name: `electron-builder ${PACKAGE_VERSION}`,
+    name: `deskgap-builder ${PACKAGE_VERSION}`,
     postFormatter: (formattedError: string, error: any): string => {
       if (debugLogger.isEnabled) {
         debugLogger.add("invalidConfig", safeStringifyJson(error))
       }
 
-      const site = "https://www.electron.build"
+      const site = "https://www.deskgap.build"
       let url = `${site}/configuration/configuration`
       const targets = new Set(["mac", "dmg", "pkg", "mas", "win", "nsis", "appx", "linux", "appimage", "snap"])
       const dataPath: string = error.dataPath == null ? null : error.dataPath

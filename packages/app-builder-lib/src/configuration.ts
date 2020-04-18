@@ -1,6 +1,6 @@
 import { Arch } from "builder-util"
 import { BeforeBuildContext, Target } from "./core"
-import { ElectronDownloadOptions } from "./electron/ElectronFramework"
+import { DeskGapDownloadOptions } from "./deskgap/DeskGapFramework"
 import { AppXOptions } from "./options/AppXOptions"
 import { AppImageOptions, DebOptions, LinuxConfiguration, LinuxTargetSpecificOptions } from "./options/linuxOptions"
 import { DmgOptions, MacConfiguration, MasConfiguration } from "./options/macOptions"
@@ -23,7 +23,7 @@ export interface Configuration extends PlatformSpecificBuildOptions {
   /**
    * The application id. Used as [CFBundleIdentifier](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070) for MacOS and as
    * [Application User Model ID](https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx) for Windows (NSIS target only, Squirrel.Windows not supported). It is strongly recommended that an explicit ID is set.
-   * @default com.electron.${name}
+   * @default com.deskgap.${name}
    */
   readonly appId?: string | null
 
@@ -103,7 +103,7 @@ export interface Configuration extends PlatformSpecificBuildOptions {
   /**
    * Whether to execute `node-gyp rebuild` before starting to package the app.
    *
-   * Don't [use](https://github.com/electron-userland/electron-builder/issues/683#issuecomment-241214075) [npm](http://electron.atom.io/docs/tutorial/using-native-node-modules/#using-npm) (neither `.npmrc`) for configuring electron headers. Use `electron-builder node-gyp-rebuild` instead.
+   * Don't [use](https://github.com/deskgap-userland/deskgap-builder/issues/683#issuecomment-241214075) [npm](http://deskgap.atom.io/docs/tutorial/using-native-node-modules/#using-npm) (neither `.npmrc`) for configuring deskgap headers. Use `deskgap-builder node-gyp-rebuild` instead.
    * @default false
    */
   readonly nodeGypRebuild?: boolean
@@ -124,24 +124,24 @@ export interface Configuration extends PlatformSpecificBuildOptions {
   readonly buildVersion?: string | null
 
   /**
-   * Whether to use [electron-compile](http://github.com/electron/electron-compile) to compile app. Defaults to `true` if `electron-compile` in the dependencies. And `false` if in the `devDependencies` or doesn't specified.
+   * Whether to use [deskgap-compile](http://github.com/deskgap/deskgap-compile) to compile app. Defaults to `true` if `deskgap-compile` in the dependencies. And `false` if in the `devDependencies` or doesn't specified.
    */
-  readonly electronCompile?: boolean
+  readonly deskgapCompile?: boolean
 
   /**
-   * The path to custom Electron build (e.g. `~/electron/out/R`).
+   * The path to custom DeskGap build (e.g. `~/deskgap/out/R`).
    */
-  readonly electronDist?: string
+  readonly deskgapDist?: string
 
   /**
-   * The [electron-download](https://github.com/electron-userland/electron-download#usage) options.
+   * The [deskgap-download](https://github.com/deskgap-userland/deskgap-download#usage) options.
    */
-  readonly electronDownload?: ElectronDownloadOptions
+  readonly deskgapDownload?: DeskGapDownloadOptions
 
   /**
-   * The version of electron you are packaging for. Defaults to version of `electron`, `electron-prebuilt` or `electron-prebuilt-compile` dependency.
+   * The version of deskgap you are packaging for. Defaults to version of `deskgap`, `deskgap-prebuilt` or `deskgap-prebuilt-compile` dependency.
    */
-  electronVersion?: string | null
+  deskgapVersion?: string | null
 
   /**
    * The name of a built-in configuration preset or path to config file (relative to project dir). Currently, only `react-cra` is supported.
@@ -173,7 +173,7 @@ export interface Configuration extends PlatformSpecificBuildOptions {
   readonly launchUiVersion?: boolean | string | null
 
   /**
-   * The framework name. One of `electron`, `proton`, `libui`. Defaults to `electron`.
+   * The framework name. One of `deskgap`, `proton`, `libui`. Defaults to `deskgap`.
    */
   readonly framework?: string | null
 
@@ -214,7 +214,7 @@ export interface Configuration extends PlatformSpecificBuildOptions {
   readonly beforeBuild?: ((context: BeforeBuildContext) => Promise<any>) | string| null
 
   /**
-   * Whether to build using Electron Build Service if target not supported on current OS.
+   * Whether to build using DeskGap Build Service if target not supported on current OS.
    * @default true
    */
   readonly remoteBuild?: boolean
@@ -237,7 +237,7 @@ export interface AfterPackContext {
   readonly outDir: string
   readonly appOutDir: string
   readonly packager: PlatformPackager<any>
-  readonly electronPlatformName: string
+  readonly deskgapPlatformName: string
   readonly arch: Arch
   readonly targets: Array<Target>
 }

@@ -1,4 +1,4 @@
-import { Publisher, UploadTask, PublishContext } from "electron-publish"
+import { Publisher, UploadTask, PublishContext } from "deskgap-publish"
 import { executeAppBuilder } from "builder-util"
 import * as path from "path"
 import { PublishConfiguration } from "builder-util-runtime"

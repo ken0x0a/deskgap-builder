@@ -1,4 +1,4 @@
-import { Platform, DIR_TARGET } from "electron-builder"
+import { Platform, DIR_TARGET } from "deskgap-builder"
 import { promises as fs } from "fs"
 import * as path from "path"
 import { CheckingWinPackager } from "../helpers/CheckingPackager"

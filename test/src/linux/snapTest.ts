@@ -1,4 +1,4 @@
-import { Arch, Platform } from "electron-builder"
+import { Arch, Platform } from "deskgap-builder"
 import { app, assertPack, snapTarget } from "../helpers/packTester"
 
 if (process.env.SNAP_TEST === "false") {
@@ -65,7 +65,7 @@ test.ifAll.ifDevOrLinuxCi("classic confinement", app({
     extraMetadata: {
       name: "cl-co-app",
     },
-    productName: "Snap Electron App (classic confinement)",
+    productName: "Snap DeskGap App (classic confinement)",
     snap: {
       confinement: "classic",
     },

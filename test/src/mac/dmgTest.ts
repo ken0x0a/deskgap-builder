@@ -1,7 +1,7 @@
 import { exec } from "builder-util"
 import { copyFile } from "builder-util/out/fs"
 import { attachAndExecute, getDmgTemplatePath } from "dmg-builder/out/dmgUtil"
-import { Platform } from "electron-builder"
+import { Platform } from "deskgap-builder"
 import { PlatformPackager } from "app-builder-lib"
 import * as path from "path"
 import { promises as fs } from "fs"

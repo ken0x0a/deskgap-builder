@@ -5,6 +5,6 @@
   "license": "MIT",
   "dependencies": {
     "ms": "2.0.0",
-    "electron-log": "2.2.8"
+    "deskgap-log": "2.2.8"
   }
 }

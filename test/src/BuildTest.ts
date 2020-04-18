@@ -2,17 +2,17 @@ import { checkBuildRequestOptions } from "app-builder-lib"
 import { readAsar } from "app-builder-lib/out/asar/asar"
 import { doMergeConfigs } from "app-builder-lib/out/util/config"
 import { walk } from "builder-util/out/fs"
-import { Arch, createTargets, DIR_TARGET, Platform } from "electron-builder"
+import { Arch, createTargets, DIR_TARGET, Platform } from "deskgap-builder"
 import { promises as fs, readFileSync } from "fs"
 import { outputJson } from "fs-extra"
 import * as path from "path"
-import { createYargs } from "electron-builder/out/builder"
+import { createYargs } from "deskgap-builder/out/builder"
 import { app, appTwo, appTwoThrows, assertPack, linuxDirTarget, modifyPackageJson, packageJson, toSystemIndependentPath } from "./helpers/packTester"
 import { ELECTRON_VERSION } from "./helpers/testConfig"
 
 test("cli", async () => {
   // because these methods are internal
-  const { configureBuildCommand, normalizeOptions } = require("electron-builder/out/builder")
+  const { configureBuildCommand, normalizeOptions } = require("deskgap-builder/out/builder")
   const yargs = createYargs()
   configureBuildCommand(yargs)
 
@@ -129,40 +129,40 @@ test("relative index", appTwo({
   }, true)
 }))
 
-it.ifDevOrLinuxCi("electron version from electron-prebuilt dependency", app({
+it.ifDevOrLinuxCi("deskgap version from deskgap-prebuilt dependency", app({
   targets: linuxDirTarget,
 }, {
   projectDirCreated: projectDir => Promise.all([
-    outputJson(path.join(projectDir, "node_modules", "electron-prebuilt", "package.json"), {
+    outputJson(path.join(projectDir, "node_modules", "deskgap-prebuilt", "package.json"), {
       version: ELECTRON_VERSION
     }),
     modifyPackageJson(projectDir, data => {
-      delete data.build.electronVersion
+      delete data.build.deskgapVersion
       data.devDependencies = {}
     })
   ])
 }))
 
-test.ifDevOrLinuxCi("electron version from electron dependency", app({
+test.ifDevOrLinuxCi("deskgap version from deskgap dependency", app({
   targets: linuxDirTarget,
 }, {
   projectDirCreated: projectDir => Promise.all([
-    outputJson(path.join(projectDir, "node_modules", "electron", "package.json"), {
+    outputJson(path.join(projectDir, "node_modules", "deskgap", "package.json"), {
       version: ELECTRON_VERSION
     }),
     modifyPackageJson(projectDir, data => {
-      delete data.build.electronVersion
+      delete data.build.deskgapVersion
       data.devDependencies = {}
     })
   ])
 }))
 
-test.ifDevOrLinuxCi("electron version from build", app({
+test.ifDevOrLinuxCi("deskgap version from build", app({
   targets: linuxDirTarget,
 }, {
   projectDirCreated: projectDir => modifyPackageJson(projectDir, data => {
     data.devDependencies = {}
-    data.build.electronVersion = ELECTRON_VERSION
+    data.build.deskgapVersion = ELECTRON_VERSION
   })
 }))
 
@@ -223,7 +223,7 @@ test.ifLinuxOrDevMac("beforeBuild", () => {
   })
 })
 
-// https://github.com/electron-userland/electron-builder/issues/1738
+// https://github.com/deskgap-userland/deskgap-builder/issues/1738
 test.ifDevOrLinuxCi("win smart unpack", () => {
   // test onNodeModuleFile hook
   const nodeModuleFiles: Array<string> = []
@@ -246,8 +246,8 @@ test.ifDevOrLinuxCi("win smart unpack", () => {
         it.dependencies = {
           debug: "3.1.0",
           "edge-cs": "1.2.1",
-          "@electron-builder/test-smart-unpack": "1.0.0",
-          "@electron-builder/test-smart-unpack-empty": "1.0.0",
+          "@deskgap-builder/test-smart-unpack": "1.0.0",
+          "@deskgap-builder/test-smart-unpack-empty": "1.0.0",
         }
       })(projectDir)
     },
@@ -290,11 +290,11 @@ async function verifySmartUnpack(resourceDir: string) {
   expect(files).toMatchSnapshot()
 }
 
-// https://github.com/electron-userland/electron-builder/issues/1738
+// https://github.com/deskgap-userland/deskgap-builder/issues/1738
 test.ifAll.ifDevOrLinuxCi("posix smart unpack", app({
   targets: linuxDirTarget,
   config: {
-    // https://github.com/electron-userland/electron-builder/issues/3273
+    // https://github.com/deskgap-userland/deskgap-builder/issues/3273
     // tslint:disable-next-line:no-invalid-template-strings
     copyright: "Copyright © 2018 ${author}",
     npmRebuild: true,
@@ -310,7 +310,7 @@ test.ifAll.ifDevOrLinuxCi("posix smart unpack", app({
     it.dependencies = {
       debug: "4.1.1",
       "edge-cs": "1.2.1",
-      // no prebuilt for electron 3
+      // no prebuilt for deskgap 3
       // "lzma-native": "3.0.10",
       keytar: "4.11.0",
     }

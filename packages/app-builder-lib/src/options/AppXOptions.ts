@@ -42,7 +42,7 @@ export interface AppXOptions extends TargetSpecificOptions {
   readonly languages?: Array<string> | string | null
 
   /**
-   * Whether to add auto launch extension. Defaults to `true` if [electron-winstore-auto-launch](https://github.com/felixrieseberg/electron-winstore-auto-launch) in the dependencies.
+   * Whether to add auto launch extension. Defaults to `true` if [deskgap-winstore-auto-launch](https://github.com/felixrieseberg/deskgap-winstore-auto-launch) in the dependencies.
    */
   readonly addAutoLaunchExtension?: boolean
 
@@ -61,10 +61,10 @@ export interface AppXOptions extends TargetSpecificOptions {
    * @private
    * @default false
    */
-  readonly electronUpdaterAware?: boolean
+  readonly deskgapUpdaterAware?: boolean
 
   /**
-   * Whether to set build number. See https://github.com/electron-userland/electron-builder/issues/3875
+   * Whether to set build number. See https://github.com/deskgap-userland/deskgap-builder/issues/3875
    * @default false
    */
   readonly setBuildNumber?: boolean

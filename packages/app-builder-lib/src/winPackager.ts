@@ -31,7 +31,7 @@ export class WinPackager extends PlatformPackager<WindowsConfiguration> {
       return this.vm.value
         .then(vm => getCertificateFromStoreInfo(platformSpecificBuildOptions, vm))
         .catch(e => {
-          // https://github.com/electron-userland/electron-builder/pull/2397
+          // https://github.com/deskgap-userland/deskgap-builder/pull/2397
           if (platformSpecificBuildOptions.sign == null) {
             throw e
           }
@@ -162,10 +162,10 @@ export class WinPackager extends PlatformPackager<WindowsConfiguration> {
           switch (name) {
             case "squirrel":
               try {
-                return require("electron-builder-squirrel-windows").default
+                return require("deskgap-builder-squirrel-windows").default
               }
               catch (e) {
-                throw new InvalidConfigurationError(`Module electron-builder-squirrel-windows must be installed in addition to build Squirrel.Windows: ${e.stack || e}`)
+                throw new InvalidConfigurationError(`Module deskgap-builder-squirrel-windows must be installed in addition to build Squirrel.Windows: ${e.stack || e}`)
               }
 
             case "appx":
@@ -202,7 +202,7 @@ export class WinPackager extends PlatformPackager<WindowsConfiguration> {
         await sign(signOptions, this)
       }
       else if (this.forceCodeSigning) {
-        throw new InvalidConfigurationError(`App is not signed and "forceCodeSigning" is set to true, please ensure that code signing configuration is correct, please see https://electron.build/code-signing`)
+        throw new InvalidConfigurationError(`App is not signed and "forceCodeSigning" is set to true, please ensure that code signing configuration is correct, please see https://deskgap.build/code-signing`)
       }
       return
     }
@@ -244,7 +244,7 @@ export class WinPackager extends PlatformPackager<WindowsConfiguration> {
         break
       }
       catch (e) {
-        // https://github.com/electron-userland/electron-builder/issues/1414
+        // https://github.com/deskgap-userland/deskgap-builder/issues/1414
         const message = e.message
         if (message != null && message.includes("Couldn't resolve host name")) {
           log.warn({error: message, attempt: i + 1}, `cannot sign`)
@@ -289,7 +289,7 @@ export class WinPackager extends PlatformPackager<WindowsConfiguration> {
     })
 
     const config = this.config
-    const cscInfoForCacheDigest = !isBuildCacheEnabled() || isCI || config.electronDist != null ? null : await this.cscInfo.value
+    const cscInfoForCacheDigest = !isBuildCacheEnabled() || isCI || config.deskgapDist != null ? null : await this.cscInfo.value
     let buildCacheManager: BuildCacheManager | null = null
     // resources editing doesn't change executable for the same input and executed quickly - no need to complicate
     if (cscInfoForCacheDigest != null) {
@@ -300,7 +300,7 @@ export class WinPackager extends PlatformPackager<WindowsConfiguration> {
 
       const timer = time("executable cache")
       const hash = createHash("sha512")
-      hash.update(config.electronVersion || "no electronVersion")
+      hash.update(config.deskgapVersion || "no deskgapVersion")
       hash.update(JSON.stringify(this.platformSpecificBuildOptions))
       hash.update(JSON.stringify(args))
       hash.update(this.platformSpecificBuildOptions.certificateSha1 || "no certificateSha1")
@@ -316,7 +316,7 @@ export class WinPackager extends PlatformPackager<WindowsConfiguration> {
 
     const timer = time("wine&sign")
     // rcedit crashed of executed using wine, resourcehacker works
-    if (process.platform === "win32" || this.info.framework.name === "electron") {
+    if (process.platform === "win32" || this.info.framework.name === "deskgap") {
       await executeAppBuilder(["rcedit", "--args", JSON.stringify(args)], undefined /* child-process */, {}, 3 /* retry five times */)
     }
 

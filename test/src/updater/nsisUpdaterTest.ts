@@ -1,5 +1,5 @@
 import { BintrayOptions, GenericServerOptions, GithubOptions, S3Options, SpacesOptions } from "builder-util-runtime"
-import { UpdateCheckResult } from "electron-updater"
+import { UpdateCheckResult } from "deskgap-updater"
 import { outputFile } from "fs-extra"
 import { tmpdir } from "os"
 import * as path from "path"
@@ -113,7 +113,7 @@ test.skip("DigitalOcean Spaces", async () => {
   const updater = await createNsisUpdater()
   updater.updateConfigPath = await writeUpdateConfig<SpacesOptions>({
     provider: "spaces",
-    name: "electron-builder-test",
+    name: "deskgap-builder-test",
     path: "light-updater-test",
     region: "nyc3",
   })
@@ -156,7 +156,7 @@ test("file url generic - manual download", async () => {
   await assertThat(path.join((await updater.downloadUpdate())[0])).isFile()
 })
 
-// https://github.com/electron-userland/electron-builder/issues/1045
+// https://github.com/deskgap-userland/deskgap-builder/issues/1045
 test("checkForUpdates several times", async () => {
   const updater = await createNsisUpdater()
   updater.updateConfigPath = await writeUpdateConfig<GenericServerOptions>({
@@ -291,7 +291,7 @@ test.ifAll.ifWindows("invalid signature", async () => {
 
 // disable for now
 test.skip("90 staging percentage", async () => {
-  const userIdFile = path.join(tmpdir(), "electron-updater-test", "userData", ".updaterId")
+  const userIdFile = path.join(tmpdir(), "deskgap-updater-test", "userData", ".updaterId")
   await outputFile(userIdFile, "1wa70172-80f8-5cc4-8131-28f5e0edd2a1")
 
   const updater = await createNsisUpdater("0.0.1")
@@ -305,7 +305,7 @@ test.skip("90 staging percentage", async () => {
 })
 
 test("1 staging percentage", async () => {
-  const userIdFile = path.join(tmpdir(), "electron-updater-test", "userData", ".updaterId")
+  const userIdFile = path.join(tmpdir(), "deskgap-updater-test", "userData", ".updaterId")
   await outputFile(userIdFile, "12a70172-80f8-5cc4-8131-28f5e0edd2a1")
 
   const updater = await createNsisUpdater("0.0.1")

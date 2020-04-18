@@ -1,4 +1,4 @@
-import { DIR_TARGET, Platform } from "electron-builder"
+import { DIR_TARGET, Platform } from "deskgap-builder"
 import { outputFile } from "fs-extra"
 import * as path from "path"
 import { CheckingWinPackager } from "../helpers/CheckingPackager"
@@ -75,9 +75,9 @@ test.ifAll.ifNotCiMac("forceCodeSigning", appThrows({
   }
 }))
 
-test.ifAll.ifNotCiMac("electronDist", appThrows({
+test.ifAll.ifNotCiMac("deskgapDist", appThrows({
   targets: Platform.WINDOWS.createTarget(DIR_TARGET),
   config: {
-    electronDist: "foo",
+    deskgapDist: "foo",
   }
 }))

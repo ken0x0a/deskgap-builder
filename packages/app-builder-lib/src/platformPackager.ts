@@ -12,9 +12,9 @@ import { checkFileInArchive } from "./asar/asarFileChecker"
 import { AsarPackager } from "./asar/asarUtil"
 import { computeData } from "./asar/integrity"
 import { copyFiles, FileMatcher, getFileMatchers, GetFileMatchersOptions, getMainFileMatchers, getNodeModuleFileMatcher } from "./fileMatcher"
-import { createTransformer, isElectronCompileUsed } from "./fileTransformer"
-import { Framework, isElectronBased } from "./Framework"
-import { AfterPackContext, AsarOptions, CompressionLevel, Configuration, ElectronPlatformName, FileAssociation, Packager, PackagerOptions, Platform, PlatformSpecificBuildOptions, Target, TargetSpecificOptions } from "./index"
+import { createTransformer, isDeskGapCompileUsed } from "./fileTransformer"
+import { Framework, isDeskGapBased } from "./Framework"
+import { AfterPackContext, AsarOptions, CompressionLevel, Configuration, DeskGapPlatformName, FileAssociation, Packager, PackagerOptions, Platform, PlatformSpecificBuildOptions, Target, TargetSpecificOptions } from "./index"
 import { executeAppBuilderAsJson } from "./util/appBuilder"
 import { computeFileSets, computeNodeModuleFileSets, copyAppFiles, ELECTRON_COMPILE_SHIM_FILENAME, transformFiles } from "./util/appFileCopier"
 import { expandMacro as doExpandMacro } from "./util/macroExpander"
@@ -112,7 +112,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
 
   async pack(outDir: string, arch: Arch, targets: Array<Target>, taskManager: AsyncTaskManager): Promise<any> {
     const appOutDir = this.computeAppOutDir(outDir, arch)
-    await this.doPack(outDir, appOutDir, this.platform.nodeName as ElectronPlatformName, arch, this.platformSpecificBuildOptions, targets)
+    await this.doPack(outDir, appOutDir, this.platform.nodeName as DeskGapPlatformName, arch, this.platformSpecificBuildOptions, targets)
     this.packageInDistributableFormat(appOutDir, arch, targets, taskManager)
   }
 
@@ -158,7 +158,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     }
   }
 
-  protected async doPack(outDir: string, appOutDir: string, platformName: ElectronPlatformName, arch: Arch, platformSpecificBuildOptions: DC, targets: Array<Target>) {
+  protected async doPack(outDir: string, appOutDir: string, platformName: DeskGapPlatformName, arch: Arch, platformSpecificBuildOptions: DC, targets: Array<Target>) {
     if (this.packagerOptions.prepackaged != null) {
       return
     }
@@ -199,11 +199,11 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     const packContext: AfterPackContext = {
       appOutDir, outDir, arch, targets,
       packager: this,
-      electronPlatformName: platformName,
+      deskgapPlatformName: platformName,
     }
 
     const asarOptions = await this.computeAsarOptions(platformSpecificBuildOptions)
-    const resourcesPath = this.platform === Platform.MAC ? path.join(appOutDir, framework.distMacOsAppName, "Contents", "Resources") : (isElectronBased(framework) ? path.join(appOutDir, "resources") : appOutDir)
+    const resourcesPath = this.platform === Platform.MAC ? path.join(appOutDir, framework.distMacOsAppName, "Contents", "Resources") : (isDeskGapBased(framework) ? path.join(appOutDir, "resources") : appOutDir)
     const taskManager = new AsyncTaskManager(this.info.cancellationToken)
     this.copyAppFiles(taskManager, asarOptions, resourcesPath, path.join(resourcesPath, "app"), packContext, platformSpecificBuildOptions, excludePatterns, macroExpander)
     await taskManager.awaitTasks()
@@ -257,9 +257,9 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
   private copyAppFiles(taskManager: AsyncTaskManager, asarOptions: AsarOptions | null, resourcePath: string, defaultDestination: string, packContext: AfterPackContext, platformSpecificBuildOptions: DC, excludePatterns: Array<Minimatch>, macroExpander: ((it: string) => string)) {
     const appDir = this.info.appDir
     const config = this.config
-    const isElectronCompile = asarOptions != null && isElectronCompileUsed(this.info)
+    const isDeskGapCompile = asarOptions != null && isDeskGapCompileUsed(this.info)
 
-    const mainMatchers = getMainFileMatchers(appDir, defaultDestination, macroExpander, platformSpecificBuildOptions, this, packContext.outDir, isElectronCompile)
+    const mainMatchers = getMainFileMatchers(appDir, defaultDestination, macroExpander, platformSpecificBuildOptions, this, packContext.outDir, isDeskGapCompile)
     if (excludePatterns.length > 0) {
       for (const matcher of mainMatchers) {
         matcher.excludePatterns = excludePatterns
@@ -267,14 +267,14 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     }
 
     const framework = this.info.framework
-    const transformer = createTransformer(appDir, config, isElectronCompile ? {
+    const transformer = createTransformer(appDir, config, isDeskGapCompile ? {
       originalMain: this.info.metadata.main,
       main: ELECTRON_COMPILE_SHIM_FILENAME,
       ...config.extraMetadata
     } : config.extraMetadata, framework.createTransformer == null ? null : framework.createTransformer())
 
     const _computeFileSets = (matchers: Array<FileMatcher>) => {
-      return computeFileSets(matchers, this.info.isPrepackedAppAsar ? null : transformer, this, isElectronCompile)
+      return computeFileSets(matchers, this.info.isPrepackedAppAsar ? null : transformer, this, isDeskGapCompile)
         .then(async result => {
           if (!this.info.isPrepackedAppAsar && !this.info.areNodeModulesHandledExternally) {
             const moduleFileMatcher = getNodeModuleFileMatcher(appDir, defaultDestination, macroExpander, platformSpecificBuildOptions, this.info)
@@ -334,7 +334,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
   }
 
   private async computeAsarOptions(customBuildOptions: DC): Promise<AsarOptions | null> {
-    if (!isElectronBased(this.info.framework)) {
+    if (!isDeskGapBased(this.info.framework)) {
       return null
     }
 
@@ -375,11 +375,11 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     return deepAssign({}, result)
   }
 
-  public getElectronSrcDir(dist: string): string {
+  public getDeskGapSrcDir(dist: string): string {
     return path.resolve(this.projectDir, dist)
   }
 
-  public getElectronDestinationDir(appOutDir: string): string {
+  public getDeskGapDestinationDir(appOutDir: string): string {
     return appOutDir
   }
 
@@ -387,7 +387,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     if (this.platform === Platform.MAC) {
       return this.getMacOsResourcesDir(appOutDir)
     }
-    else if (isElectronBased(this.info.framework)) {
+    else if (isDeskGapBased(this.info.framework)) {
       return path.join(appOutDir, "resources")
     }
     else {
@@ -408,7 +408,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
 
     const pathParsed = path.parse(file)
     // Even when packaging to asar is disabled, it does not imply that the main file can not be inside an .asar archive.
-    // This may occur when the packaging is done manually before processing with electron-builder.
+    // This may occur when the packaging is done manually before processing with deskgap-builder.
     if (pathParsed.dir.includes(".asar")) {
       // The path needs to be split to the part with an asar archive which acts like a directory and the part with
       // the path to main file itself. (e.g. path/arch.asar/dir/index.js -> path/arch.asar, dir/index.js)
@@ -473,7 +473,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
       pattern = defaultPattern || "${productName}-${version}-${arch}.${ext}"
     }
     else {
-      // https://github.com/electron-userland/electron-builder/issues/3510
+      // https://github.com/deskgap-userland/deskgap-builder/issues/3510
       // always respect arch in user custom artifact pattern
       skipArchIfX64 = false
     }
@@ -672,13 +672,13 @@ function capitalizeFirstLetter(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
-export function isSafeToUnpackElectronOnRemoteBuildServer(packager: PlatformPackager<any>) {
+export function isSafeToUnpackDeskGapOnRemoteBuildServer(packager: PlatformPackager<any>) {
   if (packager.platform !== Platform.LINUX || packager.config.remoteBuild === false) {
     return false
   }
 
   if (process.platform === "win32" || isEnvTrue(process.env._REMOTE_BUILD)) {
-    return packager.config.electronDist == null && packager.config.electronDownload == null
+    return packager.config.deskgapDist == null && packager.config.deskgapDownload == null
   }
   return false
 }

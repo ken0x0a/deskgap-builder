@@ -1,6 +1,6 @@
 // test custom windows sign using path to file
 
-import { CustomWindowsSignTaskConfiguration, FileCodeSigningInfo } from "electron-builder"
+import { CustomWindowsSignTaskConfiguration, FileCodeSigningInfo } from "deskgap-builder"
 
 export default async function(configuration: CustomWindowsSignTaskConfiguration) {
   const info = configuration.cscInfo!! as FileCodeSigningInfo

@@ -36,8 +36,8 @@ export interface DesktopFrameworkInfo {
   useCustomDist: boolean
 }
 
-function getElectronGypCacheDir() {
-  return path.join(homedir(), ".electron-gyp")
+function getDeskGapGypCacheDir() {
+  return path.join(homedir(), ".deskgap-gyp")
 }
 
 export function getGypEnv(frameworkInfo: DesktopFrameworkInfo, platform: NodeJS.Platform, arch: string, buildFromSource: boolean) {
@@ -68,10 +68,10 @@ export function getGypEnv(frameworkInfo: DesktopFrameworkInfo, platform: NodeJS.
   // https://github.com/nodejs/node-gyp/issues/21
   return {
     ...common,
-    npm_config_disturl: "https://electronjs.org/headers",
+    npm_config_disturl: "https://deskgapjs.org/headers",
     npm_config_target: frameworkInfo.version,
-    npm_config_runtime: "electron",
-    npm_config_devdir: getElectronGypCacheDir(),
+    npm_config_runtime: "deskgap",
+    npm_config_devdir: getDeskGapGypCacheDir(),
   }
 }
 

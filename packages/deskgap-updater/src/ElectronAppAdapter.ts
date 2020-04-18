@@ -1,8 +1,8 @@
 import * as path from "path"
 import { AppAdapter, getAppCacheDir } from "./AppAdapter"
 
-export class ElectronAppAdapter implements AppAdapter {
-  constructor(private readonly app = require("electron").app) {
+export class DeskGapAppAdapter implements AppAdapter {
+  constructor(private readonly app = require("deskgap").app) {
   }
 
   whenReady(): Promise<void> {

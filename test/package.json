@@ -1,5 +1,5 @@
 {
-  "name": "@electron-builder/test",
+  "name": "@deskgap-builder/test",
   "private": true,
   "dependencies": {
     "7zip-bin": "~5.0.3",
@@ -24,10 +24,10 @@
     "decompress-zip": "^0.2.2",
     "depcheck": "^0.9.2",
     "dmg-builder": "workspace:*",
-    "electron-builder": "workspace:*",
-    "electron-builder-squirrel-windows": "workspace:*",
-    "electron-publish": "workspace:*",
-    "electron-updater": "workspace:*",
+    "deskgap-builder": "workspace:*",
+    "deskgap-builder-squirrel-windows": "workspace:*",
+    "deskgap-publish": "workspace:*",
+    "deskgap-updater": "workspace:*",
     "fs-extra": "^9.0.0",
     "jest": "^25.2.4",
     "jest-junit": "^10.0.0",

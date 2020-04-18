@@ -46,7 +46,7 @@ Object {
   "CFBundleDisplayName": "Test App ßW",
   "CFBundleExecutable": "Test App ßW",
   "CFBundleIconFile": "Test App ßW.icns",
-  "CFBundleIdentifier": "org.electron-builder.testApp",
+  "CFBundleIdentifier": "org.deskgap-builder.testApp",
   "CFBundleName": "Test App ßW",
   "CFBundleShortVersionString": "1.1.0",
   "LSApplicationCategoryType": "your.app.category.type",

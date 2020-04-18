@@ -4,9 +4,9 @@
   "main": "out/util.js",
   "author": "Vladimir Krivosheev",
   "license": "MIT",
-  "repository": "electron-userland/electron-builder",
-  "bugs": "https://github.com/electron-userland/electron-builder/issues",
-  "homepage": "https://github.com/electron-userland/electron-builder",
+  "repository": "deskgap-userland/deskgap-builder",
+  "bugs": "https://github.com/deskgap-userland/deskgap-builder/issues",
+  "homepage": "https://github.com/deskgap-userland/deskgap-builder",
   "files": [
     "out"
   ],

@@ -11,40 +11,40 @@ import { getConfig } from "../util/config"
 
 export type MetadataValue = Lazy<{ [key: string]: any } | null>
 
-const electronPackages = ["electron", "electron-prebuilt", "electron-prebuilt-compile", "electron-nightly"]
+const deskgapPackages = ["deskgap", "deskgap-prebuilt", "deskgap-prebuilt-compile", "deskgap-nightly"]
 
-export async function getElectronVersion(projectDir: string, config?: Configuration, projectMetadata: MetadataValue = new Lazy(() => orNullIfFileNotExist(readJson(path.join(projectDir, "package.json"))))): Promise<string> {
+export async function getDeskGapVersion(projectDir: string, config?: Configuration, projectMetadata: MetadataValue = new Lazy(() => orNullIfFileNotExist(readJson(path.join(projectDir, "package.json"))))): Promise<string> {
   if (config == null) {
     config = await getConfig(projectDir, null, null)
   }
-  if (config.electronVersion != null) {
-    return config.electronVersion
+  if (config.deskgapVersion != null) {
+    return config.deskgapVersion
   }
-  return await computeElectronVersion(projectDir, projectMetadata)
+  return await computeDeskGapVersion(projectDir, projectMetadata)
 }
 
-export async function getElectronVersionFromInstalled(projectDir: string) {
-  for (const name of electronPackages) {
+export async function getDeskGapVersionFromInstalled(projectDir: string) {
+  for (const name of deskgapPackages) {
     try {
       return (await readJson(path.join(projectDir, "node_modules", name, "package.json"))).version
     }
     catch (e) {
       if (e.code !== "ENOENT") {
-        log.warn({name, error: e}, `cannot read electron version package.json`)
+        log.warn({name, error: e}, `cannot read deskgap version package.json`)
       }
     }
   }
   return null
 }
 
-export async function getElectronPackage(projectDir: string) {
-  for (const name of electronPackages) {
+export async function getDeskGapPackage(projectDir: string) {
+  for (const name of deskgapPackages) {
     try {
       return (await readJson(path.join(projectDir, "node_modules", name, "package.json")))
     }
     catch (e) {
       if (e.code !== "ENOENT") {
-        log.warn({name, error: e}, `cannot find electron in package.json`)
+        log.warn({name, error: e}, `cannot find deskgap in package.json`)
       }
     }
   }
@@ -52,18 +52,18 @@ export async function getElectronPackage(projectDir: string) {
 }
 
 /** @internal */
-export async function computeElectronVersion(projectDir: string, projectMetadata: MetadataValue): Promise<string> {
-  const result = await getElectronVersionFromInstalled(projectDir)
+export async function computeDeskGapVersion(projectDir: string, projectMetadata: MetadataValue): Promise<string> {
+  const result = await getDeskGapVersionFromInstalled(projectDir)
   if (result != null) {
     return result
   }
 
   const dependency = findFromPackageMetadata(await projectMetadata!!.value)
-  if (dependency?.name === "electron-nightly") {
-    log.info("You are using a nightly version of electron, be warned that those builds are highly unstable.")
+  if (dependency?.name === "deskgap-nightly") {
+    log.info("You are using a nightly version of deskgap, be warned that those builds are highly unstable.")
     const feedXml = await httpExecutor.request({
       hostname: "github.com",
-      path: `/electron/nightlies/releases.atom`,
+      path: `/deskgap/nightlies/releases.atom`,
       headers: {
         accept: "application/xml, application/atom+xml, text/xml, */*",
       },
@@ -74,11 +74,11 @@ export async function computeElectronVersion(projectDir: string, projectMetadata
     return v.startsWith("v") ? v.substring(1) : v
   }
   else if (dependency?.version === "latest") {
-    log.warn("Electron version is set to \"latest\", but it is recommended to set it to some more restricted version range.")
+    log.warn("DeskGap version is set to \"latest\", but it is recommended to set it to some more restricted version range.")
     try {
       const releaseInfo = JSON.parse((await httpExecutor.request({
         hostname: "github.com",
-        path: `/electron/${dependency.name === "electron-nightly" ? "nightlies" : "electron"}/releases/latest`,
+        path: `/deskgap/${dependency.name === "deskgap-nightly" ? "nightlies" : "deskgap"}/releases/latest`,
         headers: {
           accept: "application/json",
         },
@@ -91,13 +91,13 @@ export async function computeElectronVersion(projectDir: string, projectMetadata
       log.warn(e)
     }
 
-    throw new InvalidConfigurationError(`Cannot find electron dependency to get electron version in the '${path.join(projectDir, "package.json")}'`)
+    throw new InvalidConfigurationError(`Cannot find deskgap dependency to get deskgap version in the '${path.join(projectDir, "package.json")}'`)
   }
 
   const version = dependency?.version
   if (version == null || !/^\d/.test(version)) {
     const versionMessage = version == null ? "" : ` and version ("${version}") is not fixed in project`
-    throw new InvalidConfigurationError(`Cannot compute electron version from installed node modules - none of the possible electron modules are installed${versionMessage}.\nSee https://github.com/electron-userland/electron-builder/issues/3984#issuecomment-504968246`)
+    throw new InvalidConfigurationError(`Cannot compute deskgap version from installed node modules - none of the possible deskgap modules are installed${versionMessage}.\nSee https://github.com/deskgap-userland/deskgap-builder/issues/3984#issuecomment-504968246`)
   }
 
   return semver.coerce(version)!!.toString()
@@ -109,7 +109,7 @@ interface NameAndVersion {
 }
 
 function findFromPackageMetadata(packageData: any): NameAndVersion | null {
-  for (const name of electronPackages) {
+  for (const name of deskgapPackages) {
     const devDependencies = packageData.devDependencies
     let dep = devDependencies == null ? null : devDependencies[name]
     if (dep == null) {

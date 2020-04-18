@@ -2,7 +2,7 @@
 
 import { exec, InvalidConfigurationError, log } from "builder-util"
 import chalk from "chalk"
-import { getElectronVersion } from "app-builder-lib/out/electron/electronVersion"
+import { getDeskGapVersion } from "app-builder-lib/out/deskgap/deskgapVersion"
 import { getGypEnv } from "app-builder-lib/out/util/yarn"
 import { pathExists, readJson } from "fs-extra"
 import isCi from "is-ci"
@@ -30,11 +30,11 @@ createYargs()
       })
       .demandOption("publisher"),
     wrap(argv => createSelfSignedCert(argv.publisher)))
-  .command("start", "Run application in a development mode using electron-webpack",
+  .command("start", "Run application in a development mode using deskgap-webpack",
     yargs => yargs,
     wrap(() => start()))
   .help()
-  .epilog(`See ${chalk.underline("https://electron.build")} for more documentation.`)
+  .epilog(`See ${chalk.underline("https://deskgap.build")} for more documentation.`)
   .strict()
   .recommendCommands()
   .argv
@@ -42,11 +42,11 @@ createYargs()
 function wrap(task: (args: any) => Promise<any>) {
   return (args: any) => {
     checkIsOutdated()
-    loadEnv(path.join(process.cwd(), "electron-builder.env"))
+    loadEnv(path.join(process.cwd(), "deskgap-builder.env"))
       .then(() => task(args))
       .catch(error => {
         process.exitCode = 1
-        // https://github.com/electron-userland/electron-builder/issues/2940
+        // https://github.com/deskgap-userland/deskgap-builder/issues/2940
         process.on("exit", () => process.exitCode = 1)
         if (error instanceof InvalidConfigurationError) {
           log.error(null, error.message)
@@ -74,7 +74,7 @@ function checkIsOutdated() {
       const notifier = updateNotifier({pkg: it})
       if (notifier.update != null) {
         notifier.notify({
-          message: `Update available ${chalk.dim(notifier.update.current)}${chalk.reset(" → ")}${chalk.green(notifier.update.latest)} \nRun ${chalk.cyan(`${packageManager} upgrade electron-builder`)} to update`
+          message: `Update available ${chalk.dim(notifier.update.current)}${chalk.reset(" → ")}${chalk.green(notifier.update.latest)} \nRun ${chalk.cyan(`${packageManager} upgrade deskgap-builder`)} to update`
         })
       }
     })
@@ -84,8 +84,8 @@ function checkIsOutdated() {
 async function rebuildAppNativeCode(args: any) {
   const projectDir = process.cwd()
   log.info({platform: args.platform, arch: args.arch}, "executing node-gyp rebuild")
-  // this script must be used only for electron
+  // this script must be used only for deskgap
   await exec(process.platform === "win32" ? "node-gyp.cmd" : "node-gyp", ["rebuild"], {
-    env: getGypEnv({version: await getElectronVersion(projectDir), useCustomDist: true}, args.platform, args.arch, true),
+    env: getGypEnv({version: await getDeskGapVersion(projectDir), useCustomDist: true}, args.platform, args.arch, true),
   })
 }

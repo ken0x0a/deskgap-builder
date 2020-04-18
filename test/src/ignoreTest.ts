@@ -1,4 +1,4 @@
-import { DIR_TARGET, Platform } from "electron-builder"
+import { DIR_TARGET, Platform } from "deskgap-builder"
 import { outputFile } from "fs-extra"
 import * as path from "path"
 import { assertThat } from "./helpers/fileAssert"
@@ -24,7 +24,7 @@ test.ifDevOrLinuxCi("2 ignore", app({
     asar: false,
     files: [
       "**/*",
-      "!{app,build,electron,mobile,theme,uploads,util,dist,dist-app/aot,dist-app/app.bundle.js,dist-app/dependencies/shim.min.js,dist-app/dependencies/classList.min.js,dist-app/dependencies/web-animations.min.js,main.js,main-aot.js,favicon.ico,index.html,index-aot.html,index-cordova.html,index-aot.js,index-electron.js,index.bundle.js,systemjs.config.js,systemjs-angular-loader.js,package-lock.json}",
+      "!{app,build,deskgap,mobile,theme,uploads,util,dist,dist-app/aot,dist-app/app.bundle.js,dist-app/dependencies/shim.min.js,dist-app/dependencies/classList.min.js,dist-app/dependencies/web-animations.min.js,main.js,main-aot.js,favicon.ico,index.html,index-aot.html,index-cordova.html,index-aot.js,index-deskgap.js,index.bundle.js,systemjs.config.js,systemjs-angular-loader.js,package-lock.json}",
       "!*config*.json",
       "!**/*.{ts,scss,map,md,csv,wrapped}",
       "!**/*.{hprof,orig,pyc,pyo,rbc}",
@@ -34,10 +34,10 @@ test.ifDevOrLinuxCi("2 ignore", app({
   }
 }, {
   projectDirCreated: projectDir => {
-    return outputFile(path.join(projectDir, "electron/foo.txt"), "data")
+    return outputFile(path.join(projectDir, "deskgap/foo.txt"), "data")
   },
   packed: context => {
-    return assertThat(path.join(context.getResources(Platform.LINUX), "app", "electron", "foo.txt")).doesNotExist()
+    return assertThat(path.join(context.getResources(Platform.LINUX), "app", "deskgap", "foo.txt")).doesNotExist()
   },
 }))
 
@@ -67,14 +67,14 @@ test.ifNotCiMac("ignore node_modules dev dep", app({
     return Promise.all([
       modifyPackageJson(projectDir, data => {
         data.devDependencies = {
-          "electron-osx-sign": "*", ...data.devDependencies}
+          "deskgap-osx-sign": "*", ...data.devDependencies}
       }),
-      outputFile(path.join(projectDir, "node_modules", "electron-osx-sign", "package.json"), "{}"),
+      outputFile(path.join(projectDir, "node_modules", "deskgap-osx-sign", "package.json"), "{}"),
     ])
   },
   packed: context => {
     return Promise.all([
-      assertThat(path.join(context.getResources(Platform.LINUX), "app", "node_modules", "electron-osx-sign")).doesNotExist(),
+      assertThat(path.join(context.getResources(Platform.LINUX), "app", "node_modules", "deskgap-osx-sign")).doesNotExist(),
       assertThat(path.join(context.getResources(Platform.LINUX), "app", "ignoreMe")).doesNotExist(),
     ])
   },

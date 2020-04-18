@@ -1,13 +1,13 @@
-// Type definitions for Electron 3.0.10
-// Project: http://electronjs.org/
-// Definitions by: The Electron Team <https://github.com/electron/electron>
-// Definitions: https://github.com/electron/electron-typescript-definitions
+// Type definitions for DeskGap 3.0.10
+// Project: http://deskgapjs.org/
+// Definitions by: The DeskGap Team <https://github.com/deskgap/deskgap>
+// Definitions: https://github.com/deskgap/deskgap-typescript-definitions
 
 /// <reference types="node" />
 
 type GlobalEvent = Event;
 
-declare namespace Electron {
+declare namespace DeskGap {
   class EventEmitter {
     addListener(event: string, listener: Function): this;
     on(event: string, listener: Function): this;
@@ -86,7 +86,7 @@ declare namespace Electron {
     webviewTag: WebviewTag;
   }
 
-  interface AllElectron extends MainInterface, RendererInterface {}
+  interface AllDeskGap extends MainInterface, RendererInterface {}
 
   const app: App;
   const autoUpdater: AutoUpdater;
@@ -119,7 +119,7 @@ declare namespace Electron {
 
   interface App extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/app
+    // Docs: http://deskgap.atom.io/docs/api/app
 
     /**
      * Emitted when Chrome's accessibility support changes. This event fires when
@@ -463,7 +463,7 @@ declare namespace Electron {
     removeListener(event: 'quit', listener: (event: Event,
                                  exitCode: number) => void): this;
     /**
-     * Emitted when Electron has finished initializing. On macOS, launchInfo holds the
+     * Emitted when DeskGap has finished initializing. On macOS, launchInfo holds the
      * userInfo of the NSUserNotification that was used to open the application, if it
      * was launched from Notification Center. You can call app.isReady() to check if
      * this event has already fired.
@@ -543,7 +543,7 @@ declare namespace Electron {
                                                       certificateList: Certificate[],
                                                       callback: (certificate?: Certificate) => void) => void): this;
     /**
-     * Emitted when Electron has created a new session.
+     * Emitted when DeskGap has created a new session.
      */
     on(event: 'session-created', listener: (session: Session) => void): this;
     once(event: 'session-created', listener: (session: Session) => void): this;
@@ -656,7 +656,7 @@ declare namespace Electron {
      * Emitted when all windows have been closed. If you do not subscribe to this event
      * and all windows are closed, the default behavior is to quit the app; however, if
      * you subscribe, you control whether the app quits or not. If the user pressed Cmd
-     * + Q, or the developer called app.quit(), Electron will first try to close all
+     * + Q, or the developer called app.quit(), DeskGap will first try to close all
      * the windows and then emit the will-quit event, and in this case the
      * window-all-closed event would not be emitted.
      */
@@ -733,7 +733,7 @@ declare namespace Electron {
      * Usually the name field of package.json is a short lowercased name, according to
      * the npm modules spec. You should usually also specify a productName field, which
      * is your application's full capitalized name, and which will be preferred over
-     * name by Electron.
+     * name by DeskGap.
      */
     getName(): string;
     /**
@@ -893,7 +893,7 @@ declare namespace Electron {
      */
     setJumpList(categories: JumpListCategory[]): void;
     /**
-     * Set the app's login item settings. To work with Electron's autoUpdater on
+     * Set the app's login item settings. To work with DeskGap's autoUpdater on
      * Windows, which uses Squirrel, you'll want to set the launch path to Update.exe,
      * and pass arguments that specify your application name. For example:
      */
@@ -929,7 +929,7 @@ declare namespace Electron {
      */
     show(): void;
     /**
-     * Start accessing a security scoped resource. With this method electron
+     * Start accessing a security scoped resource. With this method deskgap
      * applications that are packaged for the Mac App Store may reach outside their
      * sandbox to access files chosen by the user. See Apple's documentation for a
      * description of how this system works.
@@ -953,7 +953,7 @@ declare namespace Electron {
 
   interface AutoUpdater extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/auto-updater
+    // Docs: http://deskgap.atom.io/docs/api/auto-updater
 
     /**
      * This event is emitted after a user calls quitAndInstall(). When this API is
@@ -1043,7 +1043,7 @@ declare namespace Electron {
 
   interface BluetoothDevice {
 
-    // Docs: http://electron.atom.io/docs/api/structures/bluetooth-device
+    // Docs: http://deskgap.atom.io/docs/api/structures/bluetooth-device
 
     deviceId: string;
     deviceName: string;
@@ -1051,7 +1051,7 @@ declare namespace Electron {
 
   class BrowserView extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/browser-view
+    // Docs: http://deskgap.atom.io/docs/api/browser-view
 
     constructor(options?: BrowserViewConstructorOptions);
     static fromId(id: number): BrowserView;
@@ -1076,7 +1076,7 @@ declare namespace Electron {
 
   class BrowserWindow extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/browser-window
+    // Docs: http://deskgap.atom.io/docs/api/browser-window
 
     /**
      * Emitted when an App Command is invoked. These are typically related to keyboard
@@ -1105,12 +1105,12 @@ declare namespace Electron {
      * beforeunload and unload event of the DOM. Calling event.preventDefault() will
      * cancel the close. Usually you would want to use the beforeunload handler to
      * decide whether the window should be closed, which will also be called when the
-     * window is reloaded. In Electron, returning any value other than undefined would
+     * window is reloaded. In DeskGap, returning any value other than undefined would
      * cancel the close. For example: Note: There is a subtle difference between the
      * behaviors of window.onbeforeunload = handler and
      * window.addEventListener('beforeunload', handler). It is recommended to always
      * set the event.returnValue explicitly, instead of only returning a value, as the
-     * former works more consistently within Electron.
+     * former works more consistently within DeskGap.
      */
     on(event: 'close', listener: (event: Event) => void): this;
     once(event: 'close', listener: (event: Event) => void): this;
@@ -1409,7 +1409,7 @@ declare namespace Electron {
     getBounds(): Rectangle;
     /**
      * Note: The BrowserView API is currently experimental and may change or be removed
-     * in future Electron releases.
+     * in future DeskGap releases.
      */
     getBrowserView(): BrowserView | null;
     getChildWindows(): BrowserWindow[];
@@ -1770,7 +1770,7 @@ declare namespace Electron {
      * Sets the touchBar layout for the current window. Specifying null or undefined
      * clears the touch bar. This method only has an effect if the machine has a touch
      * bar and is running on macOS 10.12.1+. Note: The TouchBar API is currently
-     * experimental and may change or be removed in future Electron releases.
+     * experimental and may change or be removed in future DeskGap releases.
      */
     setTouchBar(touchBar: TouchBar): void;
     /**
@@ -1818,7 +1818,7 @@ declare namespace Electron {
 
   class BrowserWindowProxy extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/browser-window-proxy
+    // Docs: http://deskgap.atom.io/docs/api/browser-window-proxy
 
     /**
      * Removes focus from the child window.
@@ -1851,7 +1851,7 @@ declare namespace Electron {
 
   interface Certificate {
 
-    // Docs: http://electron.atom.io/docs/api/structures/certificate
+    // Docs: http://deskgap.atom.io/docs/api/structures/certificate
 
     /**
      * PEM encoded data
@@ -1897,7 +1897,7 @@ declare namespace Electron {
 
   interface CertificatePrincipal {
 
-    // Docs: http://electron.atom.io/docs/api/structures/certificate-principal
+    // Docs: http://deskgap.atom.io/docs/api/structures/certificate-principal
 
     /**
      * Common Name
@@ -1927,7 +1927,7 @@ declare namespace Electron {
 
   class ClientRequest extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/client-request
+    // Docs: http://deskgap.atom.io/docs/api/client-request
 
     /**
      * Emitted when the request is aborted. The abort event will not be fired if the
@@ -2084,7 +2084,7 @@ declare namespace Electron {
 
   interface Clipboard extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/clipboard
+    // Docs: http://deskgap.atom.io/docs/api/clipboard
 
     availableFormats(type?: string): string[];
     /**
@@ -2144,7 +2144,7 @@ declare namespace Electron {
 
   interface ContentTracing extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/content-tracing
+    // Docs: http://deskgap.atom.io/docs/api/content-tracing
 
     /**
      * Get the current monitoring traced data. Child processes typically cache trace
@@ -2214,7 +2214,7 @@ declare namespace Electron {
 
   interface Cookie {
 
-    // Docs: http://electron.atom.io/docs/api/structures/cookie
+    // Docs: http://deskgap.atom.io/docs/api/structures/cookie
 
     /**
      * The domain of the cookie.
@@ -2258,7 +2258,7 @@ declare namespace Electron {
 
   class Cookies extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/cookies
+    // Docs: http://deskgap.atom.io/docs/api/cookies
 
     /**
      * Emitted when a cookie is changed because it was added, edited, removed, or
@@ -2339,7 +2339,7 @@ declare namespace Electron {
 
   interface CPUUsage {
 
-    // Docs: http://electron.atom.io/docs/api/structures/cpu-usage
+    // Docs: http://deskgap.atom.io/docs/api/structures/cpu-usage
 
     /**
      * The number of average idle cpu wakeups per second since the last call to
@@ -2354,7 +2354,7 @@ declare namespace Electron {
 
   interface CrashReport {
 
-    // Docs: http://electron.atom.io/docs/api/structures/crash-report
+    // Docs: http://deskgap.atom.io/docs/api/structures/crash-report
 
     date: Date;
     id: string;
@@ -2362,7 +2362,7 @@ declare namespace Electron {
 
   interface CrashReporter extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/crash-reporter
+    // Docs: http://deskgap.atom.io/docs/api/crash-reporter
 
     /**
      * Set an extra parameter to be sent with the crash report. The values specified
@@ -2406,7 +2406,7 @@ declare namespace Electron {
      * and in each process (main/renderer) from which you want to collect crash
      * reports. You can pass different options to crashReporter.start when calling from
      * different processes. Note Child processes created via the child_process module
-     * will not have access to the Electron modules. Therefore, to collect crash
+     * will not have access to the DeskGap modules. Therefore, to collect crash
      * reports from them, use process.crashReporter.start instead. Pass the same
      * options as above along with an additional one called crashesDirectory that
      * should point to a directory to store the crash reports temporarily. You can test
@@ -2416,7 +2416,7 @@ declare namespace Electron {
      * Replace submitURL, productName and crashesDirectory with appropriate values.
      * Note: If you need send additional/updated extra parameters after your first call
      * start you can call addExtraParameter on macOS or call start again with the
-     * new/updated extra parameters on Linux and Windows. Note: On macOS, Electron uses
+     * new/updated extra parameters on Linux and Windows. Note: On macOS, DeskGap uses
      * a new crashpad client for crash collection and reporting. If you want to enable
      * crash reporting, initializing crashpad from the main process using
      * crashReporter.start is required regardless of which process you want to collect
@@ -2430,7 +2430,7 @@ declare namespace Electron {
 
   class Debugger extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/debugger
+    // Docs: http://deskgap.atom.io/docs/api/debugger
 
     /**
      * Emitted when debugging session is terminated. This happens either when
@@ -2516,7 +2516,7 @@ declare namespace Electron {
 
   interface DesktopCapturer extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/desktop-capturer
+    // Docs: http://deskgap.atom.io/docs/api/desktop-capturer
 
     /**
      * Starts gathering information about all available desktop media sources, and
@@ -2529,7 +2529,7 @@ declare namespace Electron {
 
   interface DesktopCapturerSource {
 
-    // Docs: http://electron.atom.io/docs/api/structures/desktop-capturer-source
+    // Docs: http://deskgap.atom.io/docs/api/structures/desktop-capturer-source
 
     /**
      * A unique identifier that will correspond to the id of the matching returned by
@@ -2560,7 +2560,7 @@ declare namespace Electron {
 
   interface Dialog extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/dialog
+    // Docs: http://deskgap.atom.io/docs/api/dialog
 
     /**
      * On macOS, this displays a modal dialog that shows a message and certificate
@@ -2655,7 +2655,7 @@ declare namespace Electron {
 
   interface Display {
 
-    // Docs: http://electron.atom.io/docs/api/structures/display
+    // Docs: http://deskgap.atom.io/docs/api/structures/display
 
     bounds: Rectangle;
     /**
@@ -2681,7 +2681,7 @@ declare namespace Electron {
 
   class DownloadItem extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/download-item
+    // Docs: http://deskgap.atom.io/docs/api/download-item
 
     /**
      * Emitted when the download is in a terminal state. This includes a completed
@@ -2776,7 +2776,7 @@ declare namespace Electron {
     resume(): void;
     /**
      * The API is only available in session's will-download callback function. If user
-     * doesn't set the save path via the API, Electron will use the original routine to
+     * doesn't set the save path via the API, DeskGap will use the original routine to
      * determine the save path(Usually prompts a save dialog).
      */
     setSavePath(path: string): void;
@@ -2784,7 +2784,7 @@ declare namespace Electron {
 
   interface FileFilter {
 
-    // Docs: http://electron.atom.io/docs/api/structures/file-filter
+    // Docs: http://deskgap.atom.io/docs/api/structures/file-filter
 
     extensions: string[];
     name: string;
@@ -2792,7 +2792,7 @@ declare namespace Electron {
 
   interface GlobalShortcut extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/global-shortcut
+    // Docs: http://deskgap.atom.io/docs/api/global-shortcut
 
     /**
      * When the accelerator is already taken by other applications, this call will
@@ -2820,7 +2820,7 @@ declare namespace Electron {
 
   interface GPUFeatureStatus {
 
-    // Docs: http://electron.atom.io/docs/api/structures/gpu-feature-status
+    // Docs: http://deskgap.atom.io/docs/api/structures/gpu-feature-status
 
     /**
      * Canvas
@@ -2878,7 +2878,7 @@ declare namespace Electron {
 
   interface InAppPurchase extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/in-app-purchase
+    // Docs: http://deskgap.atom.io/docs/api/in-app-purchase
 
     /**
      * Emitted when one or more transactions have been updated.
@@ -2926,7 +2926,7 @@ declare namespace Electron {
 
   class IncomingMessage extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/incoming-message
+    // Docs: http://deskgap.atom.io/docs/api/incoming-message
 
     /**
      * Emitted when a request has been canceled during an ongoing HTTP transaction.
@@ -2987,7 +2987,7 @@ declare namespace Electron {
 
   interface IOCounters {
 
-    // Docs: http://electron.atom.io/docs/api/structures/io-counters
+    // Docs: http://deskgap.atom.io/docs/api/structures/io-counters
 
     /**
      * Then number of I/O other operations.
@@ -3017,7 +3017,7 @@ declare namespace Electron {
 
   interface IpcMain extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/ipc-main
+    // Docs: http://deskgap.atom.io/docs/api/ipc-main
 
     /**
      * Listens to channel, when a new message arrives listener would be called with
@@ -3042,7 +3042,7 @@ declare namespace Electron {
 
   interface IpcRenderer extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/ipc-renderer
+    // Docs: http://deskgap.atom.io/docs/api/ipc-renderer
 
     /**
      * Listens to channel, when a new message arrives listener would be called with
@@ -3092,7 +3092,7 @@ declare namespace Electron {
 
   interface JumpListCategory {
 
-    // Docs: http://electron.atom.io/docs/api/structures/jump-list-category
+    // Docs: http://deskgap.atom.io/docs/api/structures/jump-list-category
 
     /**
      * Array of objects if type is tasks or custom, otherwise it should be omitted.
@@ -3110,7 +3110,7 @@ declare namespace Electron {
 
   interface JumpListItem {
 
-    // Docs: http://electron.atom.io/docs/api/structures/jump-list-item
+    // Docs: http://deskgap.atom.io/docs/api/structures/jump-list-item
 
     /**
      * The command line arguments when program is executed. Should only be set if type
@@ -3157,7 +3157,7 @@ declare namespace Electron {
 
   interface MemoryInfo {
 
-    // Docs: http://electron.atom.io/docs/api/structures/memory-info
+    // Docs: http://deskgap.atom.io/docs/api/structures/memory-info
 
     /**
      * The maximum amount of memory that has ever been pinned to actual physical RAM.
@@ -3175,7 +3175,7 @@ declare namespace Electron {
     privateBytes: number;
     /**
      * The amount of memory shared between processes, typically memory consumed by the
-     * Electron code itself
+     * DeskGap code itself
      */
     sharedBytes: number;
     /**
@@ -3186,7 +3186,7 @@ declare namespace Electron {
 
   interface MemoryUsageDetails {
 
-    // Docs: http://electron.atom.io/docs/api/structures/memory-usage-details
+    // Docs: http://deskgap.atom.io/docs/api/structures/memory-usage-details
 
     count: number;
     liveSize: number;
@@ -3195,7 +3195,7 @@ declare namespace Electron {
 
   class Menu {
 
-    // Docs: http://electron.atom.io/docs/api/menu
+    // Docs: http://deskgap.atom.io/docs/api/menu
 
     /**
      * Emitted when a popup is closed either manually or with menu.closePopup().
@@ -3259,7 +3259,7 @@ declare namespace Electron {
 
   class MenuItem {
 
-    // Docs: http://electron.atom.io/docs/api/menu-item
+    // Docs: http://deskgap.atom.io/docs/api/menu-item
 
     constructor(options: MenuItemConstructorOptions);
     checked: boolean;
@@ -3271,7 +3271,7 @@ declare namespace Electron {
 
   interface MimeTypedBuffer {
 
-    // Docs: http://electron.atom.io/docs/api/structures/mime-typed-buffer
+    // Docs: http://deskgap.atom.io/docs/api/structures/mime-typed-buffer
 
     /**
      * The actual Buffer content
@@ -3285,7 +3285,7 @@ declare namespace Electron {
 
   class NativeImage {
 
-    // Docs: http://electron.atom.io/docs/api/native-image
+    // Docs: http://deskgap.atom.io/docs/api/native-image
 
     /**
      * Creates an empty NativeImage instance.
@@ -3352,7 +3352,7 @@ declare namespace Electron {
 
   interface Net extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/net
+    // Docs: http://deskgap.atom.io/docs/api/net
 
     /**
      * Creates a ClientRequest instance using the provided options which are directly
@@ -3365,7 +3365,7 @@ declare namespace Electron {
 
   interface NetLog extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/net-log
+    // Docs: http://deskgap.atom.io/docs/api/net-log
 
     /**
      * Starts recording network events to path.
@@ -3388,7 +3388,7 @@ declare namespace Electron {
 
   class Notification extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/notification
+    // Docs: http://deskgap.atom.io/docs/api/notification
 
     on(event: 'action', listener: (event: Event,
                                    /**
@@ -3478,7 +3478,7 @@ declare namespace Electron {
 
   interface NotificationAction {
 
-    // Docs: http://electron.atom.io/docs/api/structures/notification-action
+    // Docs: http://deskgap.atom.io/docs/api/structures/notification-action
 
     /**
      * The label for the given action.
@@ -3492,7 +3492,7 @@ declare namespace Electron {
 
   interface Point {
 
-    // Docs: http://electron.atom.io/docs/api/structures/point
+    // Docs: http://deskgap.atom.io/docs/api/structures/point
 
     x: number;
     y: number;
@@ -3500,7 +3500,7 @@ declare namespace Electron {
 
   interface PowerMonitor extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/power-monitor
+    // Docs: http://deskgap.atom.io/docs/api/power-monitor
 
     /**
      * Emitted when the system is about to lock the screen.
@@ -3532,7 +3532,7 @@ declare namespace Electron {
     removeListener(event: 'resume', listener: Function): this;
     /**
      * Emitted when the system is about to reboot or shut down. If the event handler
-     * invokes e.preventDefault(), Electron will attempt to delay system shutdown in
+     * invokes e.preventDefault(), DeskGap will attempt to delay system shutdown in
      * order for the app to exit cleanly. If e.preventDefault() is called, the app
      * should exit as soon as possible by calling something like app.quit().
      */
@@ -3558,7 +3558,7 @@ declare namespace Electron {
 
   interface PowerSaveBlocker extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/power-save-blocker
+    // Docs: http://deskgap.atom.io/docs/api/power-save-blocker
 
     isStarted(id: number): boolean;
     /**
@@ -3580,7 +3580,7 @@ declare namespace Electron {
 
   interface PrinterInfo {
 
-    // Docs: http://electron.atom.io/docs/api/structures/printer-info
+    // Docs: http://deskgap.atom.io/docs/api/structures/printer-info
 
     description: string;
     isDefault: boolean;
@@ -3590,7 +3590,7 @@ declare namespace Electron {
 
   interface ProcessMetric {
 
-    // Docs: http://electron.atom.io/docs/api/structures/process-metric
+    // Docs: http://deskgap.atom.io/docs/api/structures/process-metric
 
     /**
      * CPU usage of the process.
@@ -3612,7 +3612,7 @@ declare namespace Electron {
 
   interface Product {
 
-    // Docs: http://electron.atom.io/docs/api/structures/product
+    // Docs: http://deskgap.atom.io/docs/api/structures/product
 
     /**
      * The total size of the content, in bytes.
@@ -3651,7 +3651,7 @@ declare namespace Electron {
 
   interface Protocol extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/protocol
+    // Docs: http://deskgap.atom.io/docs/api/protocol
 
     /**
      * Intercepts scheme protocol and uses handler as the protocol's new handler which
@@ -3761,7 +3761,7 @@ declare namespace Electron {
 
   interface Rectangle {
 
-    // Docs: http://electron.atom.io/docs/api/structures/rectangle
+    // Docs: http://deskgap.atom.io/docs/api/structures/rectangle
 
     /**
      * The height of the rectangle (must be an integer)
@@ -3783,7 +3783,7 @@ declare namespace Electron {
 
   interface Referrer {
 
-    // Docs: http://electron.atom.io/docs/api/structures/referrer
+    // Docs: http://deskgap.atom.io/docs/api/structures/referrer
 
     /**
      * Can be default, unsafe-url, no-referrer-when-downgrade, no-referrer, origin,
@@ -3799,7 +3799,7 @@ declare namespace Electron {
 
   interface Remote extends MainInterface {
 
-    // Docs: http://electron.atom.io/docs/api/remote
+    // Docs: http://deskgap.atom.io/docs/api/remote
 
     getCurrentWebContents(): WebContents;
     /**
@@ -3822,7 +3822,7 @@ declare namespace Electron {
 
   interface RemoveClientCertificate {
 
-    // Docs: http://electron.atom.io/docs/api/structures/remove-client-certificate
+    // Docs: http://deskgap.atom.io/docs/api/structures/remove-client-certificate
 
     /**
      * Origin of the server whose associated client certificate must be removed from
@@ -3837,7 +3837,7 @@ declare namespace Electron {
 
   interface RemovePassword {
 
-    // Docs: http://electron.atom.io/docs/api/structures/remove-password
+    // Docs: http://deskgap.atom.io/docs/api/structures/remove-password
 
     /**
      * When provided, the authentication info related to the origin will only be
@@ -3869,7 +3869,7 @@ declare namespace Electron {
 
   interface Screen extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/screen
+    // Docs: http://deskgap.atom.io/docs/api/screen
 
     /**
      * Emitted when newDisplay has been added.
@@ -3944,7 +3944,7 @@ declare namespace Electron {
 
   interface ScrubberItem {
 
-    // Docs: http://electron.atom.io/docs/api/structures/scrubber-item
+    // Docs: http://deskgap.atom.io/docs/api/structures/scrubber-item
 
     /**
      * The image to appear in this item
@@ -3958,7 +3958,7 @@ declare namespace Electron {
 
   interface SegmentedControlSegment {
 
-    // Docs: http://electron.atom.io/docs/api/structures/segmented-control-segment
+    // Docs: http://deskgap.atom.io/docs/api/structures/segmented-control-segment
 
     /**
      * Whether this segment is selectable. Default: true
@@ -3976,7 +3976,7 @@ declare namespace Electron {
 
   class Session extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/session
+    // Docs: http://deskgap.atom.io/docs/api/session
 
     /**
      * If partition starts with persist:, the page will use a persistent session
@@ -3992,7 +3992,7 @@ declare namespace Electron {
      */
     static defaultSession?: Session;
     /**
-     * Emitted when Electron is about to download item in webContents. Calling
+     * Emitted when DeskGap is about to download item in webContents. Calling
      * event.preventDefault() will cancel the download and item will not be available
      * from next tick of the process.
      */
@@ -4108,7 +4108,7 @@ declare namespace Electron {
 
   interface Shell {
 
-    // Docs: http://electron.atom.io/docs/api/shell
+    // Docs: http://deskgap.atom.io/docs/api/shell
 
     /**
      * Play the beep sound.
@@ -4148,7 +4148,7 @@ declare namespace Electron {
 
   interface ShortcutDetails {
 
-    // Docs: http://electron.atom.io/docs/api/structures/shortcut-details
+    // Docs: http://deskgap.atom.io/docs/api/structures/shortcut-details
 
     /**
      * The Application User Model ID. Default is empty.
@@ -4184,7 +4184,7 @@ declare namespace Electron {
 
   interface Size {
 
-    // Docs: http://electron.atom.io/docs/api/structures/size
+    // Docs: http://deskgap.atom.io/docs/api/structures/size
 
     height: number;
     width: number;
@@ -4192,7 +4192,7 @@ declare namespace Electron {
 
   interface StreamProtocolResponse {
 
-    // Docs: http://electron.atom.io/docs/api/structures/stream-protocol-response
+    // Docs: http://deskgap.atom.io/docs/api/structures/stream-protocol-response
 
     /**
      * A Node.js readable stream representing the response body
@@ -4210,7 +4210,7 @@ declare namespace Electron {
 
   interface SystemPreferences extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/system-preferences
+    // Docs: http://deskgap.atom.io/docs/api/system-preferences
 
     on(event: 'accent-color-changed', listener: (event: Event,
                                                  /**
@@ -4341,7 +4341,7 @@ declare namespace Electron {
 
   interface Task {
 
-    // Docs: http://electron.atom.io/docs/api/structures/task
+    // Docs: http://deskgap.atom.io/docs/api/structures/task
 
     /**
      * The command line arguments when program is executed.
@@ -4376,7 +4376,7 @@ declare namespace Electron {
 
   interface ThumbarButton {
 
-    // Docs: http://electron.atom.io/docs/api/structures/thumbar-button
+    // Docs: http://deskgap.atom.io/docs/api/structures/thumbar-button
 
     click: Function;
     /**
@@ -4396,7 +4396,7 @@ declare namespace Electron {
 
   class TouchBarButton extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-button
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-button
 
     constructor(options: TouchBarButtonConstructorOptions);
     backgroundColor: string;
@@ -4406,7 +4406,7 @@ declare namespace Electron {
 
   class TouchBarColorPicker extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-color-picker
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-color-picker
 
     constructor(options: TouchBarColorPickerConstructorOptions);
     availableColors: string[];
@@ -4415,14 +4415,14 @@ declare namespace Electron {
 
   class TouchBarGroup extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-group
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-group
 
     constructor(options: TouchBarGroupConstructorOptions);
   }
 
   class TouchBarLabel extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-label
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-label
 
     constructor(options: TouchBarLabelConstructorOptions);
     label: string;
@@ -4431,7 +4431,7 @@ declare namespace Electron {
 
   class TouchBarPopover extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-popover
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-popover
 
     constructor(options: TouchBarPopoverConstructorOptions);
     icon: NativeImage;
@@ -4440,7 +4440,7 @@ declare namespace Electron {
 
   class TouchBarScrubber extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-scrubber
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-scrubber
 
     constructor(options: TouchBarScrubberConstructorOptions);
     continuous: boolean;
@@ -4453,7 +4453,7 @@ declare namespace Electron {
 
   class TouchBarSegmentedControl extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-segmented-control
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-segmented-control
 
     constructor(options: TouchBarSegmentedControlConstructorOptions);
     segments: SegmentedControlSegment[];
@@ -4463,7 +4463,7 @@ declare namespace Electron {
 
   class TouchBarSlider extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-slider
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-slider
 
     constructor(options: TouchBarSliderConstructorOptions);
     label: string;
@@ -4474,14 +4474,14 @@ declare namespace Electron {
 
   class TouchBarSpacer extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-spacer
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar-spacer
 
     constructor(options: TouchBarSpacerConstructorOptions);
   }
 
   class TouchBar extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar
+    // Docs: http://deskgap.atom.io/docs/api/touch-bar
 
     constructor(options: TouchBarConstructorOptions);
     escapeItem: (TouchBarButton | TouchBarColorPicker | TouchBarGroup | TouchBarLabel | TouchBarPopover | TouchBarScrubber | TouchBarSegmentedControl | TouchBarSlider | TouchBarSpacer | null);
@@ -4498,7 +4498,7 @@ declare namespace Electron {
 
   interface Transaction {
 
-    // Docs: http://electron.atom.io/docs/api/structures/transaction
+    // Docs: http://deskgap.atom.io/docs/api/structures/transaction
 
     /**
      * The error code if an error occurred while processing the transaction.
@@ -4530,7 +4530,7 @@ declare namespace Electron {
 
   class Tray extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/tray
+    // Docs: http://deskgap.atom.io/docs/api/tray
 
     /**
      * Emitted when the tray balloon is clicked.
@@ -4840,7 +4840,7 @@ declare namespace Electron {
 
   interface UploadBlob {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-blob
+    // Docs: http://deskgap.atom.io/docs/api/structures/upload-blob
 
     /**
      * UUID of blob data to upload.
@@ -4854,7 +4854,7 @@ declare namespace Electron {
 
   interface UploadData {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-data
+    // Docs: http://deskgap.atom.io/docs/api/structures/upload-data
 
     /**
      * UUID of blob data. Use method to retrieve the data.
@@ -4872,7 +4872,7 @@ declare namespace Electron {
 
   interface UploadFile {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-file
+    // Docs: http://deskgap.atom.io/docs/api/structures/upload-file
 
     /**
      * Path of file to be uploaded.
@@ -4898,7 +4898,7 @@ declare namespace Electron {
 
   interface UploadRawData {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-raw-data
+    // Docs: http://deskgap.atom.io/docs/api/structures/upload-raw-data
 
     /**
      * Data to be uploaded.
@@ -4912,7 +4912,7 @@ declare namespace Electron {
 
   class WebContents extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/web-contents
+    // Docs: http://deskgap.atom.io/docs/api/web-contents
 
     static fromId(id: number): WebContents;
     static getAllWebContents(): WebContents[];
@@ -5460,7 +5460,7 @@ declare namespace Electron {
      * Emitted when the page requests to open a new window for a url. It could be
      * requested by window.open or an external link like <a target='_blank'>. By
      * default a new BrowserWindow will be created for the url. Calling
-     * event.preventDefault() will prevent Electron from automatically creating a new
+     * event.preventDefault() will prevent DeskGap from automatically creating a new
      * BrowserWindow. If you call event.preventDefault() and manually create a new
      * BrowserWindow then you must set event.newGuest to reference the new
      * BrowserWindow instance, failing to do so may result in unexpected behavior. For
@@ -5479,7 +5479,7 @@ declare namespace Electron {
                                         */
                                        options: any,
                                        /**
-                                        * The non-standard features (features not handled by Chromium or Electron) given
+                                        * The non-standard features (features not handled by Chromium or DeskGap) given
                                         * to `window.open()`.
                                         */
                                        additionalFeatures: string[],
@@ -5501,7 +5501,7 @@ declare namespace Electron {
                                         */
                                        options: any,
                                        /**
-                                        * The non-standard features (features not handled by Chromium or Electron) given
+                                        * The non-standard features (features not handled by Chromium or DeskGap) given
                                         * to `window.open()`.
                                         */
                                        additionalFeatures: string[],
@@ -5523,7 +5523,7 @@ declare namespace Electron {
                                         */
                                        options: any,
                                        /**
-                                        * The non-standard features (features not handled by Chromium or Electron) given
+                                        * The non-standard features (features not handled by Chromium or DeskGap) given
                                         * to `window.open()`.
                                         */
                                        additionalFeatures: string[],
@@ -5545,7 +5545,7 @@ declare namespace Electron {
                                         */
                                        options: any,
                                        /**
-                                        * The non-standard features (features not handled by Chromium or Electron) given
+                                        * The non-standard features (features not handled by Chromium or DeskGap) given
                                         * to `window.open()`.
                                         */
                                        additionalFeatures: string[],
@@ -5961,7 +5961,7 @@ declare namespace Electron {
      */
     pasteAndMatchStyle(): void;
     /**
-     * Prints window's web page. When silent is set to true, Electron will pick the
+     * Prints window's web page. When silent is set to true, DeskGap will pick the
      * system's default printer if deviceName is empty and the default settings for
      * printing. Calling window.print() in web page is equivalent to calling
      * webContents.print({silent: false, printBackground: false, deviceName: ''}). Use
@@ -6029,7 +6029,7 @@ declare namespace Electron {
     /**
      * Uses the devToolsWebContents as the target WebContents to show devtools. The
      * devToolsWebContents must not have done any navigation, and it should not be used
-     * for other purposes after the call. By default Electron manages the devtools by
+     * for other purposes after the call. By default DeskGap manages the devtools by
      * creating an internal WebContents with native view, which developers have very
      * limited control of. With the setDevToolsWebContents method, developers can use
      * any WebContents to show the devtools in it, including BrowserWindow, BrowserView
@@ -6130,12 +6130,12 @@ declare namespace Electron {
 
   interface WebFrame extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/web-frame
+    // Docs: http://deskgap.atom.io/docs/api/web-frame
 
     /**
      * Attempts to free memory that is no longer being used (like images from a
      * previous navigation). Note that blindly calling this method probably makes
-     * Electron slower since it will have to refill these emptied caches, you should
+     * DeskGap slower since it will have to refill these emptied caches, you should
      * only call it if an event in your app has occurred that makes you think your page
      * is actually using less memory (i.e. you have navigated from a super heavy page
      * to a mostly empty one, and intend to stay there).
@@ -6251,7 +6251,7 @@ declare namespace Electron {
 
   class WebRequest extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/web-request
+    // Docs: http://deskgap.atom.io/docs/api/web-request
 
     /**
      * The listener will be called with listener(details) when a server initiated
@@ -6345,7 +6345,7 @@ declare namespace Electron {
 
   interface WebSource {
 
-    // Docs: http://electron.atom.io/docs/api/structures/web-source
+    // Docs: http://deskgap.atom.io/docs/api/structures/web-source
 
     code: string;
     /**
@@ -6357,7 +6357,7 @@ declare namespace Electron {
 
   interface WebviewTag extends HTMLElement {
 
-    // Docs: http://electron.atom.io/docs/api/webview-tag
+    // Docs: http://deskgap.atom.io/docs/api/webview-tag
 
     /**
      * Fired when a load has committed. This includes navigation within the current
@@ -7018,7 +7018,7 @@ declare namespace Electron {
      */
     kiosk?: boolean;
     /**
-     * Default window title. Default is "Electron".
+     * Default window title. Default is "DeskGap".
      */
     title?: string;
     /**
@@ -7903,7 +7903,7 @@ declare namespace Electron {
      */
     cancelId?: number;
     /**
-     * On Windows Electron will try to figure out which one of the buttons are common
+     * On Windows DeskGap will try to figure out which one of the buttons are common
      * buttons (like "Cancel" or "Yes"), and show the others as command links in the
      * dialog. This can make the dialog appear in the style of modern Windows apps. If
      * you don't like this behavior, you can set noLink to true.
@@ -8311,7 +8311,7 @@ declare namespace Electron {
     privateBytes: number;
     /**
      * The amount of memory shared between processes, typically memory consumed by the
-     * Electron code itself.
+     * DeskGap code itself.
      */
     sharedBytes: number;
   }
@@ -8792,9 +8792,9 @@ declare namespace Electron {
      */
     chrome?: string;
     /**
-     * A String representing Electron's version string.
+     * A String representing DeskGap's version string.
      */
-    electron?: string;
+    deskgap?: string;
   }
 
   interface WillNavigateEvent extends Event {
@@ -8927,7 +8927,7 @@ declare namespace Electron {
      * compatible with the Chromium OS-level sandbox and disabling the Node.js engine.
      * This is not the same as the nodeIntegration option and the APIs available to the
      * preload script are more limited. Read more about the option . This option is
-     * currently experimental and may change or be removed in future Electron releases.
+     * currently experimental and may change or be removed in future DeskGap releases.
      */
     sandbox?: boolean;
     /**
@@ -9047,18 +9047,18 @@ declare namespace Electron {
      */
     offscreen?: boolean;
     /**
-     * Whether to run Electron APIs and the specified preload script in a separate
+     * Whether to run DeskGap APIs and the specified preload script in a separate
      * JavaScript context. Defaults to false. The context that the preload script runs
      * in will still have full access to the document and window globals but it will
      * use its own set of JavaScript builtins (Array, Object, JSON, etc.) and will be
      * isolated from any changes made to the global environment by the loaded page. The
-     * Electron API will only be available in the preload script and not the loaded
+     * DeskGap API will only be available in the preload script and not the loaded
      * page. This option should be used when loading potentially untrusted remote
      * content to ensure the loaded content cannot tamper with the preload script and
-     * any Electron APIs being used. This option uses the same technique used by . You
-     * can access this context in the dev tools by selecting the 'Electron Isolated
+     * any DeskGap APIs being used. This option uses the same technique used by . You
+     * can access this context in the dev tools by selecting the 'DeskGap Isolated
      * Context' entry in the combo box at the top of the Console tab. This option is
-     * currently experimental and may change or be removed in future Electron releases.
+     * currently experimental and may change or be removed in future DeskGap releases.
      */
     contextIsolation?: boolean;
     /**
@@ -9127,12 +9127,12 @@ declare namespace Electron {
 
 }
 
-declare module 'electron' {
-  export = Electron;
+declare module 'deskgap' {
+  export = DeskGap;
 }
 
 interface NodeRequireFunction {
-  (moduleName: 'electron'): typeof Electron;
+  (moduleName: 'deskgap'): typeof DeskGap;
 }
 
 interface File {
@@ -9148,16 +9148,16 @@ declare module 'original-fs' {
 }
 
 interface Document {
-  createElement(tagName: 'webview'): Electron.WebviewTag;
+  createElement(tagName: 'webview'): DeskGap.WebviewTag;
 }
 
 declare namespace NodeJS {
   interface Process extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/process
+    // Docs: http://deskgap.atom.io/docs/api/process
 
     /**
-     * Emitted when Electron has loaded its internal initialization script and is
+     * Emitted when DeskGap has loaded its internal initialization script and is
      * beginning to load the web page or the main script. It can be used by the preload
      * script to add removed Node global symbols back to the global scope when node
      * integration is turned off:
@@ -9170,23 +9170,23 @@ declare namespace NodeJS {
      * Causes the main thread of the current process crash.
      */
     crash(): void;
-    getCPUUsage(): Electron.CPUUsage;
+    getCPUUsage(): DeskGap.CPUUsage;
     /**
      * Returns an object with V8 heap statistics. Note that all statistics are reported
      * in Kilobytes.
      */
-    getHeapStatistics(): Electron.HeapStatistics;
-    getIOCounters(): Electron.IOCounters;
+    getHeapStatistics(): DeskGap.HeapStatistics;
+    getIOCounters(): DeskGap.IOCounters;
     /**
      * Returns an object giving memory usage statistics about the current process. Note
      * that all statistics are reported in Kilobytes.
      */
-    getProcessMemoryInfo(): Electron.ProcessMemoryInfo;
+    getProcessMemoryInfo(): DeskGap.ProcessMemoryInfo;
     /**
      * Returns an object giving memory usage statistics about the entire system. Note
      * that all statistics are reported in Kilobytes.
      */
-    getSystemMemoryInfo(): Electron.SystemMemoryInfo;
+    getSystemMemoryInfo(): DeskGap.SystemMemoryInfo;
     /**
      * Causes the main thread of the current process hang.
      */
@@ -9253,7 +9253,7 @@ declare namespace NodeJS {
     windowsStore?: boolean;
   }
   interface ProcessVersions {
-    electron: string;
+    deskgap: string;
     chrome: string;
   }
 }

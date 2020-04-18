@@ -1,7 +1,7 @@
 import { DebugLogger } from "builder-util/out/DebugLogger"
-import { Configuration, Platform } from "electron-builder"
+import { Configuration, Platform } from "deskgap-builder"
 import { validateConfig } from "app-builder-lib/out/util/config"
-import { createYargs, configureBuildCommand, normalizeOptions, CliOptions } from "electron-builder/out/builder"
+import { createYargs, configureBuildCommand, normalizeOptions, CliOptions } from "deskgap-builder/out/builder"
 import { app, appThrows, linuxDirTarget } from "./helpers/packTester"
 
 test.ifAll.ifDevOrLinuxCi("validation", appThrows({
@@ -21,7 +21,7 @@ test.skip.ifDevOrLinuxCi("appId as object", appThrows({
   } as any,
 }))
 
-// https://github.com/electron-userland/electron-builder/issues/1302
+// https://github.com/deskgap-userland/deskgap-builder/issues/1302
 test.ifAll.ifDevOrLinuxCi("extraFiles", app({
   targets: Platform.LINUX.createTarget("appimage"),
   config: {
