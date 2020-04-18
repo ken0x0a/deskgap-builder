@@ -9,8 +9,8 @@ import { Minimatch } from "minimatch"
 import * as path from "path"
 import { AppInfo } from "./appInfo"
 import { checkFileInArchive } from "./asar/asarFileChecker"
-import { AsarPackager } from "./asar/asarUtil"
-import { computeData } from "./asar/integrity"
+// import { AsarPackager } from "./asar/asarUtil"
+// import { computeData } from "./asar/integrity"
 import { copyFiles, FileMatcher, getFileMatchers, GetFileMatchersOptions, getMainFileMatchers, getNodeModuleFileMatcher } from "./fileMatcher"
 import { createTransformer, isDeskGapCompileUsed } from "./fileTransformer"
 import { Framework, isDeskGapBased } from "./Framework"
@@ -216,7 +216,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
       await framework.beforeCopyExtraFiles({
         packager: this,
         appOutDir,
-        asarIntegrity: asarOptions == null ? null : await computeData(resourcesPath, asarOptions.externalAllowed ? {externalAllowed: true} : null),
+        // asarIntegrity: asarOptions == null ? null : await computeData(resourcesPath, asarOptions.externalAllowed ? {externalAllowed: true} : null),
         platformName,
       })
     }
@@ -318,8 +318,8 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
             await transformFiles(transformer, fileSet)
           }
 
-          await new AsarPackager(appDir, resourcePath, asarOptions, fileMatcher == null ? null : fileMatcher.createFilter())
-            .pack(fileSets, this)
+          // await new AsarPackager(appDir, resourcePath, asarOptions, fileMatcher == null ? null : fileMatcher.createFilter())
+          //   .pack(fileSets, this)
         }))
     }
   }

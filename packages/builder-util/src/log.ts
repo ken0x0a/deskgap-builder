@@ -1,4 +1,5 @@
-import chalk, { Chalk } from "chalk"
+import * as chalk from "chalk"
+import type { Chalk } from "chalk"
 import _debug from "debug"
 import WritableStream = NodeJS.WritableStream
 
@@ -19,10 +20,9 @@ export type LogLevel = "info" | "warn" | "debug" | "notice" | "error"
 export const PADDING = 2
 
 export class Logger {
-  constructor(protected readonly stream: WritableStream) {
-  }
+  constructor(protected readonly stream: WritableStream) {}
 
-  messageTransformer: ((message: string, level: LogLevel) => string) = it => it
+  messageTransformer: (message: string, level: LogLevel) => string = (it) => it
 
   filePath(file: string) {
     const cwd = process.cwd()
@@ -55,8 +55,7 @@ export class Logger {
   private doLog(message: string | undefined | Error, messageOrFields: Fields | null | string, level: LogLevel) {
     if (message === undefined) {
       this._doLog(messageOrFields as string, null, level)
-    }
-    else {
+    } else {
       this._doLog(message, messageOrFields as Fields | null, level)
     }
   }
@@ -65,19 +64,32 @@ export class Logger {
     // noinspection SuspiciousInstanceOfGuard
     if (message instanceof Error) {
       message = message.stack || message.toString()
-    }
-    else {
+    } else {
       message = message.toString()
     }
 
     const levelIndicator = level === "error" ? "⨯" : "•"
     const color = LEVEL_TO_COLOR[level]
     this.stream.write(`${" ".repeat(PADDING)}${color(levelIndicator)} `)
-    this.stream.write(Logger.createMessage(this.messageTransformer(message, level), fields, level, color, PADDING + 2 /* level indicator and space */))
+    this.stream.write(
+      Logger.createMessage(
+        this.messageTransformer(message, level),
+        fields,
+        level,
+        color,
+        PADDING + 2 /* level indicator and space */
+      )
+    )
     this.stream.write("\n")
   }
 
-  static createMessage(message: string, fields: Fields | null, level: LogLevel, color: (it: string) => string, messagePadding = 0): string {
+  static createMessage(
+    message: string,
+    fields: Fields | null,
+    level: LogLevel,
+    color: (it: string) => string,
+    messagePadding = 0
+  ): string {
     if (fields == null) {
       return message
     }
@@ -92,14 +104,11 @@ export class Logger {
       if (fieldValue != null && typeof fieldValue === "string" && fieldValue.includes("\n")) {
         valuePadding = " ".repeat(messagePadding + message.length + fieldPadding.length + 2)
         fieldValue = "\n" + valuePadding + fieldValue.replace(/\n/g, `\n${valuePadding}`)
-      }
-      else if (Array.isArray(fieldValue)) {
+      } else if (Array.isArray(fieldValue)) {
         fieldValue = JSON.stringify(fieldValue)
-      }
-      else if (Array.isArray(fieldValue)) {
+      } else if (Array.isArray(fieldValue)) {
         fieldValue = JSON.stringify(fieldValue)
-      }
-      else if (typeof fieldValue === "object") {
+      } else if (typeof fieldValue === "object") {
         // fieldValue = safeStringifyJson(fieldValue)
       }
 
@@ -107,8 +116,7 @@ export class Logger {
       if (++counter !== fieldNames.length) {
         if (valuePadding == null) {
           text += " "
-        }
-        else {
+        } else {
           text += "\n" + valuePadding
         }
       }
@@ -119,8 +127,7 @@ export class Logger {
   log(message: string): void {
     if (printer == null) {
       this.stream.write(`${message}\n`)
-    }
-    else {
+    } else {
       printer(message)
     }
   }

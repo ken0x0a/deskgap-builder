@@ -7,8 +7,8 @@
     "out"
   ],
   "bin": {
-    "deskgap-builder": "./out/cli/cli.js",
-    "install-app-deps": "./out/cli/install-app-deps.js"
+    "deskgap-builder": "./bin/main.js",
+    "install-app-deps": "./bin/install-app-deps.js"
   },
   "repository": "deskgap-userland/deskgap-builder",
   "engines": {
@@ -50,7 +50,7 @@
     "bluebird-lst": "^1.0.9",
     "builder-util": "workspace:*",
     "builder-util-runtime": "workspace:*",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "dmg-builder": "workspace:*",
     "fs-extra": "^9.0.0",
     "is-ci": "^2.0.0",
