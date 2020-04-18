@@ -1,3 +1,10 @@
+This is a fork of electron-builder.
+I created another this another repository, as:
+
+- It's impossible to have 2 forks on GitHub;
+- I might do PR to `electron-builder` someday;
+
+
 # electron-builder [![npm version](https://img.shields.io/npm/v/electron-builder.svg?label=latest)](https://yarn.pm/electron-builder) [![downloads per month](https://img.shields.io/npm/dm/electron-builder.svg)](https://yarn.pm/electron-builder) [![donate](https://img.shields.io/badge/donate-donorbox-green.svg)](https://www.electron.build/donate) [![project chat](https://img.shields.io/badge/chat-on_zulip-brightgreen.svg)](https://electron-builder.zulipchat.com)
 A complete solution to package and build a ready for distribution [Electron](https://electronjs.org), [Proton Native](https://proton-native.js.org/) app for macOS, Windows and Linux with “auto update” support out of the box.
 
@@ -24,12 +31,12 @@ See documentation on [electron.build](https://www.electron.build).
 * [Proton Native](https://www.electron.build/configuration/configuration/#proton-native) support.
 * Downloads all required tools files on demand automatically (e.g. to code sign windows application, to make AppX), no need to setup.
 
-| Question | Answer |
-|----------|-------|
-| “I want to configure electron-builder” | [See options](https://electron.build/configuration/configuration) |
-| “I have a question” | [Open an issue](https://github.com/electron-userland/electron-builder/issues) or [join the chat](https://electron-builder.zulipchat.com/) |
-| “I found a bug” | [Open an issue](https://github.com/electron-userland/electron-builder/issues/new) |
-| “I want to support development” | [Donate](https://www.electron.build/donate) |
+| Question                               | Answer                                                                                                                                    |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| “I want to configure electron-builder” | [See options](https://electron.build/configuration/configuration)                                                                         |
+| “I have a question”                    | [Open an issue](https://github.com/electron-userland/electron-builder/issues) or [join the chat](https://electron-builder.zulipchat.com/) |
+| “I found a bug”                        | [Open an issue](https://github.com/electron-userland/electron-builder/issues/new)                                                         |
+| “I want to support development”        | [Donate](https://www.electron.build/donate)                                                                                               |
 
 ## Installation
 [Yarn](http://yarnpkg.com/) is [strongly](https://github.com/electron-userland/electron-builder/issues/1147#issuecomment-276284477) recommended instead of npm.
