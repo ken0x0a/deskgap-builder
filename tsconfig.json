@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "resolveJsonModule": true,
+  },
+  "references": [
+    { "path": "packages/app-builder-lib" },
+    { "path": "packages/builder-util" },
+    { "path": "packages/builder-util-runtime" },
+    { "path": "packages/deskgap-builder" },
+    { "path": "packages/deskgap-builder-squirrel-windows" },
+    // { "path": "packages/deskgap-forge-maker-appimage" },
+    // { "path": "packages/deskgap-forge-maker-nsis" },
+    // { "path": "packages/deskgap-forge-maker-nsis-web" },
+    // { "path": "packages/deskgap-forge-maker-snap" },
+    { "path": "packages/deskgap-publish" },
+    { "path": "packages/deskgap-updater" },
+    { "path": "packages/dmg-builder" },
+  ],
+  "include": [],
+  "exclude": ["test"]
+}

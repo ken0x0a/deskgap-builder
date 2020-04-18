@@ -15,5 +15,8 @@
   ],
   "exclude": [
     "../../typings/deskgap.d.ts"
+  ],
+  "references": [
+    { "path": "../app-builder-lib" },
   ]
 }
