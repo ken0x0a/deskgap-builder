@@ -1,4 +1,17 @@
-import { addValue, Arch, archFromString, AsyncTaskManager, DebugLogger, deepAssign, exec, InvalidConfigurationError, log, safeStringifyJson, serializeToYaml, TmpDir } from "builder-util"
+import {
+  addValue,
+  Arch,
+  archFromString,
+  AsyncTaskManager,
+  DebugLogger,
+  deepAssign,
+  exec,
+  InvalidConfigurationError,
+  log,
+  safeStringifyJson,
+  serializeToYaml,
+  TmpDir,
+} from "builder-util"
 import { CancellationToken } from "builder-util-runtime"
 import { executeFinally, orNullIfFileNotExist } from "builder-util/out/promise"
 import { EventEmitter } from "events"
@@ -18,7 +31,7 @@ import { ArtifactBuildStarted, ArtifactCreated, PackagerOptions } from "./packag
 import { PlatformPackager, resolveFunction } from "./platformPackager"
 import { ProtonFramework } from "./ProtonFramework"
 import { computeArchToTargetNamesMap, createTargets, NoOpTarget } from "./targets/targetFactory"
-import { computeDefaultAppDirectory, getConfig, validateConfig } from "./util/config"
+import { computeDefaultAppDirectory, getConfig, validateConfig, PACKAGE_VERSION } from "./util/config"
 import { expandMacro } from "./util/macroExpander"
 import { createLazyProductionDeps, NodeModuleDirInfo } from "./util/packageDependencies"
 import { checkMetadata, readPackageJson } from "./util/packageMetadata"
@@ -29,8 +42,6 @@ import { WinPackager } from "./winPackager"
 function addHandler(emitter: EventEmitter, event: string, handler: (...args: Array<any>) => void) {
   emitter.on(event, handler)
 }
-
-declare const PACKAGE_VERSION: string
 
 async function createFrameworkInfo(configuration: Configuration, packager: Packager): Promise<Framework> {
   let framework = configuration.framework
@@ -51,11 +62,9 @@ async function createFrameworkInfo(configuration: Configuration, packager: Packa
   const isUseLaunchUi = configuration.launchUiVersion !== false
   if (framework === "proton" || framework === "proton-native") {
     return new ProtonFramework(nodeVersion, distMacOsName, isUseLaunchUi)
-  }
-  else if (framework === "libui") {
+  } else if (framework === "libui") {
     return new LibUiFramework(nodeVersion, distMacOsName, isUseLaunchUi)
-  }
-  else {
+  } else {
     throw new InvalidConfigurationError(`Unknown framework: ${framework}`)
   }
 }
@@ -107,7 +116,9 @@ export class Packager {
 
   readonly tempDirManager = new TmpDir("packager")
 
-  private _repositoryInfo = new Lazy<SourceRepositoryInfo | null>(() => getRepositoryInfo(this.projectDir, this.metadata, this.devMetadata))
+  private _repositoryInfo = new Lazy<SourceRepositoryInfo | null>(() =>
+    getRepositoryInfo(this.projectDir, this.metadata, this.devMetadata)
+  )
 
   private readonly afterPackHandlers: Array<(context: AfterPackContext) => Promise<any> | null> = []
 
@@ -139,7 +150,11 @@ export class Packager {
     return result
   }
 
-  stageDirPathCustomizer: (target: Target, packager: PlatformPackager<any>, arch: Arch) => string = (target, packager, arch) => {
+  stageDirPathCustomizer: (target: Target, packager: PlatformPackager<any>, arch: Arch) => string = (
+    target,
+    packager,
+    arch
+  ) => {
     return path.join(target.outDir, `__${target.name}-${getArtifactArchName(arch, target.name)}`)
   }
 
@@ -175,7 +190,9 @@ export class Packager {
       throw new InvalidConfigurationError("devMetadata in the options is deprecated, please use config instead")
     }
     if ("extraMetadata" in options) {
-      throw new InvalidConfigurationError("extraMetadata in the options is deprecated, please use config.extraMetadata instead")
+      throw new InvalidConfigurationError(
+        "extraMetadata in the options is deprecated, please use config.extraMetadata instead"
+      )
     }
 
     const targets = options.targets || new Map<Platform, Map<Arch, Array<string>>>()
@@ -210,8 +227,7 @@ export class Packager {
         const suffixPos = type.lastIndexOf(":")
         if (suffixPos > 0) {
           addValue(archToType, archFromString(type.substring(suffixPos + 1)), type.substring(0, suffixPos))
-        }
-        else {
+        } else {
           for (const arch of commonArch(true)) {
             addValue(archToType, arch, type)
           }
@@ -233,13 +249,12 @@ export class Packager {
     this._appDir = this.projectDir
     this.options = {
       ...options,
-      prepackaged: options.prepackaged == null ? null : path.resolve(this.projectDir, options.prepackaged)
+      prepackaged: options.prepackaged == null ? null : path.resolve(this.projectDir, options.prepackaged),
     }
 
     try {
-      log.info({version: PACKAGE_VERSION, os: require("os").release()}, "deskgap-builder")
-    }
-    catch (e) {
+      log.info({ version: PACKAGE_VERSION, os: require("os").release() }, "deskgap-builder")
+    } catch (e) {
       // error in dev mode without babel
       if (!(e instanceof ReferenceError)) {
         throw e
@@ -257,11 +272,14 @@ export class Packager {
   }
 
   async callArtifactBuildStarted(event: ArtifactBuildStarted, logFields?: any): Promise<void> {
-    log.info(logFields || {
-      target: event.targetPresentableName,
-      arch: event.arch == null ? null : Arch[event.arch],
-      file: log.filePath(event.file),
-    }, "building")
+    log.info(
+      logFields || {
+        target: event.targetPresentableName,
+        arch: event.arch == null ? null : Arch[event.arch],
+        file: log.filePath(event.file),
+      },
+      "building"
+    )
     const handler = resolveFunction(this.config.artifactBuildStarted, "artifactBuildStarted")
     if (handler != null) {
       await Promise.resolve(handler(event))
@@ -298,8 +316,11 @@ export class Packager {
       // it is a path to config file
       configPath = configFromOptions
       configFromOptions = null
-    }
-    else if (configFromOptions != null && configFromOptions.extends != null && configFromOptions.extends.includes(".")) {
+    } else if (
+      configFromOptions != null &&
+      configFromOptions.extends != null &&
+      configFromOptions.extends.includes(".")
+    ) {
       configPath = configFromOptions.extends
       delete configFromOptions.extends
     }
@@ -310,27 +331,33 @@ export class Packager {
     this._devMetadata = await orNullIfFileNotExist(readPackageJson(devPackageFile))
 
     const devMetadata = this.devMetadata
-    const configuration = await getConfig(projectDir, configPath, configFromOptions, new Lazy(() => Promise.resolve(devMetadata)))
+    const configuration = await getConfig(
+      projectDir,
+      configPath,
+      configFromOptions,
+      new Lazy(() => Promise.resolve(devMetadata))
+    )
     if (log.isDebugEnabled) {
-      log.debug({config: getSafeEffectiveConfig(configuration)}, "effective config")
+      log.debug({ config: getSafeEffectiveConfig(configuration) }, "effective config")
     }
 
     this._appDir = await computeDefaultAppDirectory(projectDir, configuration.directories!!.app)
     this.isTwoPackageJsonProjectLayoutUsed = this._appDir !== projectDir
 
-    const appPackageFile = this.isTwoPackageJsonProjectLayoutUsed ? path.join(this.appDir, "package.json") : devPackageFile
+    const appPackageFile = this.isTwoPackageJsonProjectLayoutUsed
+      ? path.join(this.appDir, "package.json")
+      : devPackageFile
 
     // tslint:disable:prefer-conditional-expression
     if (this.devMetadata != null && !this.isTwoPackageJsonProjectLayoutUsed) {
       this._metadata = this.devMetadata
-    }
-    else {
+    } else {
       this._metadata = await this.readProjectMetadataIfTwoPackageStructureOrPrepacked(appPackageFile)
     }
     deepAssign(this.metadata, configuration.extraMetadata)
 
     if (this.isTwoPackageJsonProjectLayoutUsed) {
-      log.debug({devPackageFile, appPackageFile}, "two package.json structure is used")
+      log.debug({ devPackageFile, appPackageFile }, "two package.json structure is used")
     }
     checkMetadata(this.metadata, this.devMetadata, appPackageFile, devPackageFile)
 
@@ -338,7 +365,12 @@ export class Packager {
   }
 
   // external caller of this method always uses isTwoPackageJsonProjectLayoutUsed=false and appDir=projectDir, no way (and need) to use another values
-  async _build(configuration: Configuration, metadata: Metadata, devMetadata: Metadata | null, repositoryInfo?: SourceRepositoryInfo): Promise<BuildResult> {
+  async _build(
+    configuration: Configuration,
+    metadata: Metadata,
+    devMetadata: Metadata | null,
+    repositoryInfo?: SourceRepositoryInfo
+  ): Promise<BuildResult> {
     await validateConfig(configuration, this.debugLogger)
     this._configuration = configuration
     this._metadata = metadata
@@ -351,19 +383,22 @@ export class Packager {
     this._appInfo = new AppInfo(this, null)
     this._framework = await createFrameworkInfo(this.config, this)
 
-    const commonOutDirWithoutPossibleOsMacro = path.resolve(this.projectDir, expandMacro(configuration.directories!!.output!!, null, this._appInfo, {
-      os: "",
-    }))
+    const commonOutDirWithoutPossibleOsMacro = path.resolve(
+      this.projectDir,
+      expandMacro(configuration.directories!!.output!!, null, this._appInfo, {
+        os: "",
+      })
+    )
 
     if (!isCI && (process.stdout as any).isTTY) {
       const effectiveConfigFile = path.join(commonOutDirWithoutPossibleOsMacro, "builder-effective-config.yaml")
-      log.info({file: log.filePath(effectiveConfigFile)}, "writing effective config")
+      log.info({ file: log.filePath(effectiveConfigFile) }, "writing effective config")
       await outputFile(effectiveConfigFile, getSafeEffectiveConfig(configuration))
     }
 
     // because artifact event maybe dispatched several times for different publish providers
     const artifactPaths = new Set<string>()
-    this.artifactCreated(event => {
+    this.artifactCreated((event) => {
       if (event.file != null) {
         artifactPaths.add(event.file)
       }
@@ -378,8 +413,8 @@ export class Packager {
       const toDispose = this.toDispose.slice()
       this.toDispose.length = 0
       for (const disposer of toDispose) {
-        await disposer().catch(e => {
-          log.warn({error: e}, "cannot dispose")
+        await disposer().catch((e) => {
+          log.warn({ error: e }, "cannot dispose")
         })
       }
     })
@@ -419,7 +454,9 @@ export class Packager {
       }
 
       if (platform === Platform.MAC && process.platform === Platform.WINDOWS.nodeName) {
-        throw new InvalidConfigurationError("Build for macOS is supported only on macOS, please see https://deskgap.build/multi-platform-build")
+        throw new InvalidConfigurationError(
+          "Build for macOS is supported only on macOS, please see https://deskgap.build/multi-platform-build"
+        )
       }
 
       const packager = this.createHelper(platform)
@@ -438,8 +475,16 @@ export class Packager {
         }
 
         // support os and arch macro in output value
-        const outDir = path.resolve(this.projectDir, packager.expandMacro(this._configuration!!.directories!!.output!!, Arch[arch]))
-        const targetList = createTargets(nameToTarget, targetNames.length === 0 ? packager.defaultTarget : targetNames, outDir, packager)
+        const outDir = path.resolve(
+          this.projectDir,
+          packager.expandMacro(this._configuration!!.directories!!.output!!, Arch[arch])
+        )
+        const targetList = createTargets(
+          nameToTarget,
+          targetNames.length === 0 ? packager.defaultTarget : targetNames,
+          outDir,
+          packager
+        )
         await createOutDirIfNeed(targetList, createdOutDirs)
         await packager.pack(outDir, arch, targetList, taskManager)
       }
@@ -486,17 +531,17 @@ export class Packager {
       return
     }
 
-    const frameworkInfo = {version: this.framework.version, useCustomDist: true}
+    const frameworkInfo = { version: this.framework.version, useCustomDist: true }
     const config = this.config
     if (config.nodeGypRebuild === true) {
-      log.info({arch: Arch[arch]}, "executing node-gyp rebuild")
+      log.info({ arch: Arch[arch] }, "executing node-gyp rebuild")
       await exec(process.platform === "win32" ? "node-gyp.cmd" : "node-gyp", ["rebuild"], {
         env: getGypEnv(frameworkInfo, platform.nodeName, Arch[arch], true),
       })
     }
 
     if (config.npmRebuild === false) {
-      log.info({reason: "npmRebuild is set to false"}, "skipped dependencies rebuild")
+      log.info({ reason: "npmRebuild is set to false" }, "skipped dependencies rebuild")
       return
     }
 
@@ -506,7 +551,7 @@ export class Packager {
         appDir: this.appDir,
         deskgapVersion: this.config.deskgapVersion!,
         platform,
-        arch: Arch[arch]
+        arch: Arch[arch],
       })
 
       // If beforeBuild resolves to false, it means that handling node_modules is done outside of deskgap-builder.
@@ -517,9 +562,11 @@ export class Packager {
     }
 
     if (config.buildDependenciesFromSource === true && platform.nodeName !== process.platform) {
-      log.info({reason: "platform is different and buildDependenciesFromSource is set to true"}, "skipped dependencies rebuild")
-    }
-    else {
+      log.info(
+        { reason: "platform is different and buildDependenciesFromSource is set to true" },
+        "skipped dependencies rebuild"
+      )
+    } else {
       await installOrRebuild(config, this.appDir, {
         frameworkInfo,
         platform: platform.nodeName,
@@ -561,11 +608,15 @@ function createOutDirIfNeed(targetList: Array<Target>, createdOutDirs: Set<strin
     return Promise.resolve()
   }
 
-  return Promise.all(Array.from(ourDirs).sort().map(dir => {
-    return mkdirs(dir)
-      .then(() => chmod(dir, 0o755) /* set explicitly */)
-      .then(() => createdOutDirs.add(dir))
-  }))
+  return Promise.all(
+    Array.from(ourDirs)
+      .sort()
+      .map((dir) => {
+        return mkdirs(dir)
+          .then(() => chmod(dir, 0o755) /* set explicitly */)
+          .then(() => createdOutDirs.add(dir))
+      })
+  )
 }
 
 export interface BuildResult {

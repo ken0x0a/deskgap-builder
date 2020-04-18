@@ -1,7 +1,7 @@
 import { UpdateInfo } from "builder-util-runtime"
 import { createHash } from "crypto"
 import { createReadStream } from "fs"
-import isEqual from "lodash.isequal"
+import { isEqual } from "lodash"
 import { Logger, ResolvedUpdateFileInfo } from "./main"
 import { pathExists, readJson, emptyDir, outputJson, unlink } from "fs-extra"
 import * as path from "path"
@@ -14,8 +14,7 @@ export class DownloadedUpdateHelper {
   private versionInfo: UpdateInfo | null = null
   private fileInfo: ResolvedUpdateFileInfo | null = null
 
-  constructor(readonly cacheDir: string) {
-  }
+  constructor(readonly cacheDir: string) {}
 
   private _downloadedFileInfo: CachedUpdateInfo | null = null
   get downloadedFileInfo(): CachedUpdateInfo | null {
@@ -34,14 +33,22 @@ export class DownloadedUpdateHelper {
     return path.join(this.cacheDir, "pending")
   }
 
-  async validateDownloadedPath(updateFile: string, updateInfo: UpdateInfo, fileInfo: ResolvedUpdateFileInfo, logger: Logger): Promise<string | null> {
+  async validateDownloadedPath(
+    updateFile: string,
+    updateInfo: UpdateInfo,
+    fileInfo: ResolvedUpdateFileInfo,
+    logger: Logger
+  ): Promise<string | null> {
     if (this.versionInfo != null && this.file === updateFile && this.fileInfo != null) {
       // update has already been downloaded from this running instance
       // check here only existence, not checksum
-      if (isEqual(this.versionInfo, updateInfo) && isEqual(this.fileInfo.info, fileInfo.info) && (await pathExists(updateFile))) {
+      if (
+        isEqual(this.versionInfo, updateInfo) &&
+        isEqual(this.fileInfo.info, fileInfo.info) &&
+        (await pathExists(updateFile))
+      ) {
         return updateFile
-      }
-      else {
+      } else {
         return null
       }
     }
@@ -56,7 +63,14 @@ export class DownloadedUpdateHelper {
     return cachedUpdateFile
   }
 
-  async setDownloadedFile(downloadedFile: string, packageFile: string | null, versionInfo: UpdateInfo, fileInfo: ResolvedUpdateFileInfo, updateFileName: string, isSaveCache: boolean): Promise<void> {
+  async setDownloadedFile(
+    downloadedFile: string,
+    packageFile: string | null,
+    versionInfo: UpdateInfo,
+    fileInfo: ResolvedUpdateFileInfo,
+    updateFileName: string,
+    isSaveCache: boolean
+  ): Promise<void> {
     this._file = downloadedFile
     this._packageFile = packageFile
     this.versionInfo = versionInfo
@@ -84,8 +98,7 @@ export class DownloadedUpdateHelper {
     try {
       // remove stale data
       await emptyDir(this.cacheDirForPendingUpdate)
-    }
-    catch (ignore) {
+    } catch (ignore) {
       // ignore
     }
   }
@@ -95,8 +108,7 @@ export class DownloadedUpdateHelper {
     const updateInfoFile = this.getUpdateInfoFile()
     try {
       cachedInfo = await readJson(updateInfoFile)
-    }
-    catch (e) {
+    } catch (e) {
       let message = `No cached update info available`
       if (e.code !== "ENOENT") {
         await this.cleanCacheDirForPendingUpdate()
@@ -113,7 +125,9 @@ export class DownloadedUpdateHelper {
     }
 
     if (fileInfo.info.sha512 !== cachedInfo.sha512) {
-      logger.info(`Cached update sha512 checksum doesn't match the latest available update. New update must be downloaded. Cached: ${cachedInfo.sha512}, expected: ${fileInfo.info.sha512}. Directory for cached update will be cleaned`)
+      logger.info(
+        `Cached update sha512 checksum doesn't match the latest available update. New update must be downloaded. Cached: ${cachedInfo.sha512}, expected: ${fileInfo.info.sha512}. Directory for cached update will be cleaned`
+      )
       await this.cleanCacheDirForPendingUpdate()
       return null
     }
@@ -127,7 +141,9 @@ export class DownloadedUpdateHelper {
 
     const sha512 = await hashFile(updateFile)
     if (fileInfo.info.sha512 !== sha512) {
-      logger.warn(`Sha512 checksum doesn't match the latest available update. New update must be downloaded. Cached: ${sha512}, expected: ${fileInfo.info.sha512}`)
+      logger.warn(
+        `Sha512 checksum doesn't match the latest available update. New update must be downloaded. Cached: ${sha512}, expected: ${fileInfo.info.sha512}`
+      )
       await this.cleanCacheDirForPendingUpdate()
       return null
     }
@@ -146,20 +162,23 @@ interface CachedUpdateInfo {
   readonly isAdminRightsRequired: boolean
 }
 
-function hashFile(file: string, algorithm = "sha512", encoding: "base64" | "hex" = "base64", options?: any): Promise<string> {
+function hashFile(
+  file: string,
+  algorithm = "sha512",
+  encoding: "base64" | "hex" = "base64",
+  options?: any
+): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const hash = createHash(algorithm)
-    hash
-      .on("error", reject)
-      .setEncoding(encoding)
+    hash.on("error", reject).setEncoding(encoding)
 
-    createReadStream(file, {...options, highWaterMark: 1024 * 1024 /* better to use more memory but hash faster */})
+    createReadStream(file, { ...options, highWaterMark: 1024 * 1024 /* better to use more memory but hash faster */ })
       .on("error", reject)
       .on("end", () => {
         hash.end()
         resolve(hash.read() as string)
       })
-      .pipe(hash, {end: false})
+      .pipe(hash, { end: false })
   })
 }
 
@@ -171,8 +190,7 @@ export async function createTempUpdateFile(name: string, cacheDir: string, log: 
     try {
       await unlink(result)
       return result
-    }
-    catch (e) {
+    } catch (e) {
       if (e.code === "ENOENT") {
         return result
       }

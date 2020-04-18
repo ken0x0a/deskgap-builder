@@ -43,7 +43,12 @@ export interface DeskGapDownloadOptions {
   arch?: string
 }
 
-function createDownloadOpts(opts: Configuration, platform: DeskGapPlatformName, arch: string, deskgapVersion: string): DeskGapDownloadOptions {
+function createDownloadOpts(
+  opts: Configuration,
+  platform: DeskGapPlatformName,
+  arch: string,
+  deskgapVersion: string
+): DeskGapDownloadOptions {
   return {
     platform,
     arch,
@@ -57,17 +62,20 @@ async function beforeCopyExtraFiles(options: BeforeCopyExtraFilesOptions) {
   const appOutDir = options.appOutDir
   if (packager.platform === Platform.LINUX) {
     if (!isSafeToUnpackDeskGapOnRemoteBuildServer(packager)) {
-      const linuxPackager = (packager as LinuxPackager)
+      const linuxPackager = packager as LinuxPackager
       const executable = path.join(appOutDir, linuxPackager.executableName)
       await rename(path.join(appOutDir, "deskgap"), executable)
     }
-  }
-  else if (packager.platform === Platform.WINDOWS) {
+  } else if (packager.platform === Platform.WINDOWS) {
     const executable = path.join(appOutDir, `${packager.appInfo.productFilename}.exe`)
     await rename(path.join(appOutDir, "deskgap.exe"), executable)
-  }
-  else {
-    await createMacApp(packager as MacPackager, appOutDir, options.asarIntegrity, (options.platformName as DeskGapPlatformName) === "mas")
+  } else {
+    await createMacApp(
+      packager as MacPackager,
+      appOutDir,
+      options.asarIntegrity,
+      (options.platformName as DeskGapPlatformName) === "mas"
+    )
 
     const wantedLanguages = asArray(packager.platformSpecificBuildOptions.deskgapLanguages)
     if (wantedLanguages.length === 0) {
@@ -77,17 +85,21 @@ async function beforeCopyExtraFiles(options: BeforeCopyExtraFilesOptions) {
     // noinspection SpellCheckingInspection
     const langFileExt = ".lproj"
     const resourcesDir = packager.getResourcesDir(appOutDir)
-    await BluebirdPromise.map(readdir(resourcesDir), file => {
-      if (!file.endsWith(langFileExt)) {
-        return
-      }
+    await BluebirdPromise.map(
+      readdir(resourcesDir),
+      (file) => {
+        if (!file.endsWith(langFileExt)) {
+          return
+        }
 
-      const language = file.substring(0, file.length - langFileExt.length)
-      if (!wantedLanguages.includes(language)) {
-        return remove(path.join(resourcesDir, file))
-      }
-      return
-    }, CONCURRENCY)
+        const language = file.substring(0, file.length - langFileExt.length)
+        if (!wantedLanguages.includes(language)) {
+          return remove(path.join(resourcesDir, file))
+        }
+        return
+      },
+      CONCURRENCY
+    )
   }
 }
 
@@ -101,21 +113,23 @@ class DeskGapFramework implements Framework {
   // noinspection JSUnusedGlobalSymbols
   readonly isNpmRebuildRequired = true
 
-  constructor(readonly name: string, readonly version: string, readonly distMacOsAppName: string) {
-  }
+  constructor(readonly name: string, readonly version: string, readonly distMacOsAppName: string) {}
 
   getDefaultIcon(platform: Platform) {
     if (platform === Platform.LINUX) {
       return path.join(getTemplatePath("icons"), "deskgap-linux")
-    }
-    else {
+    } else {
       // default icon is embedded into app skeleton
       return null
     }
   }
 
   prepareApplicationStageDirectory(options: PrepareApplicationStageDirectoryOptions) {
-    return unpack(options, createDownloadOpts(options.packager.config, options.platformName, options.arch, this.version), this.distMacOsAppName)
+    return unpack(
+      options,
+      createDownloadOpts(options.packager.config, options.platformName, options.arch, this.version),
+      this.distMacOsAppName
+    )
   }
 
   beforeCopyExtraFiles(options: BeforeCopyExtraFilesOptions) {
@@ -123,7 +137,10 @@ class DeskGapFramework implements Framework {
   }
 }
 
-export async function createDeskGapFrameworkSupport(configuration: Configuration, packager: Packager): Promise<Framework> {
+export async function createDeskGapFrameworkSupport(
+  configuration: Configuration,
+  packager: Packager
+): Promise<Framework> {
   let version = configuration.deskgapVersion
   if (version == null) {
     // for prepacked app asar no dev deps in the app.asar
@@ -132,8 +149,7 @@ export async function createDeskGapFrameworkSupport(configuration: Configuration
       if (version == null) {
         throw new Error(`Cannot compute deskgap version for prepacked asar`)
       }
-    }
-    else {
+    } else {
       version = await computeDeskGapVersion(packager.projectDir, new Lazy(() => Promise.resolve(packager.metadata)))
     }
     configuration.deskgapVersion = version
@@ -142,7 +158,11 @@ export async function createDeskGapFrameworkSupport(configuration: Configuration
   return new DeskGapFramework("deskgap", version, "DeskGap.app")
 }
 
-async function unpack(prepareOptions: PrepareApplicationStageDirectoryOptions, options: DeskGapDownloadOptions, distMacOsAppName: string) {
+async function unpack(
+  prepareOptions: PrepareApplicationStageDirectoryOptions,
+  options: DeskGapDownloadOptions,
+  distMacOsAppName: string
+) {
   const packager = prepareOptions.packager
   const out = prepareOptions.appOutDir
 
@@ -162,13 +182,20 @@ async function unpack(prepareOptions: PrepareApplicationStageDirectoryOptions, o
       return
     }
 
-    await executeAppBuilder(["unpack-deskgap", "--configuration", JSON.stringify([options]), "--output", out, "--distMacOsAppName", distMacOsAppName])
-  }
-  else {
+    await executeAppBuilder([
+      "unpack-deskgap",
+      "--configuration",
+      JSON.stringify([options]),
+      "--output",
+      out,
+      "--distMacOsAppName",
+      distMacOsAppName,
+    ])
+  } else {
     isFullCleanup = true
     const source = packager.getDeskGapSrcDir(dist)
     const destination = packager.getDeskGapDestinationDir(out)
-    log.info({source, destination}, "copying DeskGap")
+    log.info({ source, destination }, "copying DeskGap")
     await emptyDir(out)
     await copyDir(source, destination, {
       isUseHardLink: DO_NOT_USE_HARD_LINKS,
@@ -178,7 +205,11 @@ async function unpack(prepareOptions: PrepareApplicationStageDirectoryOptions, o
   await cleanupAfterUnpack(prepareOptions, distMacOsAppName, isFullCleanup)
 }
 
-function cleanupAfterUnpack(prepareOptions: PrepareApplicationStageDirectoryOptions, distMacOsAppName: string, isFullCleanup: boolean) {
+function cleanupAfterUnpack(
+  prepareOptions: PrepareApplicationStageDirectoryOptions,
+  distMacOsAppName: string,
+  isFullCleanup: boolean
+) {
   const out = prepareOptions.appOutDir
   const isMac = prepareOptions.packager.platform === Platform.MAC
   const resourcesPath = isMac ? path.join(out, distMacOsAppName, "Contents", "Resources") : path.join(out, "resources")
@@ -186,6 +217,10 @@ function cleanupAfterUnpack(prepareOptions: PrepareApplicationStageDirectoryOpti
   return Promise.all([
     isFullCleanup ? unlinkIfExists(path.join(resourcesPath, "default_app.asar")) : Promise.resolve(),
     isFullCleanup ? unlinkIfExists(path.join(out, "version")) : Promise.resolve(),
-    isMac ? Promise.resolve() : rename(path.join(out, "LICENSE"), path.join(out, "LICENSE.deskgap.txt")).catch(() => {/* ignore */}),
+    isMac
+      ? Promise.resolve()
+      : rename(path.join(out, "LICENSE"), path.join(out, "LICENSE.deskgap.txt")).catch(() => {
+          /* ignore */
+        }),
   ])
 }

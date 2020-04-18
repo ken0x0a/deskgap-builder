@@ -2,7 +2,7 @@
 
 import { log, use, getArchCliNames } from "builder-util"
 import { printErrorAndExit } from "builder-util/out/promise"
-import { computeDefaultAppDirectory, getConfig } from "app-builder-lib/out/util/config"
+import { computeDefaultAppDirectory, getConfig, PACKAGE_VERSION } from "app-builder-lib/out/util/config"
 import { getDeskGapVersion } from "app-builder-lib/out/deskgap/deskgapVersion"
 import { createLazyProductionDeps } from "app-builder-lib/out/util/packageDependencies"
 import { installOrRebuild } from "app-builder-lib/out/util/yarn"
@@ -11,8 +11,6 @@ import { Lazy } from "lazy-val"
 import * as path from "path"
 import { orNullIfFileNotExist } from "read-config-file"
 import * as yargs from "yargs"
-
-declare const PACKAGE_VERSION: string
 
 /** @internal */
 export function configureInstallAppDepsCommand(yargs: yargs.Argv): yargs.Argv {
