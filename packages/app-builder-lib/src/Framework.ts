@@ -1,5 +1,5 @@
 import { FileTransformer } from "builder-util/out/fs"
-// import { AsarIntegrity } from "./asar/integrity"
+import { AsarIntegrity } from "./asar/integrity"
 import { Platform, PlatformPackager, DeskGapPlatformName, AfterPackContext } from "./index"
 
 export interface Framework {
@@ -32,7 +32,7 @@ export interface BeforeCopyExtraFilesOptions {
   packager: PlatformPackager<any>
   appOutDir: string
 
-  // asarIntegrity: AsarIntegrity | null
+  asarIntegrity: AsarIntegrity | null
 
   // DeskGapPlatformName
   platformName: string

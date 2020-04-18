@@ -1,5 +1,5 @@
 import { path7za } from "7zip-bin"
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { executeAppBuilder, Arch, asArray, AsyncTaskManager, getPlatformIconFileName, InvalidConfigurationError, log, spawnAndWrite, use, exec } from "builder-util"
 import { PackageFileInfo, UUID, CURRENT_APP_PACKAGE_FILE_NAME, CURRENT_APP_INSTALLER_FILE_NAME } from "builder-util-runtime"
 import { getBinFromUrl } from "../../binDownload"

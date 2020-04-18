@@ -1,5 +1,17 @@
-import BluebirdPromise from "bluebird-lst"
-import { Arch, asArray, AsyncTaskManager, debug, DebugLogger, deepAssign, getArchSuffix, InvalidConfigurationError, isEmptyOrSpaces, log, isEnvTrue } from "builder-util"
+import * as BluebirdPromise from "bluebird-lst"
+import {
+  Arch,
+  asArray,
+  AsyncTaskManager,
+  debug,
+  DebugLogger,
+  deepAssign,
+  getArchSuffix,
+  InvalidConfigurationError,
+  isEmptyOrSpaces,
+  log,
+  isEnvTrue,
+} from "builder-util"
 import { getArtifactArchName } from "builder-util/out/arch"
 import { FileTransformer, statOrNull } from "builder-util/out/fs"
 import { orIfFileNotExist } from "builder-util/out/promise"
@@ -9,14 +21,40 @@ import { Minimatch } from "minimatch"
 import * as path from "path"
 import { AppInfo } from "./appInfo"
 import { checkFileInArchive } from "./asar/asarFileChecker"
-// import { AsarPackager } from "./asar/asarUtil"
-// import { computeData } from "./asar/integrity"
-import { copyFiles, FileMatcher, getFileMatchers, GetFileMatchersOptions, getMainFileMatchers, getNodeModuleFileMatcher } from "./fileMatcher"
+import { AsarPackager } from "./asar/asarUtil"
+import { computeData } from "./asar/integrity"
+import {
+  copyFiles,
+  FileMatcher,
+  getFileMatchers,
+  GetFileMatchersOptions,
+  getMainFileMatchers,
+  getNodeModuleFileMatcher,
+} from "./fileMatcher"
 import { createTransformer, isDeskGapCompileUsed } from "./fileTransformer"
 import { Framework, isDeskGapBased } from "./Framework"
-import { AfterPackContext, AsarOptions, CompressionLevel, Configuration, DeskGapPlatformName, FileAssociation, Packager, PackagerOptions, Platform, PlatformSpecificBuildOptions, Target, TargetSpecificOptions } from "./index"
+import {
+  AfterPackContext,
+  AsarOptions,
+  CompressionLevel,
+  Configuration,
+  DeskGapPlatformName,
+  FileAssociation,
+  Packager,
+  PackagerOptions,
+  Platform,
+  PlatformSpecificBuildOptions,
+  Target,
+  TargetSpecificOptions,
+} from "./index"
 import { executeAppBuilderAsJson } from "./util/appBuilder"
-import { computeFileSets, computeNodeModuleFileSets, copyAppFiles, ELECTRON_COMPILE_SHIM_FILENAME, transformFiles } from "./util/appFileCopier"
+import {
+  computeFileSets,
+  computeNodeModuleFileSets,
+  copyAppFiles,
+  ELECTRON_COMPILE_SHIM_FILENAME,
+  transformFiles,
+} from "./util/appFileCopier"
 import { expandMacro as doExpandMacro } from "./util/macroExpander"
 
 export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> {
@@ -42,12 +80,16 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     return this._resourceList.value
   }
 
-  private readonly _resourceList = new Lazy<Array<string>>(() => orIfFileNotExist(readdir(this.info.buildResourcesDir), []))
+  private readonly _resourceList = new Lazy<Array<string>>(() =>
+    orIfFileNotExist(readdir(this.info.buildResourcesDir), [])
+  )
 
   readonly appInfo: AppInfo
 
   protected constructor(readonly info: Packager, readonly platform: Platform) {
-    this.platformSpecificBuildOptions = PlatformPackager.normalizePlatformSpecificBuildOptions((this.config as any)[platform.buildConfigurationKey])
+    this.platformSpecificBuildOptions = PlatformPackager.normalizePlatformSpecificBuildOptions(
+      (this.config as any)[platform.buildConfigurationKey]
+    )
     this.appInfo = this.prepareAppInfo(info.appInfo)
   }
 
@@ -75,15 +117,17 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     return options == null ? Object.create(null) : options
   }
 
-  abstract createTargets(targets: Array<string>, mapper: (name: string, factory: (outDir: string) => Target) => void): void
+  abstract createTargets(
+    targets: Array<string>,
+    mapper: (name: string, factory: (outDir: string) => Target) => void
+  ): void
 
   protected getCscPassword(): string {
     const password = this.doGetCscPassword()
     if (isEmptyOrSpaces(password)) {
-      log.info({reason: "CSC_KEY_PASSWORD is not defined"}, "empty password will be used for code signing")
+      log.info({ reason: "CSC_KEY_PASSWORD is not defined" }, "empty password will be used for code signing")
       return ""
-    }
-    else {
+    } else {
       return password!.trim()
     }
   }
@@ -96,28 +140,59 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
 
   protected doGetCscPassword(): string | null | undefined {
     // allow to specify as empty string
-    return chooseNotNull(chooseNotNull(this.info.config.cscKeyPassword, this.platformSpecificBuildOptions.cscKeyPassword), process.env.CSC_KEY_PASSWORD)
+    return chooseNotNull(
+      chooseNotNull(this.info.config.cscKeyPassword, this.platformSpecificBuildOptions.cscKeyPassword),
+      process.env.CSC_KEY_PASSWORD
+    )
   }
 
   protected computeAppOutDir(outDir: string, arch: Arch): string {
-    return this.packagerOptions.prepackaged || path.join(outDir, `${this.platform.buildConfigurationKey}${getArchSuffix(arch)}${this.platform === Platform.MAC ? "" : "-unpacked"}`)
+    return (
+      this.packagerOptions.prepackaged ||
+      path.join(
+        outDir,
+        `${this.platform.buildConfigurationKey}${getArchSuffix(arch)}${
+          this.platform === Platform.MAC ? "" : "-unpacked"
+        }`
+      )
+    )
   }
 
-  dispatchArtifactCreated(file: string, target: Target | null, arch: Arch | null, safeArtifactName?: string | null): Promise<void> {
+  dispatchArtifactCreated(
+    file: string,
+    target: Target | null,
+    arch: Arch | null,
+    safeArtifactName?: string | null
+  ): Promise<void> {
     return this.info.callArtifactBuildCompleted({
-      file, safeArtifactName, target, arch,
+      file,
+      safeArtifactName,
+      target,
+      arch,
       packager: this,
     })
   }
 
   async pack(outDir: string, arch: Arch, targets: Array<Target>, taskManager: AsyncTaskManager): Promise<any> {
     const appOutDir = this.computeAppOutDir(outDir, arch)
-    await this.doPack(outDir, appOutDir, this.platform.nodeName as DeskGapPlatformName, arch, this.platformSpecificBuildOptions, targets)
+    await this.doPack(
+      outDir,
+      appOutDir,
+      this.platform.nodeName as DeskGapPlatformName,
+      arch,
+      this.platformSpecificBuildOptions,
+      targets
+    )
     this.packageInDistributableFormat(appOutDir, arch, targets, taskManager)
   }
 
-  protected packageInDistributableFormat(appOutDir: string, arch: Arch, targets: Array<Target>, taskManager: AsyncTaskManager): void {
-    if (targets.find(it => !it.isAsyncSupported) == null) {
+  protected packageInDistributableFormat(
+    appOutDir: string,
+    arch: Arch,
+    targets: Array<Target>,
+    taskManager: AsyncTaskManager
+  ): void {
+    if (targets.find((it) => !it.isAsyncSupported) == null) {
       PlatformPackager.buildAsyncTargets(targets, taskManager, appOutDir, arch)
       return
     }
@@ -136,7 +211,12 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     })
   }
 
-  private static buildAsyncTargets(targets: Array<Target>, taskManager: AsyncTaskManager, appOutDir: string, arch: Arch) {
+  private static buildAsyncTargets(
+    targets: Array<Target>,
+    taskManager: AsyncTaskManager,
+    appOutDir: string,
+    arch: Arch
+  ) {
     for (const target of targets) {
       if (target.isAsyncSupported) {
         taskManager.addTask(target.build(appOutDir, arch))
@@ -144,32 +224,54 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     }
   }
 
-  private getExtraFileMatchers(isResources: boolean, appOutDir: string, options: GetFileMatchersOptions): Array<FileMatcher> | null {
-    const base = isResources ? this.getResourcesDir(appOutDir) : (this.platform === Platform.MAC ? path.join(appOutDir, `${this.appInfo.productFilename}.app`, "Contents") : appOutDir)
+  private getExtraFileMatchers(
+    isResources: boolean,
+    appOutDir: string,
+    options: GetFileMatchersOptions
+  ): Array<FileMatcher> | null {
+    const base = isResources
+      ? this.getResourcesDir(appOutDir)
+      : this.platform === Platform.MAC
+      ? path.join(appOutDir, `${this.appInfo.productFilename}.app`, "Contents")
+      : appOutDir
     return getFileMatchers(this.config, isResources ? "extraResources" : "extraFiles", base, options)
   }
 
-  createGetFileMatchersOptions(outDir: string, arch: Arch, customBuildOptions: PlatformSpecificBuildOptions): GetFileMatchersOptions {
+  createGetFileMatchersOptions(
+    outDir: string,
+    arch: Arch,
+    customBuildOptions: PlatformSpecificBuildOptions
+  ): GetFileMatchersOptions {
     return {
-      macroExpander: it => this.expandMacro(it, arch == null ? null : Arch[arch], {"/*": "{,/**/*}"}),
+      macroExpander: (it) => this.expandMacro(it, arch == null ? null : Arch[arch], { "/*": "{,/**/*}" }),
       customBuildOptions,
       globalOutDir: outDir,
       defaultSrc: this.projectDir,
     }
   }
 
-  protected async doPack(outDir: string, appOutDir: string, platformName: DeskGapPlatformName, arch: Arch, platformSpecificBuildOptions: DC, targets: Array<Target>) {
+  protected async doPack(
+    outDir: string,
+    appOutDir: string,
+    platformName: DeskGapPlatformName,
+    arch: Arch,
+    platformSpecificBuildOptions: DC,
+    targets: Array<Target>
+  ) {
     if (this.packagerOptions.prepackaged != null) {
       return
     }
 
     const framework = this.info.framework
-    log.info({
-      platform: platformName,
-      arch: Arch[arch],
-      [`${framework.name}`]: framework.version,
-      appOutDir: log.filePath(appOutDir),
-    }, `packaging`)
+    log.info(
+      {
+        platform: platformName,
+        arch: Arch[arch],
+        [`${framework.name}`]: framework.version,
+        appOutDir: log.filePath(appOutDir),
+      },
+      `packaging`
+    )
 
     await framework.prepareApplicationStageDirectory({
       packager: this,
@@ -197,15 +299,32 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     computeParsedPatterns(extraFileMatchers)
 
     const packContext: AfterPackContext = {
-      appOutDir, outDir, arch, targets,
+      appOutDir,
+      outDir,
+      arch,
+      targets,
       packager: this,
       deskgapPlatformName: platformName,
     }
 
     const asarOptions = await this.computeAsarOptions(platformSpecificBuildOptions)
-    const resourcesPath = this.platform === Platform.MAC ? path.join(appOutDir, framework.distMacOsAppName, "Contents", "Resources") : (isDeskGapBased(framework) ? path.join(appOutDir, "resources") : appOutDir)
+    const resourcesPath =
+      this.platform === Platform.MAC
+        ? path.join(appOutDir, framework.distMacOsAppName, "Contents", "Resources")
+        : isDeskGapBased(framework)
+        ? path.join(appOutDir, "resources")
+        : appOutDir
     const taskManager = new AsyncTaskManager(this.info.cancellationToken)
-    this.copyAppFiles(taskManager, asarOptions, resourcesPath, path.join(resourcesPath, "app"), packContext, platformSpecificBuildOptions, excludePatterns, macroExpander)
+    this.copyAppFiles(
+      taskManager,
+      asarOptions,
+      resourcesPath,
+      path.join(resourcesPath, "app"),
+      packContext,
+      platformSpecificBuildOptions,
+      excludePatterns,
+      macroExpander
+    )
     await taskManager.awaitTasks()
 
     if (this.info.cancellationToken.cancelled) {
@@ -216,7 +335,10 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
       await framework.beforeCopyExtraFiles({
         packager: this,
         appOutDir,
-        // asarIntegrity: asarOptions == null ? null : await computeData(resourcesPath, asarOptions.externalAllowed ? {externalAllowed: true} : null),
+        asarIntegrity:
+          asarOptions == null
+            ? null
+            : await computeData(resourcesPath, asarOptions.externalAllowed ? { externalAllowed: true } : null),
         platformName,
       })
     }
@@ -254,12 +376,29 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     return null
   }
 
-  private copyAppFiles(taskManager: AsyncTaskManager, asarOptions: AsarOptions | null, resourcePath: string, defaultDestination: string, packContext: AfterPackContext, platformSpecificBuildOptions: DC, excludePatterns: Array<Minimatch>, macroExpander: ((it: string) => string)) {
+  private copyAppFiles(
+    taskManager: AsyncTaskManager,
+    asarOptions: AsarOptions | null,
+    resourcePath: string,
+    defaultDestination: string,
+    packContext: AfterPackContext,
+    platformSpecificBuildOptions: DC,
+    excludePatterns: Array<Minimatch>,
+    macroExpander: (it: string) => string
+  ) {
     const appDir = this.info.appDir
     const config = this.config
     const isDeskGapCompile = asarOptions != null && isDeskGapCompileUsed(this.info)
 
-    const mainMatchers = getMainFileMatchers(appDir, defaultDestination, macroExpander, platformSpecificBuildOptions, this, packContext.outDir, isDeskGapCompile)
+    const mainMatchers = getMainFileMatchers(
+      appDir,
+      defaultDestination,
+      macroExpander,
+      platformSpecificBuildOptions,
+      this,
+      packContext.outDir,
+      isDeskGapCompile
+    )
     if (excludePatterns.length > 0) {
       for (const matcher of mainMatchers) {
         matcher.excludePatterns = excludePatterns
@@ -267,32 +406,49 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     }
 
     const framework = this.info.framework
-    const transformer = createTransformer(appDir, config, isDeskGapCompile ? {
-      originalMain: this.info.metadata.main,
-      main: ELECTRON_COMPILE_SHIM_FILENAME,
-      ...config.extraMetadata
-    } : config.extraMetadata, framework.createTransformer == null ? null : framework.createTransformer())
+    const transformer = createTransformer(
+      appDir,
+      config,
+      isDeskGapCompile
+        ? {
+            originalMain: this.info.metadata.main,
+            main: ELECTRON_COMPILE_SHIM_FILENAME,
+            ...config.extraMetadata,
+          }
+        : config.extraMetadata,
+      framework.createTransformer == null ? null : framework.createTransformer()
+    )
 
     const _computeFileSets = (matchers: Array<FileMatcher>) => {
-      return computeFileSets(matchers, this.info.isPrepackedAppAsar ? null : transformer, this, isDeskGapCompile)
-        .then(async result => {
+      return computeFileSets(matchers, this.info.isPrepackedAppAsar ? null : transformer, this, isDeskGapCompile).then(
+        async (result) => {
           if (!this.info.isPrepackedAppAsar && !this.info.areNodeModulesHandledExternally) {
-            const moduleFileMatcher = getNodeModuleFileMatcher(appDir, defaultDestination, macroExpander, platformSpecificBuildOptions, this.info)
+            const moduleFileMatcher = getNodeModuleFileMatcher(
+              appDir,
+              defaultDestination,
+              macroExpander,
+              platformSpecificBuildOptions,
+              this.info
+            )
             result = result.concat(await computeNodeModuleFileSets(this, moduleFileMatcher))
           }
-          return result.filter(it => it.files.length > 0)
-        })
+          return result.filter((it) => it.files.length > 0)
+        }
+      )
     }
 
     if (this.info.isPrepackedAppAsar) {
-      taskManager.addTask(BluebirdPromise.each(_computeFileSets([new FileMatcher(appDir, resourcePath, macroExpander)]), it => copyAppFiles(it, this.info, transformer)))
-    }
-    else if (asarOptions == null) {
+      taskManager.addTask(
+        BluebirdPromise.each(_computeFileSets([new FileMatcher(appDir, resourcePath, macroExpander)]), (it) =>
+          copyAppFiles(it, this.info, transformer)
+        )
+      )
+    } else if (asarOptions == null) {
       // for ASAR all asar unpacked files will be extra transformed (e.g. sign of EXE and DLL) later,
       // for prepackaged asar extra transformation not supported yet,
       // so, extra transform if asar is disabled
       const transformerForExtraFiles = this.createTransformerForExtraFiles(packContext)
-      const combinedTransformer: FileTransformer = file => {
+      const combinedTransformer: FileTransformer = (file) => {
         if (transformerForExtraFiles != null) {
           const result = transformerForExtraFiles(file)
           if (result != null) {
@@ -302,9 +458,10 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
         return transformer(file)
       }
 
-      taskManager.addTask(BluebirdPromise.each(_computeFileSets(mainMatchers), it => copyAppFiles(it, this.info, combinedTransformer)))
-    }
-    else {
+      taskManager.addTask(
+        BluebirdPromise.each(_computeFileSets(mainMatchers), (it) => copyAppFiles(it, this.info, combinedTransformer))
+      )
+    } else {
       const unpackPattern = getFileMatchers(config, "asarUnpack", defaultDestination, {
         macroExpander,
         customBuildOptions: platformSpecificBuildOptions,
@@ -312,15 +469,20 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
         defaultSrc: appDir,
       })
       const fileMatcher = unpackPattern == null ? null : unpackPattern[0]
-      taskManager.addTask(_computeFileSets(mainMatchers)
-        .then(async fileSets => {
+      taskManager.addTask(
+        _computeFileSets(mainMatchers).then(async (fileSets) => {
           for (const fileSet of fileSets) {
             await transformFiles(transformer, fileSet)
           }
 
-          // await new AsarPackager(appDir, resourcePath, asarOptions, fileMatcher == null ? null : fileMatcher.createFilter())
-          //   .pack(fileSets, this)
-        }))
+          await new AsarPackager(
+            appDir,
+            resourcePath,
+            asarOptions,
+            fileMatcher == null ? null : fileMatcher.createFilter()
+          ).pack(fileSets, this)
+        })
+      )
     }
   }
 
@@ -356,9 +518,12 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
       const appAsarStat = await statOrNull(path.join(this.info.appDir, "app.asar"))
       //noinspection ES6MissingAwait
       if (appAsarStat == null || !appAsarStat.isFile()) {
-        log.warn({
-          solution: "enable asar and use asarUnpack to unpack files that must be externally available",
-        }, "asar usage is disabled — this is strongly not recommended")
+        log.warn(
+          {
+            solution: "enable asar and use asarUnpack to unpack files that must be externally available",
+          },
+          "asar usage is disabled — this is strongly not recommended"
+        )
       }
       return null
     }
@@ -386,11 +551,9 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
   getResourcesDir(appOutDir: string): string {
     if (this.platform === Platform.MAC) {
       return this.getMacOsResourcesDir(appOutDir)
-    }
-    else if (isDeskGapBased(this.info.framework)) {
+    } else if (isDeskGapBased(this.info.framework)) {
       return path.join(appOutDir, "resources")
-    }
-    else {
+    } else {
       return appOutDir
     }
   }
@@ -420,17 +583,16 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
         return pathPart.endsWith(".asar")
       })
       const asarPath = path.join(...pathSplit.slice(0, partWithAsarIndex + 1))
-      let mainPath = pathSplit.length > (partWithAsarIndex + 1) ? path.join.apply(pathSplit.slice(partWithAsarIndex + 1)) : ""
+      let mainPath =
+        pathSplit.length > partWithAsarIndex + 1 ? path.join.apply(pathSplit.slice(partWithAsarIndex + 1)) : ""
       mainPath += path.join(mainPath, pathParsed.base)
       await checkFileInArchive(path.join(resourcesDir, "app", asarPath), mainPath, messagePrefix)
-    }
-    else {
+    } else {
       const fullPath = path.join(resourcesDir, "app", relativeFile)
       const outStat = await statOrNull(fullPath)
       if (outStat == null) {
         throw new Error(`${messagePrefix} "${fullPath}" does not exist. Seems like a wrong configuration.`)
-      }
-      else {
+      } else {
         //noinspection ES6MissingAwait
         if (!outStat.isFile()) {
           throw new Error(`${messagePrefix} "${fullPath}" is not a file. Seems like a wrong configuration.`)
@@ -443,8 +605,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     const outStat = await statOrNull(appOutDir)
     if (outStat == null) {
       throw new Error(`Output directory "${appOutDir}" does not exist. Seems like a wrong configuration.`)
-    }
-    else {
+    } else {
       //noinspection ES6MissingAwait
       if (!outStat.isDirectory()) {
         throw new Error(`Output directory "${appOutDir}" is not a directory. Seems like a wrong configuration.`)
@@ -452,17 +613,34 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     }
 
     const resourcesDir = this.getResourcesDir(appOutDir)
-    const mainFile = (framework.getMainFile == null ? null : framework.getMainFile(this.platform)) || this.info.metadata.main || "index.js"
+    const mainFile =
+      (framework.getMainFile == null ? null : framework.getMainFile(this.platform)) ||
+      this.info.metadata.main ||
+      "index.js"
     await this.checkFileInPackage(resourcesDir, mainFile, "Application entry file", isAsar)
     await this.checkFileInPackage(resourcesDir, "package.json", "Application", isAsar)
   }
 
   // tslint:disable-next-line:no-invalid-template-strings
-  computeSafeArtifactName(suggestedName: string | null, ext: string, arch?: Arch | null, skipArchIfX64 = true, safePattern: string = "${name}-${version}-${arch}.${ext}"): string | null {
-    return computeSafeArtifactNameIfNeeded(suggestedName, () => this.computeArtifactName(safePattern, ext, skipArchIfX64 && arch === Arch.x64 ? null : arch))
+  computeSafeArtifactName(
+    suggestedName: string | null,
+    ext: string,
+    arch?: Arch | null,
+    skipArchIfX64 = true,
+    safePattern: string = "${name}-${version}-${arch}.${ext}"
+  ): string | null {
+    return computeSafeArtifactNameIfNeeded(suggestedName, () =>
+      this.computeArtifactName(safePattern, ext, skipArchIfX64 && arch === Arch.x64 ? null : arch)
+    )
   }
 
-  expandArtifactNamePattern(targetSpecificOptions: TargetSpecificOptions | null | undefined, ext: string, arch?: Arch | null, defaultPattern?: string, skipArchIfX64 = true): string {
+  expandArtifactNamePattern(
+    targetSpecificOptions: TargetSpecificOptions | null | undefined,
+    ext: string,
+    arch?: Arch | null,
+    defaultPattern?: string,
+    skipArchIfX64 = true
+  ): string {
     let pattern = targetSpecificOptions == null ? null : targetSpecificOptions.artifactName
     if (pattern == null) {
       pattern = this.platformSpecificBuildOptions.artifactName || this.config.artifactName
@@ -471,8 +649,7 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     if (pattern == null) {
       // tslint:disable-next-line:no-invalid-template-strings
       pattern = defaultPattern || "${productName}-${version}-${arch}.${ext}"
-    }
-    else {
+    } else {
       // https://github.com/deskgap-userland/deskgap-builder/issues/3510
       // always respect arch in user custom artifact pattern
       skipArchIfX64 = false
@@ -480,30 +657,48 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     return this.computeArtifactName(pattern, ext, skipArchIfX64 && arch === Arch.x64 ? null : arch)
   }
 
-  expandArtifactBeautyNamePattern(targetSpecificOptions: TargetSpecificOptions | null | undefined, ext: string, arch?: Arch | null): string {
+  expandArtifactBeautyNamePattern(
+    targetSpecificOptions: TargetSpecificOptions | null | undefined,
+    ext: string,
+    arch?: Arch | null
+  ): string {
     // tslint:disable-next-line:no-invalid-template-strings
-    return this.expandArtifactNamePattern(targetSpecificOptions, ext, arch, "${productName} ${version} ${arch}.${ext}", true)
+    return this.expandArtifactNamePattern(
+      targetSpecificOptions,
+      ext,
+      arch,
+      "${productName} ${version} ${arch}.${ext}",
+      true
+    )
   }
 
   private computeArtifactName(pattern: any, ext: string, arch: Arch | null | undefined): string {
     const archName = arch == null ? null : getArtifactArchName(arch, ext)
     return this.expandMacro(pattern, this.platform === Platform.MAC ? null : archName, {
-      ext
+      ext,
     })
   }
 
   expandMacro(pattern: string, arch?: string | null, extra: any = {}, isProductNameSanitized = true): string {
-    return doExpandMacro(pattern, arch, this.appInfo, {os: this.platform.buildConfigurationKey, ...extra}, isProductNameSanitized)
+    return doExpandMacro(
+      pattern,
+      arch,
+      this.appInfo,
+      { os: this.platform.buildConfigurationKey, ...extra },
+      isProductNameSanitized
+    )
   }
 
   generateName2(ext: string | null, classifier: string | null | undefined, deployment: boolean): string {
     const dotExt = ext == null ? "" : `.${ext}`
     const separator = ext === "deb" ? "_" : "-"
-    return `${deployment ? this.appInfo.name : this.appInfo.productFilename}${separator}${this.appInfo.version}${classifier == null ? "" : `${separator}${classifier}`}${dotExt}`
+    return `${deployment ? this.appInfo.name : this.appInfo.productFilename}${separator}${this.appInfo.version}${
+      classifier == null ? "" : `${separator}${classifier}`
+    }${dotExt}`
   }
 
   getTempFile(suffix: string): Promise<string> {
-    return this.info.tempDirManager.getTempFile({suffix})
+    return this.info.tempDirManager.getTempFile({ suffix })
   }
 
   get fileAssociations(): Array<FileAssociation> {
@@ -519,18 +714,19 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
           return path.join(resourcesDir, name)
         }
       }
-    }
-    else if (custom != null && !isEmptyOrSpaces(custom)) {
+    } else if (custom != null && !isEmptyOrSpaces(custom)) {
       const resourceList = await this.resourceList
       if (resourceList.includes(custom)) {
         return path.join(resourcesDir, custom)
       }
 
       let p = path.resolve(resourcesDir, custom)
-      if (await statOrNull(p) == null) {
+      if ((await statOrNull(p)) == null) {
         p = path.resolve(this.projectDir, custom)
-        if (await statOrNull(p) == null) {
-          throw new InvalidConfigurationError(`cannot find specified resource "${custom}", nor relative to "${resourcesDir}", neither relative to project dir ("${this.projectDir}")`)
+        if ((await statOrNull(p)) == null) {
+          throw new InvalidConfigurationError(
+            `cannot find specified resource "${custom}", nor relative to "${resourcesDir}", neither relative to project dir ("${this.projectDir}")`
+          )
         }
       }
       return p
@@ -544,17 +740,23 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
   }
 
   protected async getOrConvertIcon(format: IconFormat): Promise<string | null> {
-    const result = await this.resolveIcon(asArray(this.platformSpecificBuildOptions.icon || this.config.icon), [], format)
+    const result = await this.resolveIcon(
+      asArray(this.platformSpecificBuildOptions.icon || this.config.icon),
+      [],
+      format
+    )
     if (result.length === 0) {
       const framework = this.info.framework
       if (framework.getDefaultIcon != null) {
         return framework.getDefaultIcon(this.platform)
       }
 
-      log.warn({reason: "application icon is not set"}, `default ${capitalizeFirstLetter(framework.name)} icon is used`)
+      log.warn(
+        { reason: "application icon is not set" },
+        `default ${capitalizeFirstLetter(framework.name)} icon is used`
+      )
       return this.getDefaultFrameworkIcon()
-    }
-    else {
+    } else {
       return result[0].file
     }
   }
@@ -565,13 +767,21 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
   }
 
   // convert if need, validate size (it is a reason why tool is called even if file has target extension (already specified as foo.icns for example))
-  async resolveIcon(sources: Array<string>, fallbackSources: Array<string>, outputFormat: IconFormat): Promise<Array<IconInfo>> {
+  async resolveIcon(
+    sources: Array<string>,
+    fallbackSources: Array<string>,
+    outputFormat: IconFormat
+  ): Promise<Array<IconInfo>> {
     const args = [
       "icon",
-      "--format", outputFormat,
-      "--root", this.buildResourcesDir,
-      "--root", this.projectDir,
-      "--out", path.resolve(this.projectDir, this.config.directories!!.output!!, `.icon-${outputFormat}`),
+      "--format",
+      outputFormat,
+      "--root",
+      this.buildResourcesDir,
+      "--root",
+      this.projectDir,
+      "--out",
+      path.resolve(this.projectDir, this.config.directories!!.output!!, `.icon-${outputFormat}`),
     ]
     for (const source of sources) {
       args.push("--input", source)
@@ -587,7 +797,10 @@ export abstract class PlatformPackager<DC extends PlatformSpecificBuildOptions> 
     }
 
     if (result.isFallback) {
-      log.warn({reason: "application icon is not set"}, `default ${capitalizeFirstLetter(this.info.framework.name)} icon is used`)
+      log.warn(
+        { reason: "application icon is not set" },
+        `default ${capitalizeFirstLetter(this.info.framework.name)} icon is used`
+      )
     }
 
     return result.icons || []
@@ -613,7 +826,10 @@ export function isSafeGithubName(name: string) {
   return /^[0-9A-Za-z._-]+$/.test(name)
 }
 
-export function computeSafeArtifactNameIfNeeded(suggestedName: string | null, safeNameProducer: () => string): string | null {
+export function computeSafeArtifactNameIfNeeded(
+  suggestedName: string | null,
+  safeNameProducer: () => string
+): string | null {
   // GitHub only allows the listed characters in file names.
   if (suggestedName != null) {
     if (isSafeGithubName(suggestedName)) {
@@ -647,8 +863,7 @@ export function resolveFunction<T>(executor: T | string, name: string): T {
 
   try {
     p = require.resolve(p)
-  }
-  catch (e) {
+  } catch (e) {
     debug(e)
     p = path.resolve(p)
   }
@@ -658,8 +873,7 @@ export function resolveFunction<T>(executor: T | string, name: string): T {
   const namedExport = m[name]
   if (namedExport == null) {
     return m.default || m
-  }
-  else {
+  } else {
     return namedExport
   }
 }

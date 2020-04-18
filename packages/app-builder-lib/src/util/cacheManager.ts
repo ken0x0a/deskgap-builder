@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { Arch, log } from "builder-util"
 import { copyFile } from "builder-util/out/fs"
 import { orNullIfFileNotExist } from "builder-util/out/promise"

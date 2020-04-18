@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { createHash } from "crypto"
 import { createReadStream } from "fs"
 import { readdir } from "fs-extra"

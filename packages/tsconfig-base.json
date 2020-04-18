@@ -5,9 +5,11 @@
     "module": "CommonJS",
     "incremental": true,
     "baseUrl": ".",
-    "declaration": true,
     "stripInternal": true,
     "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "composite": true
   }
 }

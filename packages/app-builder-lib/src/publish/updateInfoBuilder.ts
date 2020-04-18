@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { Arch, log, safeStringifyJson, serializeToYaml } from "builder-util"
 import { GenericServerOptions, PublishConfiguration, UpdateInfo, WindowsUpdateInfo } from "builder-util-runtime"
 import { outputFile, outputJson, readFile } from "fs-extra"

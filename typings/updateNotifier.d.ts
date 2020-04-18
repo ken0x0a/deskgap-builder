@@ -16,5 +16,5 @@ declare module "update-notifier" {
 
   function updateNotifier(options: NotifyOptions): Notifier
 
-  export default updateNotifier
+  export = updateNotifier
 }

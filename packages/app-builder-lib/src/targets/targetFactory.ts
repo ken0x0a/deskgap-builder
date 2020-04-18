@@ -1,11 +1,15 @@
 import { addValue, Arch, archFromString, ArchType, asArray } from "builder-util"
-import { DEFAULT_TARGET, DIR_TARGET, Platform, Target, TargetConfiguration } from ".."
+import { DEFAULT_TARGET, DIR_TARGET, Platform, Target, TargetConfiguration } from "../core"
 import { PlatformPackager } from "../platformPackager"
 import { ArchiveTarget } from "./ArchiveTarget"
 
 const archiveTargets = new Set(["zip", "7z", "tar.xz", "tar.lz", "tar.gz", "tar.bz2"])
 
-export function computeArchToTargetNamesMap(raw: Map<Arch, Array<string>>, platformPackager: PlatformPackager<any>, platform: Platform): Map<Arch, Array<string>> {
+export function computeArchToTargetNamesMap(
+  raw: Map<Arch, Array<string>>,
+  platformPackager: PlatformPackager<any>,
+  platform: Platform
+): Map<Arch, Array<string>> {
   for (const targetNames of raw.values()) {
     if (targetNames.length > 0) {
       // https://github.com/deskgap-userland/deskgap-builder/issues/1355
@@ -13,9 +17,14 @@ export function computeArchToTargetNamesMap(raw: Map<Arch, Array<string>>, platf
     }
   }
 
-  const defaultArchs: Array<ArchType> = raw.size === 0 ? [platform === Platform.MAC ? "x64" : process.arch as ArchType] : Array.from(raw.keys()).map(it => Arch[it] as ArchType)
+  const defaultArchs: Array<ArchType> =
+    raw.size === 0
+      ? [platform === Platform.MAC ? "x64" : (process.arch as ArchType)]
+      : Array.from(raw.keys()).map((it) => Arch[it] as ArchType)
   const result = new Map(raw)
-  for (const target of asArray(platformPackager.platformSpecificBuildOptions.target).map<TargetConfiguration>(it => typeof it === "string" ? {target: it} : it)) {
+  for (const target of asArray(platformPackager.platformSpecificBuildOptions.target).map<TargetConfiguration>((it) =>
+    typeof it === "string" ? { target: it } : it
+  )) {
     let name = target.target
     let archs = target.arch
     const suffixPos = name.lastIndexOf(":")
@@ -33,12 +42,15 @@ export function computeArchToTargetNamesMap(raw: Map<Arch, Array<string>>, platf
 
   if (result.size === 0) {
     const defaultTarget = platformPackager.defaultTarget
-    if (raw.size === 0 && platform === Platform.LINUX && (process.platform === "darwin" || process.platform === "win32")) {
+    if (
+      raw.size === 0 &&
+      platform === Platform.LINUX &&
+      (process.platform === "darwin" || process.platform === "win32")
+    ) {
       result.set(Arch.x64, defaultTarget)
       // cannot enable arm because of native dependencies - e.g. keytar doesn't provide pre-builds for arm
       // result.set(Arch.armv7l, ["snap"])
-    }
-    else {
+    } else {
       for (const arch of defaultArchs) {
         result.set(archFromString(arch), defaultTarget)
       }
@@ -48,7 +60,12 @@ export function computeArchToTargetNamesMap(raw: Map<Arch, Array<string>>, platf
   return result
 }
 
-export function createTargets(nameToTarget: Map<string, Target>, rawList: Array<string>, outDir: string, packager: PlatformPackager<any>): Array<Target> {
+export function createTargets(
+  nameToTarget: Map<string, Target>,
+  rawList: Array<string>,
+  outDir: string,
+  packager: PlatformPackager<any>
+): Array<Target> {
   const result: Array<Target> = []
 
   const mapper = (name: string, factory: (outDir: string) => Target) => {
@@ -71,8 +88,7 @@ function normalizeTargets(targets: Array<string>, defaultTarget: Array<string>):
     const name = t.toLowerCase().trim()
     if (name === DEFAULT_TARGET) {
       list.push(...defaultTarget)
-    }
-    else {
+    } else {
       list.push(name)
     }
   }
@@ -82,11 +98,9 @@ function normalizeTargets(targets: Array<string>, defaultTarget: Array<string>):
 export function createCommonTarget(target: string, outDir: string, packager: PlatformPackager<any>): Target {
   if (archiveTargets.has(target)) {
     return new ArchiveTarget(target, outDir, packager)
-  }
-  else if (target === DIR_TARGET) {
+  } else if (target === DIR_TARGET) {
     return new NoOpTarget(DIR_TARGET)
-  }
-  else {
+  } else {
     throw new Error(`Unknown target: ${target}`)
   }
 }

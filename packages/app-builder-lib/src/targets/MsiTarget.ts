@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { Arch, log, deepAssign } from "builder-util"
 import { UUID } from "builder-util-runtime"
 import { getBinFromUrl } from "../binDownload"

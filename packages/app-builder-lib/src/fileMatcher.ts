@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { asArray, log } from "builder-util"
 import { copyDir, copyOrLinkFile, Filter, statOrNull, FileTransformer, USE_HARD_LINKS } from "builder-util/out/fs"
 import { ensureDir } from "fs-extra"

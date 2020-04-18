@@ -12,7 +12,8 @@
     "inlineSources": true,
     "sourceMap": true,
 
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": false,
     "experimentalDecorators": true,
 
     "newLine": "lf",

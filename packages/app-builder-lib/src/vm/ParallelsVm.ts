@@ -1,6 +1,6 @@
 import { exec, spawn, DebugLogger, ExtraSpawnOptions, log } from "builder-util"
 import { SpawnOptions, execFileSync, ExecFileOptions } from "child_process"
-import { VmManager } from "./vm"
+import { VmManager } from "./VmManager"
 
 /** @internal */
 export async function parseVmList(debugLogger: DebugLogger) {
@@ -12,7 +12,10 @@ export async function parseVmList(debugLogger: DebugLogger) {
 
   // let match: Array<string> | null
   const result: Array<ParallelsVm> = []
-  for (const info of rawList.split("\n\n").map(it => it.trim()).filter(it => it.length > 0)) {
+  for (const info of rawList
+    .split("\n\n")
+    .map((it) => it.trim())
+    .filter((it) => it.length > 0)) {
     const vm: any = {}
     for (const line of info.split("\n")) {
       const meta = /^([^:("]+): (.*)$/.exec(line)
@@ -48,7 +51,9 @@ export class ParallelsVmManager extends VmManager {
 
   private handleExecuteError(error: Error): any {
     if (error.message.includes("Unable to open new session in this virtual machine")) {
-      throw new Error(`Please ensure that your are logged in "${this.vm.name}" parallels virtual machine. In the future please do not stop VM, but suspend.\n\n${error.message}`)
+      throw new Error(
+        `Please ensure that your are logged in "${this.vm.name}" parallels virtual machine. In the future please do not stop VM, but suspend.\n\n${error.message}`
+      )
     }
 
     log.warn("ensure that 'Share folders' is set to 'All Disks', see https://goo.gl/E6XphP")
@@ -58,14 +63,25 @@ export class ParallelsVmManager extends VmManager {
   async exec(file: string, args: Array<string>, options?: ExecFileOptions): Promise<string> {
     await this.ensureThatVmStarted()
     // it is important to use "--current-user" to execute command under logged in user - to access certs.
-    return await exec("prlctl", ["exec", this.vm.id, "--current-user", file.startsWith("/") ? macPathToParallelsWindows(file) : file].concat(args), options)
-      .catch(error => this.handleExecuteError(error))
+    return await exec(
+      "prlctl",
+      ["exec", this.vm.id, "--current-user", file.startsWith("/") ? macPathToParallelsWindows(file) : file].concat(
+        args
+      ),
+      options
+    ).catch((error) => this.handleExecuteError(error))
   }
 
-  async spawn(file: string, args: Array<string>, options?: SpawnOptions, extraOptions?: ExtraSpawnOptions): Promise<any> {
+  async spawn(
+    file: string,
+    args: Array<string>,
+    options?: SpawnOptions,
+    extraOptions?: ExtraSpawnOptions
+  ): Promise<any> {
     await this.ensureThatVmStarted()
-    return await spawn("prlctl", ["exec", this.vm.id, file].concat(args), options, extraOptions)
-      .catch(error => this.handleExecuteError(error))
+    return await spawn("prlctl", ["exec", this.vm.id, file].concat(args), options, extraOptions).catch((error) =>
+      this.handleExecuteError(error)
+    )
   }
 
   private async doStartVm() {
@@ -82,11 +98,8 @@ export class ParallelsVmManager extends VmManager {
         const stopArgs = ["suspend", vmId]
         if (callback == null) {
           execFileSync("prlctl", stopArgs)
-        }
-        else {
-          exec("prlctl", stopArgs)
-            .then(callback)
-            .catch(callback)
+        } else {
+          exec("prlctl", stopArgs).then(callback).catch(callback)
         }
       })
     }

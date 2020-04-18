@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { Arch, isEnvTrue, log, InvalidConfigurationError } from "builder-util"
 import * as path from "path"
 import { UploadTask } from "deskgap-publish/out/publisher"

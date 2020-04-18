@@ -8,7 +8,7 @@ import { CancellationToken } from "builder-util-runtime"
 import { copyDir, copyFile, exists, statOrNull } from "builder-util/out/fs"
 import { stat } from "fs-extra"
 import * as path from "path"
-import sanitizeFileName from "sanitize-filename"
+import sanitizeFileName = require("sanitize-filename")
 import { TmpDir } from "temp-file"
 import { addLicenseToDmg } from "./dmgLicense"
 import { attachAndExecute, computeBackground, detach, getDmgVendorPath } from "./dmgUtil"
@@ -23,7 +23,12 @@ export class DmgTarget extends Target {
   async build(appPath: string, arch: Arch) {
     const packager = this.packager
     // tslint:disable-next-line:no-invalid-template-strings
-    const artifactName = packager.expandArtifactNamePattern(packager.config.dmg, "dmg", null, "${productName}-" + (packager.platformSpecificBuildOptions.bundleShortVersion || "${version}") + ".${ext}")
+    const artifactName = packager.expandArtifactNamePattern(
+      packager.config.dmg,
+      "dmg",
+      null,
+      "${productName}-" + (packager.platformSpecificBuildOptions.bundleShortVersion || "${version}") + ".${ext}"
+    )
     const artifactPath = path.join(this.outDir, artifactName)
     await packager.info.callArtifactBuildStarted({
       targetPresentableName: "DMG",
@@ -37,18 +42,23 @@ export class DmgTarget extends Target {
 
     const specification = await this.computeDmgOptions()
     // https://github.com/deskgap-userland/deskgap-builder/issues/2115
-    const backgroundFile = specification.background == null ? null : await transformBackgroundFileIfNeed(specification.background, packager.info.tempDirManager)
+    const backgroundFile =
+      specification.background == null
+        ? null
+        : await transformBackgroundFileIfNeed(specification.background, packager.info.tempDirManager)
     const finalSize = await computeAssetSize(packager.info.cancellationToken, tempDmg, specification, backgroundFile)
-    const expandingFinalSize = (finalSize * 0.1) + finalSize
+    const expandingFinalSize = finalSize * 0.1 + finalSize
     await exec("hdiutil", ["resize", "-size", expandingFinalSize.toString(), tempDmg])
 
     const volumePath = path.join("/Volumes", volumeName)
     if (await exists(volumePath)) {
-      log.debug({volumePath}, "unmounting previous disk image")
+      log.debug({ volumePath }, "unmounting previous disk image")
       await detach(volumePath)
     }
 
-    if (!await attachAndExecute(tempDmg, true, () => customizeDmg(volumePath, specification, packager, backgroundFile))) {
+    if (
+      !(await attachAndExecute(tempDmg, true, () => customizeDmg(volumePath, specification, packager, backgroundFile)))
+    ) {
       return
     }
 
@@ -64,7 +74,7 @@ export class DmgTarget extends Target {
 
     const licenseData = await addLicenseToDmg(packager, artifactPath)
     if (packager.packagerOptions.effectiveOptionComputed != null) {
-      await packager.packagerOptions.effectiveOptionComputed({licenseData})
+      await packager.packagerOptions.effectiveOptionComputed({ licenseData })
     }
 
     if (this.options.sign === true) {
@@ -72,7 +82,10 @@ export class DmgTarget extends Target {
     }
 
     const safeArtifactName = packager.computeSafeArtifactName(artifactName, "dmg")
-    const updateInfo = this.options.writeUpdateInfo === false ? null : await createBlockmap(artifactPath, this, packager, safeArtifactName)
+    const updateInfo =
+      this.options.writeUpdateInfo === false
+        ? null
+        : await createBlockmap(artifactPath, this, packager, safeArtifactName)
     await packager.info.callArtifactBuildCompleted({
       file: artifactPath,
       safeArtifactName,
@@ -133,7 +146,7 @@ export class DmgTarget extends Target {
   // public to test
   async computeDmgOptions(): Promise<DmgOptions> {
     const packager = this.packager
-    const specification: DmgOptions = {...this.options}
+    const specification: DmgOptions = { ...this.options }
     if (specification.icon == null && specification.icon !== null) {
       specification.icon = await packager.getIconPath()
     }
@@ -145,24 +158,22 @@ export class DmgTarget extends Target {
     const background = specification.background
     if (specification.backgroundColor != null) {
       if (background != null) {
-        throw new InvalidConfigurationError("Both dmg.backgroundColor and dmg.background are specified — please set the only one")
+        throw new InvalidConfigurationError(
+          "Both dmg.backgroundColor and dmg.background are specified — please set the only one"
+        )
       }
-    }
-    else if (background == null) {
+    } else if (background == null) {
       specification.background = await computeBackground(packager)
-    }
-    else {
+    } else {
       specification.background = path.resolve(packager.info.projectDir, background)
     }
 
     if (specification.format == null) {
       if (process.env.ELECTRON_BUILDER_COMPRESSION_LEVEL != null) {
-        (specification as any).format = "UDZO"
-      }
-      else if (packager.compression === "store") {
+        ;(specification as any).format = "UDZO"
+      } else if (packager.compression === "store") {
         specification.format = "UDRO"
-      }
-      else {
+      } else {
         specification.format = packager.compression === "maximum" ? "UDBZ" : "UDZO"
       }
     }
@@ -170,11 +181,15 @@ export class DmgTarget extends Target {
     if (specification.contents == null) {
       specification.contents = [
         {
-          x: 130, y: 220
+          x: 130,
+          y: 220,
         },
         {
-          x: 410, y: 220, type: "link", path: "/Applications"
-        }
+          x: 410,
+          y: 220,
+          type: "link",
+          path: "/Applications",
+        },
       ]
     }
     return specification
@@ -183,11 +198,16 @@ export class DmgTarget extends Target {
 
 async function createStageDmg(tempDmg: string, appPath: string, volumeName: string) {
   //noinspection SpellCheckingInspection
-  const imageArgs = addLogLevel(["create",
-    "-srcfolder", appPath,
-    "-volname", volumeName,
-    "-anyowners", "-nospotlight",
-    "-format", "UDRW",
+  const imageArgs = addLogLevel([
+    "create",
+    "-srcfolder",
+    appPath,
+    "-volname",
+    volumeName,
+    "-anyowners",
+    "-nospotlight",
+    "-format",
+    "UDRW",
   ])
   imageArgs.push("-fs", "HFS+", "-fsargs", "-c c=64,a=16,e=16")
   imageArgs.push(tempDmg)
@@ -200,7 +220,12 @@ function addLogLevel(args: Array<string>): Array<string> {
   return args
 }
 
-async function computeAssetSize(cancellationToken: CancellationToken, dmgFile: string, specification: DmgOptions, backgroundFile: string | null | undefined) {
+async function computeAssetSize(
+  cancellationToken: CancellationToken,
+  dmgFile: string,
+  specification: DmgOptions,
+  backgroundFile: string | null | undefined
+) {
   const asyncTaskManager = new AsyncTaskManager(cancellationToken)
   asyncTaskManager.addTask(stat(dmgFile))
 
@@ -221,7 +246,12 @@ async function computeAssetSize(cancellationToken: CancellationToken, dmgFile: s
   return result
 }
 
-async function customizeDmg(volumePath: string, specification: DmgOptions, packager: MacPackager, backgroundFile: string | null | undefined) {
+async function customizeDmg(
+  volumePath: string,
+  specification: DmgOptions,
+  packager: MacPackager,
+  backgroundFile: string | null | undefined
+) {
   const window = specification.window
   const env: any = {
     ...process.env,
@@ -242,8 +272,7 @@ async function customizeDmg(volumePath: string, specification: DmgOptions, packa
       env.windowWidth = (window.width || 540).toString()
       env.windowHeight = (window.height || 380).toString()
     }
-  }
-  else {
+  } else {
     delete env.backgroundColor
   }
 
@@ -283,16 +312,27 @@ async function customizeDmg(volumePath: string, specification: DmgOptions, packa
 
   await exec("/usr/bin/python", [path.join(getDmgVendorPath(), "dmgbuild/core.py")], {
     cwd: getDmgVendorPath(),
-    env
+    env,
   })
-  return packager.packagerOptions.effectiveOptionComputed == null || !(await packager.packagerOptions.effectiveOptionComputed({volumePath, specification, packager}))
+  return (
+    packager.packagerOptions.effectiveOptionComputed == null ||
+    !(await packager.packagerOptions.effectiveOptionComputed({ volumePath, specification, packager }))
+  )
 }
 
-async function computeDmgEntries(specification: DmgOptions, volumePath: string, packager: MacPackager, asyncTaskManager: AsyncTaskManager): Promise<string> {
+async function computeDmgEntries(
+  specification: DmgOptions,
+  volumePath: string,
+  packager: MacPackager,
+  asyncTaskManager: AsyncTaskManager
+): Promise<string> {
   let result = ""
   for (const c of specification.contents!!) {
     if (c.path != null && c.path.endsWith(".app") && c.type !== "link") {
-      log.warn({path: c.path, reason: "actual path to app will be used instead"}, "do not specify path for application")
+      log.warn(
+        { path: c.path, reason: "actual path to app will be used instead" },
+        "do not specify path for application"
+      )
     }
 
     const entryPath = c.path || `${packager.appInfo.productFilename}.app`
@@ -303,18 +343,28 @@ async function computeDmgEntries(specification: DmgOptions, volumePath: string, 
     result += `'${entryName}': (${c.x}, ${c.y})`
 
     if (c.type === "link") {
-      asyncTaskManager.addTask(exec("ln", ["-s", `/${entryPath.startsWith("/") ? entryPath.substring(1) : entryPath}`, `${volumePath}/${entryName}`]))
+      asyncTaskManager.addTask(
+        exec("ln", [
+          "-s",
+          `/${entryPath.startsWith("/") ? entryPath.substring(1) : entryPath}`,
+          `${volumePath}/${entryName}`,
+        ])
+      )
     }
     // use c.path instead of entryPath (to be sure that this logic is not applied to .app bundle) https://github.com/deskgap-userland/deskgap-builder/issues/2147
     else if (!isEmptyOrSpaces(c.path) && (c.type === "file" || c.type === "dir")) {
       const source = await packager.getResource(c.path)
       if (source == null) {
-        log.warn({entryPath, reason: "doesn't exist"}, "skipped DMG item copying")
+        log.warn({ entryPath, reason: "doesn't exist" }, "skipped DMG item copying")
         continue
       }
 
       const destination = `${volumePath}/${entryName}`
-      asyncTaskManager.addTask(c.type === "dir" || (await stat(source)).isDirectory() ? copyDir(source, destination) : copyFile(source, destination))
+      asyncTaskManager.addTask(
+        c.type === "dir" || (await stat(source)).isDirectory()
+          ? copyDir(source, destination)
+          : copyFile(source, destination)
+      )
     }
   }
   return result
@@ -327,7 +377,7 @@ async function transformBackgroundFileIfNeed(file: string, tmpDir: TmpDir): Prom
 
   const retinaFile = file.replace(/\.([a-z]+)$/, "@2x.$1")
   if (await exists(retinaFile)) {
-    const tiffFile = await tmpDir.getTempFile({suffix: ".tiff"})
+    const tiffFile = await tmpDir.getTempFile({ suffix: ".tiff" })
     await exec("tiffutil", ["-cathidpicheck", file, retinaFile, "-out", tiffFile])
     return tiffFile
   }

@@ -1,5 +1,5 @@
 import { InvalidConfigurationError, isEmptyOrSpaces } from "builder-util"
-import sanitizeFileName from "sanitize-filename"
+import sanitizeFileName = require("sanitize-filename")
 import { WinPackager } from "../winPackager"
 
 export interface CommonWindowsInstallerConfiguration {

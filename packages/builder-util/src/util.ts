@@ -1,7 +1,7 @@
 import { path7za } from "7zip-bin"
 import { appBuilderPath } from "app-builder-bin"
 import { safeStringifyJson } from "builder-util-runtime"
-import chalk from "chalk"
+import * as chalk from "chalk"
 import { ChildProcess, execFile, ExecFileOptions, spawn as _spawn, SpawnOptions } from "child_process"
 import { createHash } from "crypto"
 import _debug from "debug"
@@ -291,7 +291,6 @@ export class ExecError extends Error {
     code: string = "ERR_ELECTRON_BUILDER_CANNOT_EXECUTE"
   ) {
     super(`${command} exited with code ${code}${formatOut(out, "Output")}${formatOut(errorOut, "Error output")}`)
-
     ;(this as NodeJS.ErrnoException).code = code
   }
 }
@@ -374,7 +373,6 @@ export function isEnvTrue(value: string | null | undefined) {
 export class InvalidConfigurationError extends Error {
   constructor(message: string, code: string = "ERR_ELECTRON_BUILDER_INVALID_CONFIGURATION") {
     super(message)
-
     ;(this as NodeJS.ErrnoException).code = code
   }
 }

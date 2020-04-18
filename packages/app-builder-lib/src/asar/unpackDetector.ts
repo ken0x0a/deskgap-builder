@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { log } from "builder-util"
 import { CONCURRENCY } from "builder-util/out/fs"
 import { ensureDir } from "fs-extra"

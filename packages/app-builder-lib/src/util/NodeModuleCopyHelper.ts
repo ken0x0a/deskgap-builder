@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { CONCURRENCY } from "builder-util/out/fs"
 import { lstat, readdir } from "fs-extra"
 import * as path from "path"

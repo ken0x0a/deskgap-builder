@@ -3,7 +3,7 @@ import { getBinFromUrl } from "app-builder-lib/out/binDownload"
 import { Arch, getArchSuffix, SquirrelWindowsOptions, Target } from "app-builder-lib"
 import { WinPackager } from "app-builder-lib/out/winPackager"
 import * as path from "path"
-import sanitizeFileName from "sanitize-filename"
+import sanitizeFileName = require("sanitize-filename")
 import { convertVersion, SquirrelBuilder, SquirrelOptions } from "./squirrelPack"
 
 export default class SquirrelWindowsTarget extends Target {

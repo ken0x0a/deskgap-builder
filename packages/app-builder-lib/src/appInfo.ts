@@ -1,5 +1,5 @@
 import { isEmptyOrSpaces, log } from "builder-util"
-import sanitizeFileName from "sanitize-filename"
+import sanitizeFileName = require("sanitize-filename")
 import { prerelease, SemVer } from "semver"
 import { PlatformSpecificBuildOptions } from "./options/PlatformSpecificBuildOptions"
 import { Packager } from "./packager"

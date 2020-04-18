@@ -1,5 +1,5 @@
 import { Arch, AsyncTaskManager, log } from "builder-util"
-import sanitizeFileName from "sanitize-filename"
+import sanitizeFileName = require("sanitize-filename")
 import { DIR_TARGET, Platform, Target, TargetSpecificOptions } from "./core"
 import { LinuxConfiguration } from "./options/linuxOptions"
 import { Packager } from "./packager"
@@ -18,7 +18,8 @@ export class LinuxPackager extends PlatformPackager<LinuxConfiguration> {
     super(info, Platform.LINUX)
 
     const executableName = this.platformSpecificBuildOptions.executableName
-    this.executableName = executableName == null ? this.appInfo.sanitizedName.toLowerCase() : sanitizeFileName(executableName)
+    this.executableName =
+      executableName == null ? this.appInfo.sanitizedName.toLowerCase() : sanitizeFileName(executableName)
   }
 
   get defaultTarget(): Array<string> {
@@ -60,7 +61,7 @@ export class LinuxPackager extends PlatformPackager<LinuxConfiguration> {
         }
       })()
 
-      mapper(name, outDir => {
+      mapper(name, (outDir) => {
         if (targetClass === null) {
           return createCommonTarget(name, outDir, this)
         }
@@ -91,7 +92,10 @@ class RemoteTarget extends Target {
   }
 
   constructor(private readonly target: Target, private readonly remoteBuilder: RemoteBuilder) {
-    super(target.name, true /* all must be scheduled in time (so, on finishBuild RemoteBuilder will have all targets added - so, we must set isAsyncSupported to true (resolved promise is returned)) */)
+    super(
+      target.name,
+      true /* all must be scheduled in time (so, on finishBuild RemoteBuilder will have all targets added - so, we must set isAsyncSupported to true (resolved promise is returned)) */
+    )
   }
 
   async finishBuild() {
@@ -106,7 +110,7 @@ class RemoteTarget extends Target {
   }
 
   private async doBuild(appOutDir: string, arch: Arch) {
-    log.info({target: this.target.name, arch: Arch[arch]}, "scheduling remote build")
+    log.info({ target: this.target.name, arch: Arch[arch] }, "scheduling remote build")
     await this.target.checkOptions()
     this.remoteBuilder.scheduleBuild(this.target, arch, appOutDir)
   }

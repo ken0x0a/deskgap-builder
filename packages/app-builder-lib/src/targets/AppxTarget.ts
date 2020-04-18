@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { Arch, asArray, deepAssign, InvalidConfigurationError, log } from "builder-util"
 import { copyOrLinkFile, walk } from "builder-util/out/fs"
 import { emptyDir, readdir, readFile, writeFile } from "fs-extra"

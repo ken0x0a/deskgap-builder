@@ -6,7 +6,6 @@ import { Lazy } from "lazy-val"
 import * as path from "path"
 import { orNullIfFileNotExist } from "read-config-file"
 import * as findWorkspaceRoot from "find-yarn-workspace-root"
-
 import * as semver from "semver"
 import { Configuration } from "../configuration"
 import { getConfig } from "../util/config"
@@ -49,6 +48,7 @@ export async function getDeskGapVersionFromInstalled(projectDir: string): Promis
       }
     }
   }
+  return
 }
 
 export async function getDeskGapPackage(projectDir: string) {
@@ -67,12 +67,13 @@ export async function getDeskGapPackage(projectDir: string) {
 /** @internal */
 export async function computeDeskGapVersion(projectDir: string, projectMetadata: MetadataValue): Promise<string> {
   const result = await getDeskGapVersionFromInstalled(projectDir)
-  console.log("\x1b[33mVersion from %s\x1b[0m", result)
+  log.info("\x1b[33mVersion from %s\x1b[0m", result)
   if (result !== undefined) {
     return result
   }
 
   const dependency = findFromPackageMetadata(await projectMetadata!!.value)
+  log.info(dependency)
   if (dependency?.name === "deskgap-nightly") {
     log.info("You are using a nightly version of deskgap, be warned that those builds are highly unstable.")
     const feedXml = await httpExecutor.request({

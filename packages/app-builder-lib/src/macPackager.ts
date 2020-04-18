@@ -1,4 +1,4 @@
-import BluebirdPromise from "bluebird-lst"
+import * as BluebirdPromise from "bluebird-lst"
 import { deepAssign, Arch, AsyncTaskManager, exec, InvalidConfigurationError, log, use } from "builder-util"
 import { signAsync, SignOptions } from "../deskgap-osx-sign"
 import { mkdirs, readdir } from "fs-extra"
