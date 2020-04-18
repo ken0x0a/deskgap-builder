@@ -15,5 +15,10 @@
   ],
   "exclude": [
     "../../typings/deskgap.d.ts"
+  ],
+  "references": [
+    { "path": "../builder-util" },
+    { "path": "../builder-util-runtime" },
+    { "path": "../deskgap-publish" },
   ]
 }

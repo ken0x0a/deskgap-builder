@@ -2,7 +2,7 @@
   "extends": "../tsconfig-base.json",
   "compilerOptions": {
     "outDir": "out",
-    "rootDir": "src"
+    "rootDir": "src",
   },
   "jsdoc": {
     "out": "../../scripts/jsdoc/out/builder",
@@ -18,5 +18,7 @@
   ],
   "references": [
     { "path": "../app-builder-lib" },
+    { "path": "../builder-util" },
+    { "path": "../builder-util-runtime" },
   ]
 }

@@ -4,9 +4,9 @@
     "resolveJsonModule": true,
   },
   "references": [
-    { "path": "packages/app-builder-lib" },
-    { "path": "packages/builder-util" },
-    { "path": "packages/builder-util-runtime" },
+    // { "path": "packages/app-builder-lib" },
+    // { "path": "packages/builder-util" },
+    // { "path": "packages/builder-util-runtime" },
     { "path": "packages/deskgap-builder" },
     { "path": "packages/deskgap-builder-squirrel-windows" },
     // { "path": "packages/deskgap-forge-maker-appimage" },

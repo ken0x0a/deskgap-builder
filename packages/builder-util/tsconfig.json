@@ -10,5 +10,8 @@
   "jsdoc": {
     "out": "../../scripts/jsdoc/out/util",
     "access": "public"
-  }
+  },
+  "references": [
+    { "path": "../builder-util-runtime" },
+  ]
 }
