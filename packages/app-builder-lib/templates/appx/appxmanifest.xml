@@ -8,7 +8,7 @@
   <!-- use single quotes to avoid double quotes escaping in the publisher value  -->
   <Identity Name="${identityName}"
     ProcessorArchitecture="${arch}"
-    Publisher='${publisher}'
+    Publisher="${publisher}"
     Version="${version}" />
   <Properties>
     <DisplayName>${displayName}</DisplayName>
