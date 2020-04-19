@@ -1,13 +1,13 @@
-import * as path from "path"
-import { build } from "./index"
-import { PackagerOptions } from "./packagerApi"
+import * as path from "path";
+import { build } from "./index";
+import { PackagerOptions } from "./packagerApi";
 
 export interface ForgeOptions {
-  readonly dir: string
+  readonly dir: string;
 }
 
 export function buildForge(forgeOptions: ForgeOptions, options: PackagerOptions) {
-  const appDir = forgeOptions.dir
+  const appDir = forgeOptions.dir;
   return build({
     prepackaged: appDir,
     config: {
@@ -16,6 +16,6 @@ export function buildForge(forgeOptions: ForgeOptions, options: PackagerOptions)
         output: path.resolve(appDir, "..", "make"),
       },
     },
-    ...options
-  })
+    ...options,
+  });
 }

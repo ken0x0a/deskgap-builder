@@ -1,39 +1,31 @@
-import { Publisher, UploadTask, PublishContext } from "deskgap-publish"
-import { executeAppBuilder } from "builder-util"
-import * as path from "path"
-import { PublishConfiguration } from "builder-util-runtime"
+import { executeAppBuilder } from "builder-util";
+import { PublishConfiguration } from "builder-util-runtime";
+import { PublishContext, Publisher, UploadTask } from "deskgap-publish";
+import * as path from "path";
 
 export class SnapStorePublisher extends Publisher {
-  readonly providerName = "snapStore"
+  readonly providerName = "snapStore";
 
-  constructor(context: PublishContext, private options: SnapStoreOptions) {
-    super(context)
-  }
-
-  upload(task: UploadTask): Promise<any> {
-    this.createProgressBar(path.basename(task.file), -1)
-
-    const args = ["publish-snap", "-f", task.file]
-
-    let channels = this.options.channels
-    if (channels == null) {
-      channels = ["edge"]
-    }
-    else {
-      if (typeof channels === "string") {
-        channels = channels.split(",")
-      }
-    }
-
-    for (const channel of channels) {
-      args.push("-c", channel)
-    }
-
-    return executeAppBuilder(args)
+  constructor(context: PublishContext, private readonly options: SnapStoreOptions) {
+    super(context);
   }
 
   toString(): string {
-    return "Snap Store"
+    return "Snap Store";
+  }
+
+  upload(task: UploadTask): Promise<any> {
+    this.createProgressBar(path.basename(task.file), -1);
+
+    const args = ["publish-snap", "-f", task.file];
+
+    let { channels } = this.options;
+    if (channels == null) channels = ["edge"];
+    else if (typeof channels === "string") channels = channels.split(",");
+
+    for (const channel of channels) args.push("-c", channel);
+
+    return executeAppBuilder(args);
   }
 }
 
@@ -45,5 +37,5 @@ export interface SnapStoreOptions extends PublishConfiguration {
    * The list of channels the snap would be released.
    * @default ["edge"]
    */
-  readonly channels?: string | Array<string> | null
+  readonly channels?: string | string[] | null;
 }

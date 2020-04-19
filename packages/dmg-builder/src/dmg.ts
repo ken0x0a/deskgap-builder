@@ -1,91 +1,87 @@
-import { DmgOptions, Target } from "app-builder-lib"
-import { findIdentity, isSignAllowed } from "app-builder-lib/out/codeSign/macCodeSign"
-import MacPackager from "app-builder-lib/out/macPackager"
-import { createBlockmap } from "app-builder-lib/out/targets/differentialUpdateInfoBuilder"
-import { executeAppBuilderAsJson } from "app-builder-lib/out/util/appBuilder"
-import { Arch, AsyncTaskManager, exec, InvalidConfigurationError, isEmptyOrSpaces, log, spawn } from "builder-util"
-import { CancellationToken } from "builder-util-runtime"
-import { copyDir, copyFile, exists, statOrNull } from "builder-util/out/fs"
-import { stat } from "fs-extra"
-import * as path from "path"
-import sanitizeFileName = require("sanitize-filename")
-import { TmpDir } from "temp-file"
-import { addLicenseToDmg } from "./dmgLicense"
-import { attachAndExecute, computeBackground, detach, getDmgVendorPath } from "./dmgUtil"
+import { DmgOptions, Target } from "app-builder-lib";
+import { findIdentity, isSignAllowed } from "app-builder-lib/out/codeSign/macCodeSign";
+import MacPackager from "app-builder-lib/out/macPackager";
+import { createBlockmap } from "app-builder-lib/out/targets/differentialUpdateInfoBuilder";
+import { executeAppBuilderAsJson } from "app-builder-lib/out/util/appBuilder";
+import { Arch, AsyncTaskManager, exec, InvalidConfigurationError, isEmptyOrSpaces, log, spawn } from "builder-util";
+import { CancellationToken } from "builder-util-runtime";
+import { copyDir, copyFile, exists, statOrNull } from "builder-util/out/fs";
+import { stat } from "fs-extra";
+import * as path from "path";
+
+import sanitizeFileName = require("sanitize-filename");
+import { TmpDir } from "temp-file";
+import { addLicenseToDmg } from "./dmgLicense";
+import { attachAndExecute, computeBackground, detach, getDmgVendorPath } from "./dmgUtil";
 
 export class DmgTarget extends Target {
-  readonly options: DmgOptions = this.packager.config.dmg || Object.create(null)
+  readonly options: DmgOptions = this.packager.config.dmg || Object.create(null);
 
   constructor(private readonly packager: MacPackager, readonly outDir: string) {
-    super("dmg")
+    super("dmg");
   }
 
   async build(appPath: string, arch: Arch) {
-    const packager = this.packager
+    const { packager } = this;
     // tslint:disable-next-line:no-invalid-template-strings
     const artifactName = packager.expandArtifactNamePattern(
       packager.config.dmg,
       "dmg",
       null,
-      "${productName}-" + (packager.platformSpecificBuildOptions.bundleShortVersion || "${version}") + ".${ext}"
-    )
-    const artifactPath = path.join(this.outDir, artifactName)
+      `\${productName}-${packager.platformSpecificBuildOptions.bundleShortVersion || "${version}"}.\${ext}`,
+    );
+    const artifactPath = path.join(this.outDir, artifactName);
     await packager.info.callArtifactBuildStarted({
       targetPresentableName: "DMG",
       file: artifactPath,
       arch,
-    })
+    });
 
-    const volumeName = sanitizeFileName(this.computeVolumeName(this.options.title))
+    const volumeName = sanitizeFileName(this.computeVolumeName(this.options.title));
 
-    const tempDmg = await createStageDmg(await packager.getTempFile(".dmg"), appPath, volumeName)
+    const tempDmg = await createStageDmg(await packager.getTempFile(".dmg"), appPath, volumeName);
 
-    const specification = await this.computeDmgOptions()
+    const specification = await this.computeDmgOptions();
     // https://github.com/deskgap-userland/deskgap-builder/issues/2115
     const backgroundFile =
       specification.background == null
         ? null
-        : await transformBackgroundFileIfNeed(specification.background, packager.info.tempDirManager)
-    const finalSize = await computeAssetSize(packager.info.cancellationToken, tempDmg, specification, backgroundFile)
-    const expandingFinalSize = finalSize * 0.1 + finalSize
-    await exec("hdiutil", ["resize", "-size", expandingFinalSize.toString(), tempDmg])
+        : await transformBackgroundFileIfNeed(specification.background, packager.info.tempDirManager);
+    const finalSize = await computeAssetSize(packager.info.cancellationToken, tempDmg, specification, backgroundFile);
+    const expandingFinalSize = finalSize * 0.1 + finalSize;
+    await exec("hdiutil", ["resize", "-size", expandingFinalSize.toString(), tempDmg]);
 
-    const volumePath = path.join("/Volumes", volumeName)
+    const volumePath = path.join("/Volumes", volumeName);
     if (await exists(volumePath)) {
-      log.debug({ volumePath }, "unmounting previous disk image")
-      await detach(volumePath)
+      log.debug({ volumePath }, "unmounting previous disk image");
+      await detach(volumePath);
     }
 
     if (
       !(await attachAndExecute(tempDmg, true, () => customizeDmg(volumePath, specification, packager, backgroundFile)))
-    ) {
-      return
-    }
+    )
+      return;
 
     // dmg file must not exist otherwise hdiutil failed (https://github.com/deskgap-userland/deskgap-builder/issues/1308#issuecomment-282847594), so, -ov must be specified
-    const args = ["convert", tempDmg, "-ov", "-format", specification.format!!, "-o", artifactPath]
-    if (specification.format === "UDZO") {
-      args.push("-imagekey", `zlib-level=${process.env.ELECTRON_BUILDER_COMPRESSION_LEVEL || "9"}`)
-    }
-    await spawn("hdiutil", addLogLevel(args))
-    if (this.options.internetEnabled && parseInt(require("os").split(".")[0], 10) < 19) {
-      await exec("hdiutil", addLogLevel(["internet-enable"]).concat(artifactPath))
-    }
+    const args = ["convert", tempDmg, "-ov", "-format", specification.format!, "-o", artifactPath];
+    if (specification.format === "UDZO")
+      args.push("-imagekey", `zlib-level=${process.env.ELECTRON_BUILDER_COMPRESSION_LEVEL || "9"}`);
 
-    const licenseData = await addLicenseToDmg(packager, artifactPath)
-    if (packager.packagerOptions.effectiveOptionComputed != null) {
-      await packager.packagerOptions.effectiveOptionComputed({ licenseData })
-    }
+    await spawn("hdiutil", addLogLevel(args));
+    if (this.options.internetEnabled && parseInt(require("os").split(".")[0], 10) < 19)
+      await exec("hdiutil", addLogLevel(["internet-enable"]).concat(artifactPath));
 
-    if (this.options.sign === true) {
-      await this.signDmg(artifactPath)
-    }
+    const licenseData = await addLicenseToDmg(packager, artifactPath);
+    if (packager.packagerOptions.effectiveOptionComputed != null)
+      await packager.packagerOptions.effectiveOptionComputed({ licenseData });
 
-    const safeArtifactName = packager.computeSafeArtifactName(artifactName, "dmg")
+    if (this.options.sign === true) await this.signDmg(artifactPath);
+
+    const safeArtifactName = packager.computeSafeArtifactName(artifactName, "dmg");
     const updateInfo =
       this.options.writeUpdateInfo === false
         ? null
-        : await createBlockmap(artifactPath, this, packager, safeArtifactName)
+        : await createBlockmap(artifactPath, this, packager, safeArtifactName);
     await packager.info.callArtifactBuildCompleted({
       file: artifactPath,
       safeArtifactName,
@@ -94,91 +90,37 @@ export class DmgTarget extends Target {
       packager,
       isWriteUpdateInfo: updateInfo != null,
       updateInfo,
-    })
-  }
-
-  private async signDmg(artifactPath: string) {
-    if (!isSignAllowed(false)) {
-      return
-    }
-
-    const packager = this.packager
-    const qualifier = packager.platformSpecificBuildOptions.identity
-    // explicitly disabled if set to null
-    if (qualifier === null) {
-      // macPackager already somehow handle this situation, so, here just return
-      return
-    }
-
-    const keychainFile = (await packager.codeSigningInfo.value).keychainFile
-    const certificateType = "Developer ID Application"
-    let identity = await findIdentity(certificateType, qualifier, keychainFile)
-    if (identity == null) {
-      identity = await findIdentity("Mac Developer", qualifier, keychainFile)
-      if (identity == null) {
-        return
-      }
-    }
-
-    const args = ["--sign", identity.hash]
-    if (keychainFile != null) {
-      args.push("--keychain", keychainFile)
-    }
-    args.push(artifactPath)
-    await exec("codesign", args)
-  }
-
-  computeVolumeName(custom?: string | null): string {
-    const appInfo = this.packager.appInfo
-    const shortVersion = this.packager.platformSpecificBuildOptions.bundleShortVersion || appInfo.version
-
-    if (custom == null) {
-      return `${appInfo.productFilename} ${shortVersion}`
-    }
-
-    return custom
-      .replace(/\${shortVersion}/g, shortVersion)
-      .replace(/\${version}/g, appInfo.version)
-      .replace(/\${name}/g, appInfo.name)
-      .replace(/\${productName}/g, appInfo.productName)
+    });
   }
 
   // public to test
   async computeDmgOptions(): Promise<DmgOptions> {
-    const packager = this.packager
-    const specification: DmgOptions = { ...this.options }
-    if (specification.icon == null && specification.icon !== null) {
-      specification.icon = await packager.getIconPath()
-    }
+    const { packager } = this;
+    const specification: DmgOptions = { ...this.options };
+    if (specification.icon == null && specification.icon !== null) specification.icon = await packager.getIconPath();
 
-    if (specification.icon != null && isEmptyOrSpaces(specification.icon)) {
-      throw new InvalidConfigurationError("dmg.icon cannot be specified as empty string")
-    }
+    if (specification.icon != null && isEmptyOrSpaces(specification.icon))
+      throw new InvalidConfigurationError("dmg.icon cannot be specified as empty string");
 
-    const background = specification.background
+    const { background } = specification;
     if (specification.backgroundColor != null) {
-      if (background != null) {
+      if (background != null)
         throw new InvalidConfigurationError(
-          "Both dmg.backgroundColor and dmg.background are specified — please set the only one"
-        )
-      }
-    } else if (background == null) {
-      specification.background = await computeBackground(packager)
-    } else {
-      specification.background = path.resolve(packager.info.projectDir, background)
-    }
+          "Both dmg.backgroundColor and dmg.background are specified — please set the only one",
+        );
+    } else if (background == null) specification.background = await computeBackground(packager);
+    else specification.background = path.resolve(packager.info.projectDir, background);
 
-    if (specification.format == null) {
+    if (specification.format == null)
       if (process.env.ELECTRON_BUILDER_COMPRESSION_LEVEL != null) {
-        ;(specification as any).format = "UDZO"
+        (specification as any).format = "UDZO";
       } else if (packager.compression === "store") {
-        specification.format = "UDRO"
+        specification.format = "UDRO";
       } else {
-        specification.format = packager.compression === "maximum" ? "UDBZ" : "UDZO"
+        specification.format = packager.compression === "maximum" ? "UDBZ" : "UDZO";
       }
-    }
 
-    if (specification.contents == null) {
+    if (specification.contents == null)
       specification.contents = [
         {
           x: 130,
@@ -190,14 +132,52 @@ export class DmgTarget extends Target {
           type: "link",
           path: "/Applications",
         },
-      ]
+      ];
+
+    return specification;
+  }
+
+  computeVolumeName(custom?: string | null): string {
+    const { appInfo } = this.packager;
+    const shortVersion = this.packager.platformSpecificBuildOptions.bundleShortVersion || appInfo.version;
+
+    if (custom == null) return `${appInfo.productFilename} ${shortVersion}`;
+
+    return custom
+      .replace(/\${shortVersion}/g, shortVersion)
+      .replace(/\${version}/g, appInfo.version)
+      .replace(/\${name}/g, appInfo.name)
+      .replace(/\${productName}/g, appInfo.productName);
+  }
+
+  private async signDmg(artifactPath: string) {
+    if (!isSignAllowed(false)) return;
+
+    const { packager } = this;
+    const qualifier = packager.platformSpecificBuildOptions.identity;
+    // explicitly disabled if set to null
+    if (qualifier === null)
+      // macPackager already somehow handle this situation, so, here just return
+      return;
+
+    const { keychainFile } = await packager.codeSigningInfo.value;
+    const certificateType = "Developer ID Application";
+    let identity = await findIdentity(certificateType, qualifier, keychainFile);
+    if (identity == null) {
+      identity = await findIdentity("Mac Developer", qualifier, keychainFile);
+      if (identity == null) return;
     }
-    return specification
+
+    const args = ["--sign", identity.hash];
+    if (keychainFile != null) args.push("--keychain", keychainFile);
+
+    args.push(artifactPath);
+    await exec("codesign", args);
   }
 }
 
 async function createStageDmg(tempDmg: string, appPath: string, volumeName: string) {
-  //noinspection SpellCheckingInspection
+  // noinspection SpellCheckingInspection
   const imageArgs = addLogLevel([
     "create",
     "-srcfolder",
@@ -208,51 +188,44 @@ async function createStageDmg(tempDmg: string, appPath: string, volumeName: stri
     "-nospotlight",
     "-format",
     "UDRW",
-  ])
-  imageArgs.push("-fs", "HFS+", "-fsargs", "-c c=64,a=16,e=16")
-  imageArgs.push(tempDmg)
-  await spawn("hdiutil", imageArgs)
-  return tempDmg
+  ]);
+  imageArgs.push("-fs", "HFS+", "-fsargs", "-c c=64,a=16,e=16");
+  imageArgs.push(tempDmg);
+  await spawn("hdiutil", imageArgs);
+  return tempDmg;
 }
 
-function addLogLevel(args: Array<string>): Array<string> {
-  args.push(process.env.DEBUG_DMG === "true" ? "-verbose" : "-quiet")
-  return args
+function addLogLevel(args: string[]): string[] {
+  args.push(process.env.DEBUG_DMG === "true" ? "-verbose" : "-quiet");
+  return args;
 }
 
 async function computeAssetSize(
   cancellationToken: CancellationToken,
   dmgFile: string,
   specification: DmgOptions,
-  backgroundFile: string | null | undefined
+  backgroundFile: string | null | undefined,
 ) {
-  const asyncTaskManager = new AsyncTaskManager(cancellationToken)
-  asyncTaskManager.addTask(stat(dmgFile))
+  const asyncTaskManager = new AsyncTaskManager(cancellationToken);
+  asyncTaskManager.addTask(stat(dmgFile));
 
-  if (specification.icon != null) {
-    asyncTaskManager.addTask(statOrNull(specification.icon))
-  }
+  if (specification.icon != null) asyncTaskManager.addTask(statOrNull(specification.icon));
 
-  if (backgroundFile != null) {
-    asyncTaskManager.addTask(stat(backgroundFile))
-  }
+  if (backgroundFile != null) asyncTaskManager.addTask(stat(backgroundFile));
 
-  let result = 32 * 1024
-  for (const stat of await asyncTaskManager.awaitTasks()) {
-    if (stat != null) {
-      result += stat.size
-    }
-  }
-  return result
+  let result = 32 * 1024;
+  for (const stat of await asyncTaskManager.awaitTasks()) if (stat != null) result += stat.size;
+
+  return result;
 }
 
 async function customizeDmg(
   volumePath: string,
   specification: DmgOptions,
   packager: MacPackager,
-  backgroundFile: string | null | undefined
+  backgroundFile: string | null | undefined,
 ) {
-  const window = specification.window
+  const { window } = specification;
   const env: any = {
     ...process.env,
     volumePath,
@@ -261,126 +234,110 @@ async function customizeDmg(
     iconTextSize: specification.iconTextSize || 12,
 
     PYTHONIOENCODING: "utf8",
-  }
+  };
 
   if (specification.backgroundColor != null || specification.background == null) {
-    env.backgroundColor = specification.backgroundColor || "#ffffff"
+    env.backgroundColor = specification.backgroundColor || "#ffffff";
 
     if (window != null) {
-      env.windowX = (window.x == null ? 100 : window.x).toString()
-      env.windowY = (window.y == null ? 400 : window.y).toString()
-      env.windowWidth = (window.width || 540).toString()
-      env.windowHeight = (window.height || 380).toString()
+      env.windowX = (window.x == null ? 100 : window.x).toString();
+      env.windowY = (window.y == null ? 400 : window.y).toString();
+      env.windowWidth = (window.width || 540).toString();
+      env.windowHeight = (window.height || 380).toString();
     }
-  } else {
-    delete env.backgroundColor
-  }
+  } else delete env.backgroundColor;
 
-  const args = ["dmg", "--volume", volumePath]
-  if (specification.icon != null) {
-    args.push("--icon", (await packager.getResource(specification.icon))!!)
-  }
-  if (backgroundFile != null) {
-    args.push("--background", backgroundFile)
-  }
+  const args = ["dmg", "--volume", volumePath];
+  if (specification.icon != null) args.push("--icon", (await packager.getResource(specification.icon))!);
 
-  const data: any = await executeAppBuilderAsJson(args)
+  if (backgroundFile != null) args.push("--background", backgroundFile);
+
+  const data: any = await executeAppBuilderAsJson(args);
   if (data.backgroundWidth != null) {
-    env.windowWidth = window == null ? null : window.width
-    env.windowHeight = window == null ? null : window.height
+    env.windowWidth = window == null ? null : window.width;
+    env.windowHeight = window == null ? null : window.height;
 
-    if (env.windowWidth == null) {
-      env.windowWidth = data.backgroundWidth.toString()
-    }
-    if (env.windowHeight == null) {
-      env.windowHeight = data.backgroundHeight.toString()
-    }
+    if (env.windowWidth == null) env.windowWidth = data.backgroundWidth.toString();
 
-    if (env.windowX == null) {
-      env.windowX = 400
-    }
-    if (env.windowY == null) {
-      env.windowY = Math.round((1440 - env.windowHeight) / 2).toString()
-    }
+    if (env.windowHeight == null) env.windowHeight = data.backgroundHeight.toString();
+
+    if (env.windowX == null) env.windowX = 400;
+
+    if (env.windowY == null) env.windowY = Math.round((1440 - env.windowHeight) / 2).toString();
   }
 
-  Object.assign(env, data)
+  Object.assign(env, data);
 
-  const asyncTaskManager = new AsyncTaskManager(packager.info.cancellationToken)
-  env.iconLocations = await computeDmgEntries(specification, volumePath, packager, asyncTaskManager)
-  await asyncTaskManager.awaitTasks()
+  const asyncTaskManager = new AsyncTaskManager(packager.info.cancellationToken);
+  env.iconLocations = await computeDmgEntries(specification, volumePath, packager, asyncTaskManager);
+  await asyncTaskManager.awaitTasks();
 
   await exec("/usr/bin/python", [path.join(getDmgVendorPath(), "dmgbuild/core.py")], {
     cwd: getDmgVendorPath(),
     env,
-  })
+  });
   return (
     packager.packagerOptions.effectiveOptionComputed == null ||
     !(await packager.packagerOptions.effectiveOptionComputed({ volumePath, specification, packager }))
-  )
+  );
 }
 
 async function computeDmgEntries(
   specification: DmgOptions,
   volumePath: string,
   packager: MacPackager,
-  asyncTaskManager: AsyncTaskManager
+  asyncTaskManager: AsyncTaskManager,
 ): Promise<string> {
-  let result = ""
-  for (const c of specification.contents!!) {
-    if (c.path != null && c.path.endsWith(".app") && c.type !== "link") {
+  let result = "";
+  for (const c of specification.contents!) {
+    if (c.path?.endsWith(".app") && c.type !== "link")
       log.warn(
         { path: c.path, reason: "actual path to app will be used instead" },
-        "do not specify path for application"
-      )
-    }
+        "do not specify path for application",
+      );
 
-    const entryPath = c.path || `${packager.appInfo.productFilename}.app`
-    const entryName = c.name || path.basename(entryPath)
-    if (result.length !== 0) {
-      result += ",\n"
-    }
-    result += `'${entryName}': (${c.x}, ${c.y})`
+    const entryPath = c.path || `${packager.appInfo.productFilename}.app`;
+    const entryName = c.name || path.basename(entryPath);
+    if (result.length !== 0) result += ",\n";
 
-    if (c.type === "link") {
+    result += `'${entryName}': (${c.x}, ${c.y})`;
+
+    if (c.type === "link")
       asyncTaskManager.addTask(
         exec("ln", [
           "-s",
           `/${entryPath.startsWith("/") ? entryPath.substring(1) : entryPath}`,
           `${volumePath}/${entryName}`,
-        ])
-      )
-    }
+        ]),
+      );
     // use c.path instead of entryPath (to be sure that this logic is not applied to .app bundle) https://github.com/deskgap-userland/deskgap-builder/issues/2147
     else if (!isEmptyOrSpaces(c.path) && (c.type === "file" || c.type === "dir")) {
-      const source = await packager.getResource(c.path)
+      const source = await packager.getResource(c.path);
       if (source == null) {
-        log.warn({ entryPath, reason: "doesn't exist" }, "skipped DMG item copying")
-        continue
+        log.warn({ entryPath, reason: "doesn't exist" }, "skipped DMG item copying");
+        continue;
       }
 
-      const destination = `${volumePath}/${entryName}`
+      const destination = `${volumePath}/${entryName}`;
       asyncTaskManager.addTask(
         c.type === "dir" || (await stat(source)).isDirectory()
           ? copyDir(source, destination)
-          : copyFile(source, destination)
-      )
+          : copyFile(source, destination),
+      );
     }
   }
-  return result
+  return result;
 }
 
 async function transformBackgroundFileIfNeed(file: string, tmpDir: TmpDir): Promise<string> {
-  if (file.endsWith(".tiff") || file.endsWith(".TIFF")) {
-    return file
-  }
+  if (file.endsWith(".tiff") || file.endsWith(".TIFF")) return file;
 
-  const retinaFile = file.replace(/\.([a-z]+)$/, "@2x.$1")
+  const retinaFile = file.replace(/\.([a-z]+)$/, "@2x.$1");
   if (await exists(retinaFile)) {
-    const tiffFile = await tmpDir.getTempFile({ suffix: ".tiff" })
-    await exec("tiffutil", ["-cathidpicheck", file, retinaFile, "-out", tiffFile])
-    return tiffFile
+    const tiffFile = await tmpDir.getTempFile({ suffix: ".tiff" });
+    await exec("tiffutil", ["-cathidpicheck", file, retinaFile, "-out", tiffFile]);
+    return tiffFile;
   }
 
-  return file
+  return file;
 }

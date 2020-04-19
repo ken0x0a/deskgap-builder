@@ -1,16 +1,16 @@
 #! /usr/bin/env node
 
-import { log, use, getArchCliNames } from "builder-util"
-import { printErrorAndExit } from "builder-util/out/promise"
-import { computeDefaultAppDirectory, getConfig, PACKAGE_VERSION } from "app-builder-lib/out/util/config"
-import { getDeskGapVersion } from "app-builder-lib/out/deskgap/deskgapVersion"
-import { createLazyProductionDeps } from "app-builder-lib/out/util/packageDependencies"
-import { installOrRebuild } from "app-builder-lib/out/util/yarn"
-import { readJson } from "fs-extra"
-import { Lazy } from "lazy-val"
-import * as path from "path"
-import { orNullIfFileNotExist } from "read-config-file"
-import * as yargs from "yargs"
+import { getDeskGapVersion } from "app-builder-lib/out/deskgap/deskgapVersion";
+import { computeDefaultAppDirectory, getConfig, PACKAGE_VERSION } from "app-builder-lib/out/util/config";
+import { createLazyProductionDeps } from "app-builder-lib/out/util/packageDependencies";
+import { installOrRebuild } from "app-builder-lib/out/util/yarn";
+import { getArchCliNames, log, use } from "builder-util";
+import { printErrorAndExit } from "builder-util/out/promise";
+import { readJson } from "fs-extra";
+import { Lazy } from "lazy-val";
+import * as path from "path";
+import { orNullIfFileNotExist } from "read-config-file";
+import * as yargs from "yargs";
 
 /** @internal */
 export function configureInstallAppDepsCommand(yargs: yargs.Argv): yargs.Argv {
@@ -29,30 +29,28 @@ export function configureInstallAppDepsCommand(yargs: yargs.Argv): yargs.Argv {
       choices: getArchCliNames().concat("all"),
       default: process.arch === "arm" ? "armv7l" : process.arch,
       description: "The target arch",
-    })
+    });
 }
 
 /** @internal */
 export async function installAppDeps(args: any) {
   try {
-    log.info({ version: PACKAGE_VERSION }, "deskgap-builder")
+    log.info({ version: PACKAGE_VERSION }, "deskgap-builder");
   } catch (e) {
     // error in dev mode without babel
-    if (!(e instanceof ReferenceError)) {
-      throw e
-    }
+    if (!(e instanceof ReferenceError)) throw e;
   }
 
-  const projectDir = process.cwd()
-  const packageMetadata = new Lazy(() => orNullIfFileNotExist(readJson(path.join(projectDir, "package.json"))))
-  const config = await getConfig(projectDir, null, null, packageMetadata)
+  const projectDir = process.cwd();
+  const packageMetadata = new Lazy(() => orNullIfFileNotExist(readJson(path.join(projectDir, "package.json"))));
+  const config = await getConfig(projectDir, null, null, packageMetadata);
   const results = await Promise.all<string>([
     computeDefaultAppDirectory(
       projectDir,
-      use(config.directories, (it) => it!.app)
+      use(config.directories, (it) => it!.app),
     ),
     getDeskGapVersion(projectDir, config, packageMetadata),
-  ])
+  ]);
 
   // if two package.json — force full install (user wants to install/update app deps in addition to dev)
   await installOrRebuild(
@@ -64,15 +62,15 @@ export async function installAppDeps(args: any) {
       arch: args.arch,
       productionDeps: createLazyProductionDeps(results[0], null),
     },
-    results[0] !== projectDir
-  )
+    results[0] !== projectDir,
+  );
 }
 
 function main() {
-  return installAppDeps(configureInstallAppDepsCommand(yargs).argv)
+  return installAppDeps(configureInstallAppDepsCommand(yargs).argv);
 }
 
 if (process.mainModule === module) {
-  log.warn("please use as subcommand: deskgap-builder install-app-deps")
-  main().catch(printErrorAndExit)
+  log.warn("please use as subcommand: deskgap-builder install-app-deps");
+  main().catch(printErrorAndExit);
 }

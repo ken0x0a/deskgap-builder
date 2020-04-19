@@ -1,14 +1,14 @@
 export interface FileChunks {
-  checksums: Array<string>
-  sizes: Array<number>
+  checksums: string[];
+  sizes: number[];
 }
 
 export interface BlockMap {
-  version: "1" | "2"
-  files: Array<BlockMapFile>
+  files: BlockMapFile[];
+  version: "1" | "2";
 }
 
 export interface BlockMapFile extends FileChunks {
-  name: string
-  offset: number
+  name: string;
+  offset: number;
 }

@@ -1,46 +1,44 @@
-import { Arch } from "builder-util"
-import { PublishConfiguration } from "builder-util-runtime"
-import { Configuration } from "./configuration"
-import { Platform, Target } from "./core"
-import { Packager } from "./packager"
-import { PlatformPackager } from "./platformPackager"
-import { UploadTask } from "deskgap-publish"
+import { Arch } from "builder-util";
+import { PublishConfiguration } from "builder-util-runtime";
+import { UploadTask } from "deskgap-publish";
+import { Configuration } from "./configuration";
+import { Platform, Target } from "./core";
+import { Packager } from "./packager";
+import { PlatformPackager } from "./platformPackager";
 
 export interface PackagerOptions {
-  targets?: Map<Platform, Map<Arch, Array<string>>>
+  readonly config?: Configuration | string | null;
 
-  mac?: Array<string>
-  linux?: Array<string>
-  win?: Array<string>
+  readonly effectiveOptionComputed?: (options: any) => Promise<boolean>;
+  linux?: string[];
 
-  projectDir?: string | null
+  mac?: string[];
 
-  platformPackagerFactory?: ((info: Packager, platform: Platform) => PlatformPackager<any>) | null
+  platformPackagerFactory?: ((info: Packager, platform: Platform) => PlatformPackager<any>) | null;
 
-  readonly config?: Configuration | string | null
+  readonly prepackaged?: string | null;
 
-  readonly effectiveOptionComputed?: (options: any) => Promise<boolean>
-
-  readonly prepackaged?: string | null
+  projectDir?: string | null;
+  targets?: Map<Platform, Map<Arch, string[]>>;
+  win?: string[];
 }
 
 export interface ArtifactCreated extends UploadTask {
-  readonly packager: PlatformPackager<any>
-  readonly target: Target | null
+  readonly isWriteUpdateInfo?: boolean;
+  readonly packager: PlatformPackager<any>;
 
-  updateInfo?: any
+  readonly publishConfig?: PublishConfiguration | null;
 
-  readonly safeArtifactName?: string | null
+  readonly safeArtifactName?: string | null;
+  readonly target: Target | null;
 
-  readonly publishConfig?: PublishConfiguration | null
-
-  readonly isWriteUpdateInfo?: boolean
+  updateInfo?: any;
 }
 
 export interface ArtifactBuildStarted {
-  readonly targetPresentableName: string
-
-  readonly file: string
   // null for NSIS
-  readonly arch: Arch | null
+  readonly arch: Arch | null;
+
+  readonly file: string;
+  readonly targetPresentableName: string;
 }

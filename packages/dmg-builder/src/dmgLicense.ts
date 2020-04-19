@@ -1,104 +1,93 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { exec, log } from "builder-util"
-import { PlatformPackager } from "app-builder-lib"
-import { getLicenseFiles } from "app-builder-lib/out/util/license"
-import { outputFile, readFile } from "fs-extra"
-import { serializeString } from "./dmgUtil"
-import { getLicenseButtons, getLicenseButtonsFile } from "./licenseButtons"
+import { PlatformPackager } from "app-builder-lib";
+import { getLicenseFiles } from "app-builder-lib/out/util/license";
+import { exec, log } from "builder-util";
+import { outputFile, readFile } from "fs-extra";
+import { serializeString } from "./dmgUtil";
+import { getLicenseButtons, getLicenseButtonsFile } from "./licenseButtons";
 
 // DropDMG/dmgbuild a in any case (even if no english, but only ru/de) set to 0 (en_US), well, without docs, just believe that's correct
-const DEFAULT_REGION_CODE = 0
+const DEFAULT_REGION_CODE = 0;
 
 export async function addLicenseToDmg(packager: PlatformPackager<any>, dmgPath: string): Promise<string | null> {
   // http://www.owsiak.org/?p=700
-  const licenseFiles = await getLicenseFiles(packager)
-  if (licenseFiles.length === 0) {
-    return null
-  }
+  const licenseFiles = await getLicenseFiles(packager);
+  if (licenseFiles.length === 0) return null;
 
-  const licenseButtonFiles = await getLicenseButtonsFile(packager)
-  packager.debugLogger.add("dmg.licenseFiles", licenseFiles)
-  packager.debugLogger.add("dmg.licenseButtons", licenseButtonFiles)
+  const licenseButtonFiles = await getLicenseButtonsFile(packager);
+  packager.debugLogger.add("dmg.licenseFiles", licenseFiles);
+  packager.debugLogger.add("dmg.licenseButtons", licenseButtonFiles);
 
-  const style: Array<string> = []
-  const rtfs: Array<string> = []
-  const defaultButtons: Array<string> = []
+  const style: string[] = [];
+  const rtfs: string[] = [];
+  const defaultButtons: string[] = [];
 
-  let counter = 5000
-  const addedRegionCodes: Array<number> = []
+  let counter = 5000;
+  const addedRegionCodes: number[] = [];
   for (const item of licenseFiles) {
-    log.info({lang: item.langName}, "adding license")
+    log.info({ lang: item.langName }, "adding license");
 
     // value from DropDMG, data the same for any language
     // noinspection SpellCheckingInspection
     style.push(`data 'styl' (${counter}, "${item.langName}") {
   $"0001 0000 0000 000E 0011 0015 0000 000C"
   $"0000 0000 0000"
-};`)
+};`);
 
-    let data = `data 'RTF ' (${counter}, "${item.langName}") {\n`
-    const fileData = await readFile(item.file, "utf-8")
-    const isRtf = item.file.endsWith(".rtf") || item.file.endsWith(".RTF")
-    data += isRtf ? serializeString((Buffer.from(fileData)).toString("hex")) : wrapInRtf(await readFile(item.file, "utf-8"))
-    data += "\n};"
-    rtfs.push(data)
+    let data = `data 'RTF ' (${counter}, "${item.langName}") {\n`;
+    const fileData = await readFile(item.file, "utf-8");
+    const isRtf = item.file.endsWith(".rtf") || item.file.endsWith(".RTF");
+    data += isRtf
+      ? serializeString(Buffer.from(fileData).toString("hex"))
+      : wrapInRtf(await readFile(item.file, "utf-8"));
+    data += "\n};";
+    rtfs.push(data);
 
-    defaultButtons.push(await getLicenseButtons(licenseButtonFiles, item.langWithRegion, counter, item.langName))
-    addedRegionCodes.push(getRegionCode(item.langWithRegion))
-    counter++
+    defaultButtons.push(await getLicenseButtons(licenseButtonFiles, item.langWithRegion, counter, item.langName));
+    addedRegionCodes.push(getRegionCode(item.langWithRegion));
+    counter++;
   }
 
-  const buffer = Buffer.allocUnsafe((2 + (3 * addedRegionCodes.length)) * 2)
-  let offset = 0
-  buffer.writeUInt16BE(DEFAULT_REGION_CODE, offset)
-  offset += 2
-  buffer.writeUInt16BE(addedRegionCodes.length, offset)
-  offset += 2
+  const buffer = Buffer.allocUnsafe((2 + 3 * addedRegionCodes.length) * 2);
+  let offset = 0;
+  buffer.writeUInt16BE(DEFAULT_REGION_CODE, offset);
+  offset += 2;
+  buffer.writeUInt16BE(addedRegionCodes.length, offset);
+  offset += 2;
 
   for (let i = 0; i < addedRegionCodes.length; i++) {
-    const regionCode = addedRegionCodes[i]
-    buffer.writeUInt16BE(regionCode, offset)
-    offset += 2
-    buffer.writeUInt16BE(i, offset)
-    offset += 2
-    buffer.writeUInt16BE(/* is two byte */ [14, 51, 52, 53].includes(regionCode) ? 1 : 0, offset)
-    offset += 2
+    const regionCode = addedRegionCodes[i];
+    buffer.writeUInt16BE(regionCode, offset);
+    offset += 2;
+    buffer.writeUInt16BE(i, offset);
+    offset += 2;
+    buffer.writeUInt16BE(/* is two byte */ [14, 51, 52, 53].includes(regionCode) ? 1 : 0, offset);
+    offset += 2;
   }
 
-  const lPic = `data 'LPic' (5000) {\n${serializeString(buffer.toString("hex"))}\n};`
-  const data = style
-    .concat(rtfs)
-    .concat(lPic)
-    .concat(defaultButtons)
-    .join("\n\n")
+  const lPic = `data 'LPic' (5000) {\n${serializeString(buffer.toString("hex"))}\n};`;
+  const data = style.concat(rtfs).concat(lPic).concat(defaultButtons).join("\n\n");
 
-  packager.debugLogger.add("dmg.licenseResource", data)
-  const tempFile = await packager.getTempFile(".r")
-  await outputFile(tempFile, data)
-  await exec("hdiutil", ["unflatten", dmgPath])
-  await exec("Rez", ["-a", tempFile, "-o", dmgPath])
-  await exec("hdiutil", ["flatten", dmgPath])
+  packager.debugLogger.add("dmg.licenseResource", data);
+  const tempFile = await packager.getTempFile(".r");
+  await outputFile(tempFile, data);
+  await exec("hdiutil", ["unflatten", dmgPath]);
+  await exec("Rez", ["-a", tempFile, "-o", dmgPath]);
+  await exec("hdiutil", ["flatten", dmgPath]);
 
-  return data
+  return data;
 }
 
 function getRtfUnicodeEscapedString(text: string) {
-  let result = ""
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === "\\" || text[i] === "{" || text[i] === "}" || text[i] === "\n") {
-      result += `\\${text[i]}`
-    }
+  let result = "";
+  for (let i = 0; i < text.length; i++)
+    if (text[i] === "\\" || text[i] === "{" || text[i] === "}" || text[i] === "\n") result += `\\${text[i]}`;
     else if (text[i] === "\r") {
       // ignore
-    }
-    else if (text.charCodeAt(i) <= 0x7f) {
-      result += text[i]
-    }
-    else {
-      result += `\\u${text.codePointAt(i)}?`
-    }
-  }
-  return result
+    } else if (text.charCodeAt(i) <= 0x7f) result += text[i];
+    else result += `\\u${text.codePointAt(i)}?`;
+
+  return result;
 }
 
 function wrapInRtf(text: string) {
@@ -120,16 +109,15 @@ function wrapInRtf(text: string) {
   $"3637 3230 5C70 6172 6469 726E 6174 7572"
   $"616C 5C70 6172 7469 6768 7465 6E66 6163"
   $"746F 7230 0A0A 5C66 305C 6673 3234 205C"
-${serializeString("63663020" + Buffer.from(getRtfUnicodeEscapedString(text)).toString("hex").toUpperCase() + "7D")}`
+${serializeString(`63663020${Buffer.from(getRtfUnicodeEscapedString(text)).toString("hex").toUpperCase()}7D`)}`;
   // ^ to produce correctly splitted output, this two leading chunks from default wrapper appended here
 }
 
 function getRegionCode(langWithRegion: string) {
-  const result = regionCodes[langWithRegion]
-  if (result == null) {
-    throw new Error(`Cannot determine region code for ${langWithRegion}`)
-  }
-  return result
+  const result = regionCodes[langWithRegion];
+  if (result == null) throw new Error(`Cannot determine region code for ${langWithRegion}`);
+
+  return result;
 }
 
 // noinspection SpellCheckingInspection
@@ -218,5 +206,5 @@ const regionCodes: any = {
   bo: 105,
   ne_NP: 106,
   kl: 107,
-  en_IE: 108
-}
+  en_IE: 108,
+};

@@ -1,35 +1,34 @@
-import { log } from "builder-util"
-import { BlockMapDataHolder, PackageFileInfo } from "builder-util-runtime"
-import * as path from "path"
-import { Target } from "../core"
-import { PlatformPackager } from "../platformPackager"
-import { executeAppBuilderAsJson } from "../util/appBuilder"
-import { ArchiveOptions } from "./archive"
+import { log } from "builder-util";
+import { BlockMapDataHolder, PackageFileInfo } from "builder-util-runtime";
+import * as path from "path";
+import { Target } from "../core";
+import { PlatformPackager } from "../platformPackager";
+import { executeAppBuilderAsJson } from "../util/appBuilder";
+import { ArchiveOptions } from "./archive";
 
-export const BLOCK_MAP_FILE_SUFFIX = ".blockmap"
+export const BLOCK_MAP_FILE_SUFFIX = ".blockmap";
 
-export function createNsisWebDifferentialUpdateInfo(artifactPath: string, packageFiles: { [arch: string]: PackageFileInfo }) {
-  if (packageFiles == null) {
-    return null
-  }
+export function createNsisWebDifferentialUpdateInfo(
+  artifactPath: string,
+  packageFiles: { [arch: string]: PackageFileInfo },
+) {
+  if (packageFiles == null) return null;
 
-  const keys = Object.keys(packageFiles)
-  if (keys.length <= 0) {
-    return null
-  }
+  const keys = Object.keys(packageFiles);
+  if (keys.length <= 0) return null;
 
-  const packages: { [arch: string]: PackageFileInfo } = {}
+  const packages: { [arch: string]: PackageFileInfo } = {};
   for (const arch of keys) {
-    const packageFileInfo = packageFiles[arch]
-    const file = path.basename(packageFileInfo.path)
+    const packageFileInfo = packageFiles[arch];
+    const file = path.basename(packageFileInfo.path);
     packages[arch] = {
       ...packageFileInfo,
       path: file,
       // https://github.com/deskgap-userland/deskgap-builder/issues/2583
       file,
-    } as any
+    } as any;
   }
-  return {packages}
+  return { packages };
 }
 
 export function configureDifferentialAwareArchiveOptions(archiveOptions: ArchiveOptions): ArchiveOptions {
@@ -54,23 +53,34 @@ export function configureDifferentialAwareArchiveOptions(archiveOptions: Archive
    2018/01/11 11:31:43:0435 File has 234 changed blocks
 
    */
-  archiveOptions.dictSize = 1
+  archiveOptions.dictSize = 1;
   // solid compression leads to a lot of changed blocks
-  archiveOptions.solid = false
+  archiveOptions.solid = false;
   // do not allow to change compression level to avoid different packages
-  archiveOptions.compression = "normal"
-  return archiveOptions
+  archiveOptions.compression = "normal";
+  return archiveOptions;
 }
 
 export async function appendBlockmap(file: string): Promise<BlockMapDataHolder> {
-  log.info({file: log.filePath(file)}, "building embedded block map")
-  return await executeAppBuilderAsJson<BlockMapDataHolder>(["blockmap", "--input", file, "--compression", "deflate"])
+  log.info({ file: log.filePath(file) }, "building embedded block map");
+  return await executeAppBuilderAsJson<BlockMapDataHolder>(["blockmap", "--input", file, "--compression", "deflate"]);
 }
 
-export async function createBlockmap(file: string, target: Target, packager: PlatformPackager<any>, safeArtifactName: string | null): Promise<BlockMapDataHolder> {
-  const blockMapFile = `${file}${BLOCK_MAP_FILE_SUFFIX}`
-  log.info({blockMapFile: log.filePath(blockMapFile)}, "building block map")
-  const updateInfo = await executeAppBuilderAsJson<BlockMapDataHolder>(["blockmap", "--input", file, "--output", blockMapFile])
+export async function createBlockmap(
+  file: string,
+  target: Target,
+  packager: PlatformPackager<any>,
+  safeArtifactName: string | null,
+): Promise<BlockMapDataHolder> {
+  const blockMapFile = `${file}${BLOCK_MAP_FILE_SUFFIX}`;
+  log.info({ blockMapFile: log.filePath(blockMapFile) }, "building block map");
+  const updateInfo = await executeAppBuilderAsJson<BlockMapDataHolder>([
+    "blockmap",
+    "--input",
+    file,
+    "--output",
+    blockMapFile,
+  ]);
   await packager.info.callArtifactBuildCompleted({
     file: blockMapFile,
     safeArtifactName: safeArtifactName == null ? null : `${safeArtifactName}${BLOCK_MAP_FILE_SUFFIX}`,
@@ -78,6 +88,6 @@ export async function createBlockmap(file: string, target: Target, packager: Pla
     arch: null,
     packager,
     updateInfo,
-  })
-  return updateInfo
+  });
+  return updateInfo;
 }

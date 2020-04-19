@@ -1,26 +1,45 @@
 /* eslint-disable @typescript-eslint/camelcase */
 export const bundledLanguages = [
-  "en_US", "de_DE", "fr_FR", "es_ES", "zh_CN", "zh_TW", "ja_JP", "ko_KR", "it_IT", "nl_NL", "da_DK", "sv_SE",
-  "nb_NO", "fi_FI", "ru_RU", "pt_PT", "pt_BR", "pl_PL", "uk_UA", "cs_CZ", "sk_SK", "hu_HU", "ar_SA", "tr_TR",
-  "th_TH", "vi_VN",
-]
+  "en_US",
+  "de_DE",
+  "fr_FR",
+  "es_ES",
+  "zh_CN",
+  "zh_TW",
+  "ja_JP",
+  "ko_KR",
+  "it_IT",
+  "nl_NL",
+  "da_DK",
+  "sv_SE",
+  "nb_NO",
+  "fi_FI",
+  "ru_RU",
+  "pt_PT",
+  "pt_BR",
+  "pl_PL",
+  "uk_UA",
+  "cs_CZ",
+  "sk_SK",
+  "hu_HU",
+  "ar_SA",
+  "tr_TR",
+  "th_TH",
+  "vi_VN",
+];
 
 // todo "ro_RO" "el_GR" "et_EE" "ka_GE"
 
-const langToLangWithRegion = new Map<string, string>()
-for (const id of bundledLanguages) {
-  langToLangWithRegion.set(id.substring(0, id.indexOf("_")), id)
-}
+const langToLangWithRegion = new Map<string, string>();
+for (const id of bundledLanguages) langToLangWithRegion.set(id.substring(0, id.indexOf("_")), id);
 
 export function toLangWithRegion(lang: string): string {
-  if (lang.includes("_")) {
-    return lang
-  }
+  if (lang.includes("_")) return lang;
 
-  lang = lang.toLowerCase()
+  lang = lang.toLowerCase();
 
-  const result = langToLangWithRegion.get(lang)
-  return result == null ? `${lang}_${lang.toUpperCase()}` : result
+  const result = langToLangWithRegion.get(lang);
+  return result == null ? `${lang}_${lang.toUpperCase()}` : result;
 }
 
 export const lcid: any = {
@@ -224,8 +243,8 @@ export const lcid: any = {
   zh_MO: 5124,
   zh_SG: 4100,
   zh_TW: 1028,
-  zu_ZA: 1077
-}
+  zu_ZA: 1077,
+};
 
 // noinspection SpellCheckingInspection
 export const langIdToName = {
@@ -412,5 +431,5 @@ export const langIdToName = {
   yi: "Yiddish",
   yo: "Yoruba",
   za: "Zhuang",
-  zu: "Zulu"
-}
+  zu: "Zulu",
+};

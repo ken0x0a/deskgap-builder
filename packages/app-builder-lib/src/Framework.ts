@@ -1,54 +1,54 @@
-import { FileTransformer } from "builder-util/out/fs"
-import { AsarIntegrity } from "./asar/integrity"
-import { Platform, PlatformPackager, DeskGapPlatformName, AfterPackContext } from "./index"
+import { FileTransformer } from "builder-util/out/fs";
+import { AsarIntegrity } from "./asar/integrity";
+import { AfterPackContext, DeskGapPlatformName, Platform, PlatformPackager } from "./index";
 
 export interface Framework {
-  readonly name: string
-  readonly version: string
-  readonly distMacOsAppName: string
-  readonly macOsDefaultTargets: Array<string>
-  readonly defaultAppIdPrefix: string
+  readonly defaultAppIdPrefix: string;
+  readonly distMacOsAppName: string;
 
-  readonly isNpmRebuildRequired: boolean
+  readonly isCopyElevateHelper: boolean;
 
-  readonly isCopyElevateHelper: boolean
+  readonly isNpmRebuildRequired: boolean;
+  readonly macOsDefaultTargets: string[];
+  readonly name: string;
+  readonly version: string;
 
-  getDefaultIcon?(platform: Platform): string | null
+  afterPack?(context: AfterPackContext): Promise<any>;
 
-  getMainFile?(platform: Platform): string | null
+  beforeCopyExtraFiles?(options: BeforeCopyExtraFilesOptions): Promise<any>;
 
-  getExcludedDependencies?(platform: Platform): Array<string> | null
+  createTransformer?(): FileTransformer | null;
 
-  prepareApplicationStageDirectory(options: PrepareApplicationStageDirectoryOptions): Promise<any>
+  getDefaultIcon?(platform: Platform): string | null;
 
-  beforeCopyExtraFiles?(options: BeforeCopyExtraFilesOptions): Promise<any>
+  getExcludedDependencies?(platform: Platform): string[] | null;
 
-  afterPack?(context: AfterPackContext): Promise<any>
+  getMainFile?(platform: Platform): string | null;
 
-  createTransformer?(): FileTransformer | null
+  prepareApplicationStageDirectory(options: PrepareApplicationStageDirectoryOptions): Promise<any>;
 }
 
 export interface BeforeCopyExtraFilesOptions {
-  packager: PlatformPackager<any>
-  appOutDir: string
+  appOutDir: string;
 
-  asarIntegrity: AsarIntegrity | null
+  asarIntegrity: AsarIntegrity | null;
+  packager: PlatformPackager<any>;
 
   // DeskGapPlatformName
-  platformName: string
+  platformName: string;
 }
 
 export interface PrepareApplicationStageDirectoryOptions {
-  readonly packager: PlatformPackager<any>
   /**
    * Platform doesn't process application output directory in any way. Unpack implementation must create or empty dir if need.
    */
-  readonly appOutDir: string
-  readonly platformName: DeskGapPlatformName
-  readonly arch: string
-  readonly version: string
+  readonly appOutDir: string;
+  readonly arch: string;
+  readonly packager: PlatformPackager<any>;
+  readonly platformName: DeskGapPlatformName;
+  readonly version: string;
 }
 
 export function isDeskGapBased(framework: Framework): boolean {
-  return framework.name === "deskgap"
+  return framework.name === "deskgap";
 }

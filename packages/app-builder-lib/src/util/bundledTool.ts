@@ -1,17 +1,20 @@
 export interface ToolInfo {
-  path: string
-  env?: any
+  env?: any;
+  path: string;
 }
 
-export function computeEnv(oldValue: string | null | undefined, newValues: Array<string>): string {
-  const parsedOldValue = oldValue ? oldValue.split(":") : []
-  return newValues.concat(parsedOldValue).filter(it => it.length > 0).join(":")
+export function computeEnv(oldValue: string | null | undefined, newValues: string[]): string {
+  const parsedOldValue = oldValue ? oldValue.split(":") : [];
+  return newValues
+    .concat(parsedOldValue)
+    .filter((it) => it.length > 0)
+    .join(":");
 }
 
-export function computeToolEnv(libPath: Array<string>): any {
+export function computeToolEnv(libPath: string[]): any {
   // noinspection SpellCheckingInspection
   return {
     ...process.env,
-    DYLD_LIBRARY_PATH: computeEnv(process.env.DYLD_LIBRARY_PATH, libPath)
-  }
+    DYLD_LIBRARY_PATH: computeEnv(process.env.DYLD_LIBRARY_PATH, libPath),
+  };
 }

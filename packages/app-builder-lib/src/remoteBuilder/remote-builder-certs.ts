@@ -10,7 +10,7 @@ FgQUlm08vBe4CUNAOTQN5Z1RNTfJjjYwCgYIKoZIzj0EAwIDRwAwRAIgMXlT6YM8
 4pQtnhUjijVMz+NlcYafS1CEbNBMaWhP87YCIGXUmu7ON9hRLanXzBNBlrtTQG+i
 l/NT6REwZA64/lNy
 -----END CERTIFICATE-----
-`)
+`);
 
 // noinspection SpellCheckingInspection
 export const ELECTRON_BUILD_SERVICE_CA_CERT = Buffer.from(`-----BEGIN CERTIFICATE-----
@@ -24,4 +24,4 @@ zkIYrYiTZGpHEp0wCgYIKoZIzj0EAwIDSAAwRQIgKSfjAQbYlY/S1wMLUi84r8QN
 hhMnUwsOmlDan0xPalICIQDLIAXAIyArVtH38a4aizvhH8YeXrxzpJh3U8RolBZF
 SA==
 -----END CERTIFICATE-----
-`)
+`);

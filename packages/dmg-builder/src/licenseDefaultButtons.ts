@@ -20,7 +20,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
   $"2C20 7765 6E6E 2053 6965 20D2 416B 7A65"
   $"7074 6965 7265 6ED3 2061 6E67 656B 6C69"
   $"636B 7420 6861 6265 6E2E"
-};`
+};`;
 
     case "fr_FR":
       return `data 'STR#' (${id}, "${name}") {
@@ -39,7 +39,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"6573 2074 6572 6D65 7320 6465 206C 6120"
 	$"6C69 6365 6E63 652C 2063 6C69 7175 657A"
 	$"2073 7572 2022 5265 6675 7365 7222 2E"
-};`
+};`;
 
     case "fr_CA":
       return `data 'STR#' (${id}, "${name}") {
@@ -59,7 +59,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"6573 2064 6520 6C61 206C 6963 656E 6365"
 	$"2C20 636C 6971 7565 7A20 7375 7220 2252"
 	$"6566 7573 6572 222E"
-};`
+};`;
 
     case "es_ES":
       return `data 'STR#' (${id}, "${name}") {
@@ -79,7 +79,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"6573 7461 206C 6963 656E 6369 612C 2070"
 	$"756C 7365 2022 4E6F 2061 6365 7074 6172"
 	$"2E22"
-};`
+};`;
 
     case "it_IT":
       return `data 'STR#' (${id}, "${name}") {
@@ -94,7 +94,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"696C 2073 6F66 7477 6172 652E 2041 6C74"
 	$"7269 6D65 6E74 6920 6661 6920 636C 6963"
 	$"2073 7520 2252 6966 6975 746F 222E"
-};`
+};`;
 
     case "ja_JP":
       return `data 'STR#' (${id}, "${name}") {
@@ -113,7 +113,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"8782 C982 CD81 4181 7593 AF88 D382 B582"
 	$"DC82 B982 F181 7682 F089 9F82 B582 C482"
 	$"AD82 BE82 B382 A281 42"
-};`
+};`;
 
     case "nl_NL":
       return `data 'STR#' (${id}, "${name}") {
@@ -130,7 +130,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"656E 2075 206E 6965 7420 616B 6B6F 6F72"
 	$"6420 6761 6174 2C20 6B6C 696B 7420 7520"
 	$"6F70 2027 4E65 6527 2E"
-};`
+};`;
 
     case "sv_SE":
       return `data 'STR#' (${id}, "${name}") {
@@ -146,7 +146,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"2067 6F64 6B8A 6E6E 6572 206C 6963 656E"
 	$"7376 696C 6C6B 6F72 656E 2C20 6B6C 6963"
 	$"6B61 2070 8C20 2241 7662 9A6A 7322 2E"
-};`
+};`;
 
     case "br_FR":
       return `data 'STR#' (${id}, "${name}") {
@@ -163,7 +163,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"6F20 6573 7487 2064 6520 6163 6F72 646F"
 	$"2C20 7072 6573 7369 6F6E 6520 2244 6973"
 	$"636F 7264 6172 222E"
-};`
+};`;
 
     case "zh_TW":
       return `data 'STR#' (${id}, "${name}") {
@@ -175,7 +175,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"A7A6 50B7 4EA1 A8A5 48A6 77B8 CBB3 6EC5"
 	$"E9A1 43A6 70AA 47A4 A3A6 50B7 4EA1 41BD"
 	$"D0AB F6A1 A7A4 A3A6 50B7 4EA1 A8A1 43"
-};`
+};`;
 
     case "zh_CN":
       return `data 'STR#' (${id}, "${name}") {
@@ -188,7 +188,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"BCFE A1A3 C8E7 B9FB C4FA B2BB CDAC D2E2"
 	$"A3AC C7EB B0B4 A1B0 B2BB CDAC D2E2 A1B1"
 	$"A1A3"
-};`
+};`;
 
     case "da_DK":
       return `data 'STR#' (${id}, "${name}") {
@@ -204,7 +204,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"6C69 6B20 708C 20D2 5565 6E69 67D3 2066"
 	$"6F72 2061 7420 616E 6E75 6C6C 6572 6520"
 	$"696E 7374 616C 6C65 7269 6E67 656E 2E"
-};`
+};`;
 
     case "fi_FI":
       return `data 'STR#' (${id}, "${name}") {
@@ -218,7 +218,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"7976 8A6B 7379 2073 6F70 696D 756B 7365"
 	$"6E20 6568 746F 6A61 2C20 6F73 6F69 7461"
 	$"20D5 456E 2068 7976 8A6B 7379 D52E"
-};`
+};`;
 
     case "ko_KR":
       return `data 'STR#' (${id}, "${name}") {
@@ -233,7 +233,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"B4C2 B4D9 B8E9 2C20 22B5 BFC0 C720 BEC8"
 	$"C7D4 2220 B4DC C3DF B8A6 20B4 A9B8 A3BD"
 	$"CABD C3BF C02E"
-};`
+};`;
 
     case "nb_NO":
       return `data 'STR#' (${id}, "${name}") {
@@ -250,7 +250,7 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"7669 7320 4465 2069 6B6B 6520 6572 2065"
 	$"6E69 672C 206B 6C69 6B6B 6572 2044 6520"
 	$"708C 2022 496B 6B65 2065 6E69 6722 2E"
-};`
+};`;
 
     default:
       // en_US
@@ -266,6 +266,6 @@ export function getDefaultButtons(langWithRegion: string, id: number, name: stri
 	$"6F75 2064 6F20 6E6F 7420 6167 7265 652C"
 	$"2070 7265 7373 20D2 4469 7361 6772 6565"
 	$"D32E"
-};`
+};`;
   }
 }

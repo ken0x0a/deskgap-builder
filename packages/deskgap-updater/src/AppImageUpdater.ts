@@ -1,46 +1,42 @@
-import { AllPublishOptions, newError } from "builder-util-runtime"
-import { execFileSync, spawn } from "child_process"
-import { chmod } from "fs-extra"
-import { unlinkSync } from "fs"
-import * as path from "path"
-import { DownloadUpdateOptions } from "./AppUpdater"
-import { BaseUpdater, InstallOptions } from "./BaseUpdater"
-import { FileWithEmbeddedBlockMapDifferentialDownloader } from "./differentialDownloader/FileWithEmbeddedBlockMapDifferentialDownloader"
-import { findFile } from "./providers/Provider"
+import { AllPublishOptions, newError } from "builder-util-runtime";
+import { execFileSync, spawn } from "child_process";
+import { unlinkSync } from "fs";
+import { chmod } from "fs-extra";
+import * as path from "path";
+import { DownloadUpdateOptions } from "./AppUpdater";
+import { BaseUpdater, InstallOptions } from "./BaseUpdater";
+import { FileWithEmbeddedBlockMapDifferentialDownloader } from "./differentialDownloader/FileWithEmbeddedBlockMapDifferentialDownloader";
+import { findFile } from "./providers/Provider";
 
 export class AppImageUpdater extends BaseUpdater {
   constructor(options?: AllPublishOptions | null, app?: any) {
-    super(options, app)
+    super(options, app);
   }
 
   public isUpdaterActive(): boolean {
     if (process.env.APPIMAGE == null) {
-      if (process.env.SNAP == null) {
-        this._logger.warn("APPIMAGE env is not defined, current application is not an AppImage")
-      }
-      else {
-        this._logger.info("SNAP env is defined, updater is disabled")
-      }
-      return false
+      if (process.env.SNAP == null)
+        this._logger.warn("APPIMAGE env is not defined, current application is not an AppImage");
+      else this._logger.info("SNAP env is defined, updater is disabled");
+
+      return false;
     }
-    return super.isUpdaterActive()
+    return super.isUpdaterActive();
   }
 
-  /*** @private */
-  protected doDownloadUpdate(downloadUpdateOptions: DownloadUpdateOptions): Promise<Array<string>> {
-    const provider = downloadUpdateOptions.updateInfoAndProvider.provider
-    const fileInfo = findFile(provider.resolveFiles(downloadUpdateOptions.updateInfoAndProvider.info), "AppImage")!!
+  /** * @private */
+  protected doDownloadUpdate(downloadUpdateOptions: DownloadUpdateOptions): Promise<string[]> {
+    const { provider } = downloadUpdateOptions.updateInfoAndProvider;
+    const fileInfo = findFile(provider.resolveFiles(downloadUpdateOptions.updateInfoAndProvider.info), "AppImage")!;
     return this.executeDownload({
       fileExtension: "AppImage",
       fileInfo,
       downloadUpdateOptions,
       task: async (updateFile, downloadOptions) => {
-        const oldFile = process.env.APPIMAGE!!
-        if (oldFile == null) {
-          throw newError("APPIMAGE env is not defined", "ERR_UPDATER_OLD_FILE_NOT_FOUND")
-        }
+        const oldFile = process.env.APPIMAGE!;
+        if (oldFile == null) throw newError("APPIMAGE env is not defined", "ERR_UPDATER_OLD_FILE_NOT_FOUND");
 
-        let isDownloadFull = false
+        let isDownloadFull = false;
         try {
           await new FileWithEmbeddedBlockMapDifferentialDownloader(fileInfo.info, this.httpExecutor, {
             newUrl: fileInfo.url,
@@ -49,64 +45,53 @@ export class AppImageUpdater extends BaseUpdater {
             newFile: updateFile,
             isUseMultipleRangeRequest: provider.isUseMultipleRangeRequest,
             requestHeaders: downloadUpdateOptions.requestHeaders,
-          })
-            .download()
-        }
-        catch (e) {
-          this._logger.error(`Cannot download differentially, fallback to full download: ${e.stack || e}`)
+          }).download();
+        } catch (e) {
+          this._logger.error(`Cannot download differentially, fallback to full download: ${e.stack || e}`);
           // during test (developer machine mac) we must throw error
-          isDownloadFull = process.platform === "linux"
+          isDownloadFull = process.platform === "linux";
         }
 
-        if (isDownloadFull) {
-          await this.httpExecutor.download(fileInfo.url, updateFile, downloadOptions)
-        }
+        if (isDownloadFull) await this.httpExecutor.download(fileInfo.url, updateFile, downloadOptions);
 
-        await chmod(updateFile, 0o755)
+        await chmod(updateFile, 0o755);
       },
-    })
+    });
   }
 
   protected doInstall(options: InstallOptions): boolean {
-    const appImageFile = process.env.APPIMAGE!!
-    if (appImageFile == null) {
-      throw newError("APPIMAGE env is not defined", "ERR_UPDATER_OLD_FILE_NOT_FOUND")
-    }
+    const appImageFile = process.env.APPIMAGE!;
+    if (appImageFile == null) throw newError("APPIMAGE env is not defined", "ERR_UPDATER_OLD_FILE_NOT_FOUND");
 
     // https://stackoverflow.com/a/1712051/1910191
-    unlinkSync(appImageFile)
+    unlinkSync(appImageFile);
 
-    let destination: string
-    const existingBaseName = path.basename(appImageFile)
+    let destination: string;
+    const existingBaseName = path.basename(appImageFile);
     // https://github.com/deskgap-userland/deskgap-builder/issues/2964
     // if no version in existing file name, it means that user wants to preserve current custom name
-    if (path.basename(options.installerPath) === existingBaseName || !/\d+\.\d+\.\d+/.test(existingBaseName)) {
+    if (path.basename(options.installerPath) === existingBaseName || !/\d+\.\d+\.\d+/.test(existingBaseName))
       // no version in the file name, overwrite existing
-      destination = appImageFile
-    }
-    else {
-      destination = path.join(path.dirname(appImageFile), path.basename(options.installerPath))
-    }
+      destination = appImageFile;
+    else destination = path.join(path.dirname(appImageFile), path.basename(options.installerPath));
 
-    execFileSync("mv", ["-f", options.installerPath, destination])
+    execFileSync("mv", ["-f", options.installerPath, destination]);
 
     const env: any = {
       ...process.env,
       APPIMAGE_SILENT_INSTALL: "true",
-    }
+    };
 
-    if (options.isForceRunAfter) {
+    if (options.isForceRunAfter)
       spawn(destination, [], {
         detached: true,
         stdio: "ignore",
         env,
-      })
-        .unref()
-    }
+      }).unref();
     else {
-      env.APPIMAGE_EXIT_AFTER_INSTALL = "true"
-      execFileSync(destination, [], {env})
+      env.APPIMAGE_EXIT_AFTER_INSTALL = "true";
+      execFileSync(destination, [], { env });
     }
-    return true
+    return true;
   }
 }

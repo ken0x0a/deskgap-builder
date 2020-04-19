@@ -1,23 +1,46 @@
-import { DownloadOptions, HttpExecutor, configureRequestOptions, configureRequestUrl } from "builder-util-runtime"
-import { net, session } from "deskgap"
-import { RequestOptions } from "http"
-import Session = DeskGap.Session
-import ClientRequest = DeskGap.ClientRequest
+import { configureRequestOptions, configureRequestUrl, DownloadOptions, HttpExecutor } from "builder-util-runtime";
+import { net, session } from "deskgap";
+import { RequestOptions } from "http";
 
-export type LoginCallback = (username: string, password: string) => void
-export const NET_SESSION_NAME = "deskgap-updater"
+import Session = DeskGap.Session;
+import ClientRequest = DeskGap.ClientRequest;
+
+export type LoginCallback = (username: string, password: string) => void;
+export const NET_SESSION_NAME = "deskgap-updater";
 
 export function getNetSession(): Session {
   return session.fromPartition(NET_SESSION_NAME, {
-    cache: false
-  })
+    cache: false,
+  });
 }
 
 export class DeskGapHttpExecutor extends HttpExecutor<DeskGap.ClientRequest> {
-  private cachedSession: Session | null = null
+  private cachedSession: Session | null = null;
 
   constructor(private readonly proxyLoginCallback?: (authInfo: any, callback: LoginCallback) => void) {
-    super()
+    super();
+  }
+
+  createRequest(options: any, callback: (response: any) => void): any {
+    // fix (node 7+) for making deskgap updater work when using AWS private buckets, check if headers contain Host property
+    if (options.headers && options.headers.Host) {
+      // set host value from headers.Host
+      options.host = options.headers.Host;
+      // remove header property 'Host', if not removed causes net::ERR_INVALID_ARGUMENT exception
+      delete options.headers.Host;
+    }
+
+    // differential downloader can call this method very often, so, better to cache session
+    if (this.cachedSession == null) this.cachedSession = getNetSession();
+
+    const request = net.request({
+      ...options,
+      session: this.cachedSession,
+    });
+    request.on("response", callback);
+    if (this.proxyLoginCallback != null) request.on("login", this.proxyLoginCallback);
+
+    return request;
   }
 
   async download(url: URL, destination: string, options: DownloadOptions): Promise<string> {
@@ -25,64 +48,40 @@ export class DeskGapHttpExecutor extends HttpExecutor<DeskGap.ClientRequest> {
       const requestOptions = {
         headers: options.headers || undefined,
         redirect: "manual",
-      }
-      configureRequestUrl(url, requestOptions)
-      configureRequestOptions(requestOptions)
-      this.doDownload(requestOptions, {
-        destination,
-        options,
-        onCancel,
-        callback: error => {
-          if (error == null) {
-            resolve(destination)
-          }
-          else {
-            reject(error)
-          }
+      };
+      configureRequestUrl(url, requestOptions);
+      configureRequestOptions(requestOptions);
+      this.doDownload(
+        requestOptions,
+        {
+          destination,
+          options,
+          onCancel,
+          callback: (error) => {
+            if (error == null) resolve(destination);
+            else reject(error);
+          },
+          responseHandler: null,
         },
-        responseHandler: null,
-      }, 0)
-    })
+        0,
+      );
+    });
   }
 
-  createRequest(options: any, callback: (response: any) => void): any {
-
-    // fix (node 7+) for making deskgap updater work when using AWS private buckets, check if headers contain Host property
-    if (options.headers && options.headers.Host){
-      // set host value from headers.Host
-      options.host = options.headers.Host
-      // remove header property 'Host', if not removed causes net::ERR_INVALID_ARGUMENT exception
-      delete options.headers.Host;
-    }
-
-    // differential downloader can call this method very often, so, better to cache session
-    if (this.cachedSession == null) {
-      this.cachedSession = getNetSession()
-    }
-
-    const request = net.request({
-      ...options,
-      session: this.cachedSession,
-    })
-    request.on("response", callback)
-    if (this.proxyLoginCallback != null) {
-      request.on("login", this.proxyLoginCallback)
-    }
-    return request
-  }
-
-  protected addRedirectHandlers(request: ClientRequest, options: RequestOptions, reject: (error: Error) => void, redirectCount: number, handler: (options: RequestOptions) => void): void {
+  protected addRedirectHandlers(
+    request: ClientRequest,
+    options: RequestOptions,
+    reject: (error: Error) => void,
+    redirectCount: number,
+    handler: (options: RequestOptions) => void,
+  ): void {
     request.on("redirect", (statusCode: number, method: string, redirectUrl: string) => {
       // no way to modify request options, abort old and make a new one
       // https://github.com/deskgap/deskgap/issues/11505
-      request.abort()
+      request.abort();
 
-      if (redirectCount > this.maxRedirects) {
-        reject(this.createMaxRedirectError())
-      }
-      else {
-        handler(HttpExecutor.prepareRedirectUrlOptions(redirectUrl, options))
-      }
-    })
+      if (redirectCount > this.maxRedirects) reject(this.createMaxRedirectError());
+      else handler(HttpExecutor.prepareRedirectUrlOptions(redirectUrl, options));
+    });
   }
 }

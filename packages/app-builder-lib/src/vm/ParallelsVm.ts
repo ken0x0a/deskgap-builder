@@ -1,136 +1,119 @@
-import { exec, spawn, DebugLogger, ExtraSpawnOptions, log } from "builder-util"
-import { SpawnOptions, execFileSync, ExecFileOptions } from "child_process"
-import { VmManager } from "./VmManager"
+import { DebugLogger, exec, ExtraSpawnOptions, log, spawn } from "builder-util";
+import { ExecFileOptions, execFileSync, SpawnOptions } from "child_process";
+import { VmManager } from "./VmManager";
 
 /** @internal */
 export async function parseVmList(debugLogger: DebugLogger) {
   // do not log output if debug - it is huge, logged using debugLogger
-  let rawList = await exec("prlctl", ["list", "-i", "-s", "name"], undefined, false)
-  debugLogger.add("parallels.list", rawList)
+  let rawList = await exec("prlctl", ["list", "-i", "-s", "name"], undefined, false);
+  debugLogger.add("parallels.list", rawList);
 
-  rawList = rawList.substring(rawList.indexOf("ID:"))
+  rawList = rawList.substring(rawList.indexOf("ID:"));
 
   // let match: Array<string> | null
-  const result: Array<ParallelsVm> = []
+  const result: ParallelsVm[] = [];
   for (const info of rawList
     .split("\n\n")
     .map((it) => it.trim())
     .filter((it) => it.length > 0)) {
-    const vm: any = {}
+    const vm: any = {};
     for (const line of info.split("\n")) {
-      const meta = /^([^:("]+): (.*)$/.exec(line)
-      if (meta == null) {
-        continue
-      }
+      const meta = /^([^:("]+): (.*)$/.exec(line);
+      if (meta == null) continue;
 
-      const key = meta[1].toLowerCase()
-      if (key === "id" || key === "os" || key === "name" || key === "state" || key === "name") {
-        vm[key] = meta[2].trim()
-      }
+      const key = meta[1].toLowerCase();
+      if (key === "id" || key === "os" || key === "name" || key === "state" || key === "name") vm[key] = meta[2].trim();
     }
-    result.push(vm)
+    result.push(vm);
   }
-  return result
+  return result;
 }
 
 /** @internal */
 export class ParallelsVmManager extends VmManager {
-  private startPromise: Promise<any>
+  get pathSep(): string {
+    return "/";
+  }
 
-  private isExitHookAdded = false
+  private isExitHookAdded = false;
+  private startPromise: Promise<any>;
 
   constructor(private readonly vm: ParallelsVm) {
-    super()
+    super();
 
-    this.startPromise = this.doStartVm()
+    this.startPromise = this.doStartVm();
   }
 
-  get pathSep(): string {
-    return "/"
-  }
-
-  private handleExecuteError(error: Error): any {
-    if (error.message.includes("Unable to open new session in this virtual machine")) {
-      throw new Error(
-        `Please ensure that your are logged in "${this.vm.name}" parallels virtual machine. In the future please do not stop VM, but suspend.\n\n${error.message}`
-      )
-    }
-
-    log.warn("ensure that 'Share folders' is set to 'All Disks', see https://goo.gl/E6XphP")
-    throw error
-  }
-
-  async exec(file: string, args: Array<string>, options?: ExecFileOptions): Promise<string> {
-    await this.ensureThatVmStarted()
+  async exec(file: string, args: string[], options?: ExecFileOptions): Promise<string> {
+    await this.ensureThatVmStarted();
     // it is important to use "--current-user" to execute command under logged in user - to access certs.
     return await exec(
       "prlctl",
       ["exec", this.vm.id, "--current-user", file.startsWith("/") ? macPathToParallelsWindows(file) : file].concat(
-        args
+        args,
       ),
-      options
-    ).catch((error) => this.handleExecuteError(error))
+      options,
+    ).catch((error) => this.handleExecuteError(error));
   }
 
-  async spawn(
-    file: string,
-    args: Array<string>,
-    options?: SpawnOptions,
-    extraOptions?: ExtraSpawnOptions
-  ): Promise<any> {
-    await this.ensureThatVmStarted()
+  async spawn(file: string, args: string[], options?: SpawnOptions, extraOptions?: ExtraSpawnOptions): Promise<any> {
+    await this.ensureThatVmStarted();
     return await spawn("prlctl", ["exec", this.vm.id, file].concat(args), options, extraOptions).catch((error) =>
-      this.handleExecuteError(error)
-    )
-  }
-
-  private async doStartVm() {
-    const vmId = this.vm.id
-    const state = this.vm.state
-    if (state === "running") {
-      return
-    }
-
-    if (!this.isExitHookAdded) {
-      this.isExitHookAdded = true
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require("async-exit-hook")((callback: (() => void) | null) => {
-        const stopArgs = ["suspend", vmId]
-        if (callback == null) {
-          execFileSync("prlctl", stopArgs)
-        } else {
-          exec("prlctl", stopArgs).then(callback).catch(callback)
-        }
-      })
-    }
-    await exec("prlctl", ["start", vmId])
-  }
-
-  private ensureThatVmStarted() {
-    let startPromise = this.startPromise
-    if (startPromise == null) {
-      startPromise = this.doStartVm()
-      this.startPromise = startPromise
-    }
-    return startPromise
+      this.handleExecuteError(error),
+    );
   }
 
   toVmFile(file: string): string {
     // https://stackoverflow.com/questions/4742992/cannot-access-network-drive-in-powershell-running-as-administrator
-    return macPathToParallelsWindows(file)
+    return macPathToParallelsWindows(file);
+  }
+
+  private async doStartVm() {
+    const vmId = this.vm.id;
+    const { state } = this.vm;
+    if (state === "running") return;
+
+    if (!this.isExitHookAdded) {
+      this.isExitHookAdded = true;
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require("async-exit-hook")((callback: (() => void) | null) => {
+        const stopArgs = ["suspend", vmId];
+        if (callback == null) execFileSync("prlctl", stopArgs);
+        else exec("prlctl", stopArgs).then(callback).catch(callback);
+      });
+    }
+    await exec("prlctl", ["start", vmId]);
+  }
+
+  private ensureThatVmStarted() {
+    let { startPromise } = this;
+    if (startPromise == null) {
+      startPromise = this.doStartVm();
+      this.startPromise = startPromise;
+    }
+    return startPromise;
+  }
+
+  private handleExecuteError(error: Error): any {
+    if (error.message.includes("Unable to open new session in this virtual machine"))
+      throw new Error(
+        `Please ensure that your are logged in "${this.vm.name}" parallels virtual machine. In the future please do not stop VM, but suspend.\n\n${error.message}`,
+      );
+
+    log.warn("ensure that 'Share folders' is set to 'All Disks', see https://goo.gl/E6XphP");
+    throw error;
   }
 }
 
 export function macPathToParallelsWindows(file: string) {
-  if (file.startsWith("C:\\")) {
-    return file
-  }
-  return "\\\\Mac\\Host\\" + file.replace(/\//g, "\\")
+  if (file.startsWith("C:\\")) return file;
+
+  return `\\\\Mac\\Host\\${file.replace(/\//g, "\\")}`;
 }
 
 export interface ParallelsVm {
-  id: string
-  name: string
-  os: "win-10" | "ubuntu" | "elementary"
-  state: "running" | "suspended" | "stopped"
+  id: string;
+  name: string;
+  os: "win-10" | "ubuntu" | "elementary";
+  state: "running" | "suspended" | "stopped";
 }
