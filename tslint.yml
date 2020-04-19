@@ -1,0 +1,7 @@
+extends:
+  - "@ken0x0a/tslint-config"
+  - "@ken0x0a/tslint-config/tslint.etc.yml"
+# https://palantir.github.io/tslint/rules/
+rules:
+  no-implicit-dependencies: false
+  no-submodule-imports: false

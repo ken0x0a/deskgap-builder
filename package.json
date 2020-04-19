@@ -56,10 +56,23 @@
     "typescript-json-schema": "^0.42.0"
   },
   "devDependencies": {
+    "@ken0x0a/configs": "2.6.11",
     "@types/node": "13.13.0"
   },
   "eslintIgnore": [
     "*.d.ts",
     "out"
-  ]
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/@ken0x0a/commit-config",
+      "maxHeaderWidth": 100,
+      "maxLineWidth": 100,
+      "defaultType": "chore",
+      "defaultScope": "",
+      "defaultSubject": "--",
+      "defaultBody": "",
+      "defaultIssues": ""
+    }
+  }
 }
