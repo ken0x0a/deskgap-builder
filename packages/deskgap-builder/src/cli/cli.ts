@@ -15,6 +15,10 @@ import { createSelfSignedCert } from "./create-self-signed-cert"
 import { configureInstallAppDepsCommand, installAppDeps } from "./install-app-deps"
 import { start } from "./start"
 
+process.on("unhandledRejection", (err) => {
+  console.error("\x1b[35m%s\x1b[0m", "unhandledRejection")
+  console.error(err)
+})
 // tslint:disable:no-unused-expression
 createYargs()
   .command(["build", "*"], "Build", configureBuildCommand, wrap(build))

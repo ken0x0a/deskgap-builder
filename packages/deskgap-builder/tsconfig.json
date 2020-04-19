@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "out",
     "rootDir": "src",
+    "noEmitOnError": false,
   },
   "jsdoc": {
     "out": "../../scripts/jsdoc/out/builder",

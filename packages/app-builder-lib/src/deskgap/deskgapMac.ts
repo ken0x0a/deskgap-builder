@@ -18,9 +18,9 @@ export async function createMacApp(
   packager: MacPackager,
   appOutDir: string,
   asarIntegrity: AsarIntegrity | null,
-  isMas: boolean
+  isMas: boolean,
 ) {
-  const appInfo = packager.appInfo
+  const { appInfo } = packager
   const appFilename = appInfo.productFilename
 
   const contentsPath = path.join(appOutDir, packager.info.framework.distMacOsAppName, "Contents")
@@ -29,20 +29,16 @@ export async function createMacApp(
 
   const appPlistFilename = path.join(contentsPath, "Info.plist")
 
-  const plistContent: Array<any> = await executeAppBuilderAsJson(["decode-plist", "-f"])
+  const plistContent: any[] = await executeAppBuilderAsJson(["decode-plist", "-f"])
 
-  if (plistContent[0] == null) {
-    throw new Error("corrupted DeskGap dist")
-  }
+  if (plistContent[0] == null) throw new Error("corrupted DeskGap dist")
 
-  const appPlist = plistContent[0]!!
+  const appPlist = plistContent[0]!
 
   // if an extend-info file was supplied, copy its contents in first
-  if (plistContent[8] != null) {
-    Object.assign(appPlist, plistContent[8])
-  }
+  if (plistContent[8] != null) Object.assign(appPlist, plistContent[8])
 
-  const buildMetadata = packager.config!!
+  const buildMetadata = packager.config
 
   /**
    * Configure bundleIdentifier for the generic DeskGap Helper process
@@ -52,39 +48,35 @@ export async function createMacApp(
    */
 
   const oldHelperBundleId = (buildMetadata as any)["helper-bundle-id"]
-  if (oldHelperBundleId != null) {
+  if (oldHelperBundleId != null)
     log.warn("build.helper-bundle-id is deprecated, please set as build.mac.helperBundleId")
-  }
 
   await packager.applyCommonInfo(appPlist, contentsPath)
 
   // required for deskgap-updater proxy
-  if (!isMas) {
-    configureLocalhostAts(appPlist)
-  }
+  if (!isMas) configureLocalhostAts(appPlist)
 
   const protocols = asArray(buildMetadata.protocols).concat(asArray(packager.platformSpecificBuildOptions.protocols))
-  if (protocols.length > 0) {
+  if (protocols.length > 0)
     appPlist.CFBundleURLTypes = protocols.map((protocol) => {
       const schemes = asArray(protocol.schemes)
-      if (schemes.length === 0) {
+      if (schemes.length === 0)
         throw new InvalidConfigurationError(`Protocol "${protocol.name}": must be at least one scheme specified`)
-      }
+
       return {
         CFBundleURLName: protocol.name,
         CFBundleTypeRole: protocol.role || "Editor",
         CFBundleURLSchemes: schemes.slice(),
       }
     })
-  }
 
-  const fileAssociations = packager.fileAssociations
-  if (fileAssociations.length > 0) {
+  const { fileAssociations } = packager
+  if (fileAssociations.length > 0)
     appPlist.CFBundleDocumentTypes = await BluebirdPromise.map(fileAssociations, async (fileAssociation) => {
       const extensions = asArray(fileAssociation.ext).map(normalizeExt)
       const customIcon = await packager.getResource(
         getPlatformIconFileName(fileAssociation.icon, true),
-        `${extensions[0]}.icns`
+        `${extensions[0]}.icns`,
       )
       let iconFile = appPlist.CFBundleIconFile
       if (customIcon != null) {
@@ -99,16 +91,12 @@ export async function createMacApp(
         CFBundleTypeIconFile: iconFile,
       } as any
 
-      if (fileAssociation.isPackage) {
-        result.LSTypeIsPackage = true
-      }
+      if (fileAssociation.isPackage) result.LSTypeIsPackage = true
+
       return result
     })
-  }
 
-  if (asarIntegrity != null) {
-    appPlist.AsarIntegrity = JSON.stringify(asarIntegrity)
-  }
+  if (asarIntegrity != null) appPlist.AsarIntegrity = JSON.stringify(asarIntegrity)
 
   const plistDataToWrite: any = {
     [appPlistFilename]: appPlist,

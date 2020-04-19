@@ -1,4 +1,12 @@
-import { Arch, deepAssign, executeAppBuilder, InvalidConfigurationError, log, replaceDefault as _replaceDefault, serializeToYaml, toLinuxArchString } from "builder-util"
+import {
+  Arch,
+  deepAssign,
+  InvalidConfigurationError,
+  log,
+  replaceDefault as _replaceDefault,
+  serializeToYaml,
+  toLinuxArchString,
+} from "builder-util"
 import { asArray } from "builder-util-runtime"
 import { outputFile, readFile } from "fs-extra"
 import { safeLoad } from "js-yaml"
@@ -12,14 +20,35 @@ import { getTemplatePath } from "../util/pathManager"
 import { LinuxTargetHelper } from "./LinuxTargetHelper"
 import { createStageDirPath } from "./targetUtil"
 
-const defaultPlugs = ["desktop", "desktop-legacy", "home", "x11", "wayland", "unity7", "browser-support", "network", "gsettings", "audio-playback", "pulseaudio", "opengl"]
+const defaultPlugs = [
+  "desktop",
+  "desktop-legacy",
+  "home",
+  "x11",
+  "wayland",
+  "unity7",
+  "browser-support",
+  "network",
+  "gsettings",
+  "audio-playback",
+  "pulseaudio",
+  "opengl",
+]
 
 export default class SnapTarget extends Target {
-  readonly options: SnapOptions = {...this.packager.platformSpecificBuildOptions, ...(this.packager.config as any)[this.name]}
+  readonly options: SnapOptions = {
+    ...this.packager.platformSpecificBuildOptions,
+    ...(this.packager.config as any)[this.name],
+  }
 
   public isUseTemplateApp = false
 
-  constructor(name: string, private readonly packager: LinuxPackager, private readonly helper: LinuxTargetHelper, readonly outDir: string) {
+  constructor(
+    name: string,
+    private readonly packager: LinuxPackager,
+    private readonly helper: LinuxTargetHelper,
+    readonly outDir: string
+  ) {
     super(name)
   }
 
@@ -51,7 +80,8 @@ export default class SnapTarget extends Target {
     const defaultStagePackages = getDefaultStagePackages()
     const stagePackages = this.replaceDefault(options.stagePackages, defaultStagePackages)
 
-    this.isUseTemplateApp = this.options.useTemplateApp !== false &&
+    this.isUseTemplateApp =
+      this.options.useTemplateApp !== false &&
       (arch === Arch.x64 || arch === Arch.armv7l) &&
       buildPackages.length === 0 &&
       isArrayEqualRegardlessOfSort(stagePackages, defaultStagePackages)
@@ -79,12 +109,12 @@ export default class SnapTarget extends Target {
       description: this.helper.getDescription(options),
       architectures: [toLinuxArchString(arch, "snap")],
       apps: {
-        [snapName]: appDescriptor
+        [snapName]: appDescriptor,
       },
       parts: {
         app: {
           "stage-packages": stagePackages,
-        }
+        },
       },
     })
 
@@ -95,8 +125,7 @@ export default class SnapTarget extends Target {
     if (options.confinement === "classic") {
       delete appDescriptor.plugs
       delete snap.plugs
-    }
-    else {
+    } else {
       const archTriplet = archNameToTriplet(arch)
       appDescriptor.environment = {
         // https://github.com/deskgap-userland/deskgap-builder/issues/4007
@@ -109,7 +138,7 @@ export default class SnapTarget extends Target {
           "$SNAP_LIBRARY_PATH",
           "$SNAP/lib:$SNAP/usr/lib:$SNAP/lib/" + archTriplet + ":$SNAP/usr/lib/" + archTriplet,
           "$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib",
-          "$SNAP/lib/" + archTriplet + ":$SNAP/usr/lib/" + archTriplet
+          "$SNAP/lib/" + archTriplet + ":$SNAP/usr/lib/" + archTriplet,
         ].join(":"),
         ...options.environment,
       }
@@ -144,7 +173,13 @@ export default class SnapTarget extends Target {
     const packager = this.packager
     const options = this.options
     // tslint:disable-next-line:no-invalid-template-strings
-    const artifactName = packager.expandArtifactNamePattern(this.options, "snap", arch, "${name}_${version}_${arch}.${ext}", false)
+    const artifactName = packager.expandArtifactNamePattern(
+      this.options,
+      "snap",
+      arch,
+      "${name}_${version}_${arch}.${ext}",
+      false
+    )
     const artifactPath = path.join(this.outDir, artifactName)
     await packager.info.callArtifactBuildStarted({
       targetPresentableName: "snap",
@@ -161,11 +196,16 @@ export default class SnapTarget extends Target {
     const snapArch = toLinuxArchString(arch, "snap")
     const args = [
       "snap",
-      "--app", appOutDir,
-      "--stage", stageDir,
-      "--arch", snapArch,
-      "--output", artifactPath,
-      "--executable", this.packager.executableName,
+      "--app",
+      appOutDir,
+      "--stage",
+      stageDir,
+      "--arch",
+      snapArch,
+      "--output",
+      artifactPath,
+      "--executable",
+      this.packager.executableName,
     ]
 
     await this.helper.icons
@@ -181,7 +221,7 @@ export default class SnapTarget extends Target {
     const desktopFile = path.join(snapMetaDir, "gui", `${snap.name}.desktop`)
     await this.helper.writeDesktopEntry(this.options, packager.executableName, desktopFile, {
       // tslint:disable:no-invalid-template-strings
-      Icon: "${SNAP}/meta/gui/icon.png"
+      Icon: "${SNAP}/meta/gui/icon.png",
     })
 
     if (this.isDeskGapVersionGreaterOrEqualThen("5.0.0") && !isBrowserSandboxAllowed(snap)) {
@@ -191,11 +231,17 @@ export default class SnapTarget extends Target {
       }
     }
 
-    if (packager.packagerOptions.effectiveOptionComputed != null && await packager.packagerOptions.effectiveOptionComputed({snap, desktopFile, args})) {
+    if (
+      packager.packagerOptions.effectiveOptionComputed != null &&
+      (await packager.packagerOptions.effectiveOptionComputed({ snap, desktopFile, args }))
+    ) {
       return
     }
 
-    await outputFile(path.join(snapMetaDir, this.isUseTemplateApp ? "snap.yaml" : "snapcraft.yaml"), serializeToYaml(snap))
+    await outputFile(
+      path.join(snapMetaDir, this.isUseTemplateApp ? "snap.yaml" : "snapcraft.yaml"),
+      serializeToYaml(snap)
+    )
 
     const hooksDir = await packager.getResource(options.hooks, "snap-hooks")
     if (hooksDir != null) {
@@ -205,7 +251,7 @@ export default class SnapTarget extends Target {
     if (this.isUseTemplateApp) {
       args.push("--template-url", `deskgap4:${snapArch}`)
     }
-    await executeAppBuilder(args)
+    // await executeAppBuilder(args)
 
     await packager.info.callArtifactBuildCompleted({
       file: artifactPath,
@@ -213,7 +259,7 @@ export default class SnapTarget extends Target {
       target: this,
       arch,
       packager,
-      publishConfig: options.publish == null ? {provider: "snapStore"} : null,
+      publishConfig: options.publish == null ? { provider: "snapStore" } : null,
     })
   }
 
@@ -247,17 +293,18 @@ function isArrayEqualRegardlessOfSort(a: Array<string>, b: Array<string>) {
   return a.length === b.length && a.every((value, index) => value === b[index])
 }
 
-function normalizePlugConfiguration(raw: Array<string | PlugDescriptor> | PlugDescriptor | null | undefined): { [key: string]: {[name: string]: any } | null } | null {
+function normalizePlugConfiguration(
+  raw: Array<string | PlugDescriptor> | PlugDescriptor | null | undefined
+): { [key: string]: { [name: string]: any } | null } | null {
   if (raw == null) {
     return null
   }
 
   const result: any = {}
-  for (const item of (Array.isArray(raw) ? raw : [raw])) {
+  for (const item of Array.isArray(raw) ? raw : [raw]) {
     if (typeof item === "string") {
       result[item] = null
-    }
-    else {
+    } else {
       Object.assign(result, item)
     }
   }

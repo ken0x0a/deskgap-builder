@@ -1,32 +1,40 @@
 import * as BluebirdPromise from "bluebird-lst"
-import { Arch, isEnvTrue, log, InvalidConfigurationError } from "builder-util"
+import { Arch, InvalidConfigurationError, isEnvTrue, log } from "builder-util"
 import * as path from "path"
-import { UploadTask } from "deskgap-publish/out/publisher"
-import { Platform, Target, TargetSpecificOptions } from "../core"
+import { Platform, Target } from "../core"
 import { LinuxPackager } from "../linuxPackager"
-import { ArtifactCreated } from "../packagerApi"
 import { isSafeToUnpackDeskGapOnRemoteBuildServer, PlatformPackager } from "../platformPackager"
-import { executeAppBuilderAsJson } from "../util/appBuilder"
+// import { executeAppBuilderAsJson } from "../util/appBuilder"
 import { ProjectInfoManager } from "./ProjectInfoManager"
 
 interface TargetInfo {
-  name: string
   arch: string
-  unpackedDirectory: string
+  name: string
   outDir: string
+  unpackedDirectory: string
 }
 
 export class RemoteBuilder {
-  private readonly toBuild = new Map<Arch, Array<TargetInfo>>()
   private buildStarted = false
+  private readonly toBuild = new Map<Arch, TargetInfo[]>()
 
-  constructor(readonly packager: PlatformPackager<any>) {
+  constructor(readonly packager: PlatformPackager<any>) {}
+
+  build(): Promise<any> {
+    if (this.buildStarted) return Promise.resolve()
+
+    this.buildStarted = true
+
+    return BluebirdPromise.mapSeries(Array.from(this.toBuild.keys()), (arch: Arch) => {
+      return this._build(this.toBuild.get(arch)!, this.packager)
+    })
   }
 
   scheduleBuild(target: Target, arch: Arch, unpackedDirectory: string) {
-    if (!isEnvTrue(process.env._REMOTE_BUILD) && this.packager.config.remoteBuild === false) {
-      throw new InvalidConfigurationError("Target is not supported on your OS and using of DeskGap Build Service is disabled (\"remoteBuild\" option)")
-    }
+    if (!isEnvTrue(process.env._REMOTE_BUILD) && this.packager.config.remoteBuild === false)
+      throw new InvalidConfigurationError(
+        'Target is not supported on your OS and using of DeskGap Build Service is disabled ("remoteBuild" option)',
+      )
 
     let list = this.toBuild.get(arch)
     if (list == null) {
@@ -42,28 +50,14 @@ export class RemoteBuilder {
     })
   }
 
-  build(): Promise<any> {
-    if (this.buildStarted) {
-      return Promise.resolve()
-    }
-
-    this.buildStarted = true
-
-    return BluebirdPromise.mapSeries(Array.from(this.toBuild.keys()), (arch: Arch) => {
-      return this._build(this.toBuild.get(arch)!!, this.packager)
-    })
-  }
-
   // noinspection JSMethodCanBeStatic
-  private async _build(targets: Array<TargetInfo>, packager: PlatformPackager<any>): Promise<void> {
-    if (log.isDebugEnabled) {
-      log.debug({remoteTargets: JSON.stringify(targets, null, 2)}, "remote building")
-    }
+  private async _build(targets: TargetInfo[], packager: PlatformPackager<any>): Promise<void> {
+    if (log.isDebugEnabled) log.debug({ remoteTargets: JSON.stringify(targets, null, 2) }, "remote building")
 
     const projectInfoManager = new ProjectInfoManager(packager.info)
 
     const buildRequest: any = {
-      targets: targets.map(it => {
+      targets: targets.map((it) => {
         return {
           name: it.name,
           arch: it.arch,
@@ -80,64 +74,65 @@ export class RemoteBuilder {
         arch: targets[0].arch,
       }
 
-      const linuxPackager = (packager as LinuxPackager)
+      const linuxPackager = packager as LinuxPackager
       buildRequest.executableName = linuxPackager.executableName
     }
 
     const req = Buffer.from(JSON.stringify(buildRequest)).toString("base64")
-    const outDir = targets[0].outDir
+    const { outDir } = targets[0]
     const args = ["remote-build", "--request", req, "--output", outDir]
 
     args.push("--file", targets[0].unpackedDirectory)
     args.push("--file", await projectInfoManager.infoFile.value)
 
-    const buildResourcesDir = packager.buildResourcesDir
-    if (buildResourcesDir === packager.projectDir) {
-      throw new InvalidConfigurationError(`Build resources dir equals to project dir and so, not sent to remote build agent. It will lead to incorrect results.\nPlease set "directories.buildResources" to separate dir or leave default ("build" directory in the project root)`)
-    }
+    const { buildResourcesDir } = packager
+    if (buildResourcesDir === packager.projectDir)
+      throw new InvalidConfigurationError(
+        `Build resources dir equals to project dir and so, not sent to remote build agent. It will lead to incorrect results.\nPlease set "directories.buildResources" to separate dir or leave default ("build" directory in the project root)`,
+      )
 
     args.push("--build-resource-dir", buildResourcesDir)
 
-    const result: any = await executeAppBuilderAsJson(args)
-    if (result.error != null) {
-      throw new InvalidConfigurationError(`Remote builder error (if you think that it is not your application misconfiguration issue, please file issue to https://github.com/deskgap-userland/deskgap-builder/issues):\n\n${result.error}`, "REMOTE_BUILDER_ERROR")
-    }
-    else if (result.files != null) {
-      for (const artifact of result.files) {
-        const localFile = path.join(outDir, artifact.file)
-        const artifactCreatedEvent = this.artifactInfoToArtifactCreatedEvent(artifact, localFile, outDir)
-        // PublishManager uses outDir and options, real (the same as for local build) values must be used
-        await this.packager.info.callArtifactBuildCompleted(artifactCreatedEvent)
-      }
-    }
+    // const result: any = await executeAppBuilderAsJson(args)
+    // if (result.error != null) {
+    //   throw new InvalidConfigurationError(`Remote builder error (if you think that it is not your application misconfiguration issue, please file issue to https://github.com/deskgap-userland/deskgap-builder/issues):\n\n${result.error}`, "REMOTE_BUILDER_ERROR")
+    // }
+    // else if (result.files != null) {
+    //   for (const artifact of result.files) {
+    //     const localFile = path.join(outDir, artifact.file)
+    //     const artifactCreatedEvent = this.artifactInfoToArtifactCreatedEvent(artifact, localFile, outDir)
+    //     // PublishManager uses outDir and options, real (the same as for local build) values must be used
+    //     await this.packager.info.callArtifactBuildCompleted(artifactCreatedEvent)
+    //   }
+    // }
   }
 
-  private artifactInfoToArtifactCreatedEvent(artifact: ArtifactInfo, localFile: string, outDir: string): ArtifactCreated {
-    const target = artifact.target
-    // noinspection SpellCheckingInspection
-    return {
-      ...artifact,
-      file: localFile,
-      target: target == null ? null : new FakeTarget(target, outDir, (this.packager.config as any)[target]),
-      packager: this.packager,
-    }
-  }
+  // private artifactInfoToArtifactCreatedEvent(artifact: ArtifactInfo, localFile: string, outDir: string): ArtifactCreated {
+  //   const target = artifact.target
+  //   // noinspection SpellCheckingInspection
+  //   return {
+  //     ...artifact,
+  //     file: localFile,
+  //     target: target == null ? null : new FakeTarget(target, outDir, (this.packager.config as any)[target]),
+  //     packager: this.packager,
+  //   }
+  // }
 }
 
-class FakeTarget extends Target {
-  constructor(name: string, readonly outDir: string, readonly options: TargetSpecificOptions | null | undefined) {
-    super(name)
-  }
+// class FakeTarget extends Target {
+//   constructor(name: string, readonly outDir: string, readonly options: TargetSpecificOptions | null | undefined) {
+//     super(name)
+//   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async build(appOutDir: string, arch: Arch) {
-    // no build
-  }
-}
+//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//   async build(appOutDir: string, arch: Arch) {
+//     // no build
+//   }
+// }
 
-interface ArtifactInfo extends UploadTask {
-  target: string | null
+// interface ArtifactInfo extends UploadTask {
+//   target: string | null
 
-  readonly isWriteUpdateInfo?: boolean
-  readonly updateInfo?: any
-}
+//   readonly isWriteUpdateInfo?: boolean
+//   readonly updateInfo?: any
+// }

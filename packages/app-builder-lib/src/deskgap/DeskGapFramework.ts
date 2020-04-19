@@ -1,5 +1,6 @@
 import * as BluebirdPromise from "bluebird-lst"
-import { asArray, executeAppBuilder, log } from "builder-util"
+// import { asArray, executeAppBuilder, log } from "builder-util"
+import { asArray, log } from "builder-util"
 import { CONCURRENCY, copyDir, DO_NOT_USE_HARD_LINKS, statOrNull, unlinkIfExists } from "builder-util/out/fs"
 import { emptyDir, readdir, remove, rename } from "fs-extra"
 import { Lazy } from "lazy-val"
@@ -182,15 +183,15 @@ async function unpack(
       return
     }
 
-    await executeAppBuilder([
-      "unpack-deskgap",
-      "--configuration",
-      JSON.stringify([options]),
-      "--output",
-      out,
-      "--distMacOsAppName",
-      distMacOsAppName,
-    ])
+    // await executeAppBuilder([
+    //   "unpack-deskgap",
+    //   "--configuration",
+    //   JSON.stringify([options]),
+    //   "--output",
+    //   out,
+    //   "--distMacOsAppName",
+    //   distMacOsAppName,
+    // ])
   } else {
     isFullCleanup = true
     const source = packager.getDeskGapSrcDir(dist)
