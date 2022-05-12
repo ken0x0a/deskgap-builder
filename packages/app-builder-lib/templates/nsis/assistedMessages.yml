@@ -12,7 +12,7 @@ chooseInstallationOptions:
   tr_TR: Yükleme Ayarlarını Seçin
   sv_SE: Välj alternativ för installation
   pl_PL: Wybierz opcje instalacji
-  no: Velg alternativer for installering
+  "no": Velg alternativer for installering
   nl_NL: Kies installatie-opties
   it_IT: Scegli opzioni di installazione
   fi: Valitse asennusvaihtoehdot
@@ -32,7 +32,7 @@ chooseUninstallationOptions:
   tr_TR: Kaldırma Ayarlarını Seçin
   sv_SE: Välj alternativ för avinstallation
   pl_PL: Wybierz opcje dezinstalacji
-  no: Velg alternativer for avinstallering
+  "no": Velg alternativer for avinstallering
   nl_NL: Kies verwijderings-opties
   it_IT: Scegli opzioni di disinstallazione
   fi: Valitse asennuksen poistovaihtoehdot
@@ -52,7 +52,7 @@ whichInstallationShouldBeRemoved:
   tr_TR: Hangi Yükleme Kaldırılsın?
   sv_SE: Vilken installation ska tas bort?
   pl_PL: Którą instalację chcesz usunąć?
-  no: Hvilken installasjon skal fjernes?
+  "no": Hvilken installasjon skal fjernes?
   nl_NL: Welke installatie moet worden verwijderd?
   it_IT: Quale installazione intendi rimuovere?
   fi: Mikä asennus pitäisi poistaa?
@@ -92,7 +92,7 @@ selectUserMode:
   tr_TR: Lütfen bu yazılımı tüm kullanıcılar için mi yoksa sadece kendiniz mi kullanmak istediğinizi seçin
   sv_SE: Välj om du vill göra den här mjukvaran tillgänglig för alla användare eller bara för dig
   pl_PL: Wybierz, czy to oprogramowanie ma być dostępne dla wszystkich użytkowników, czy tylko dla Ciebie
-  no: Velg om du vil gjøre denne programvaren tilgjengelig for alle brukerne eller bare deg selv
+  "no": Velg om du vil gjøre denne programvaren tilgjengelig for alle brukerne eller bare deg selv
   nl_NL: Selecteer of je deze software beschikbaar wilt maken voor alle gebruikers of alleen voor jezelf.
   it_IT: Seleziona se desideri rendere questo software accessibile a tutti gli utenti o solo a te
   fi: Valitse, haluatko tämän ohjelmiston kaikkien käyttäjien vai pelkästään itsesi käyttöön
@@ -112,7 +112,7 @@ whichInstallationRemove:
   tr_TR: Bu yazılım hem makine başına (tüm kullanıcılar) hem de kullanıcı başına yüklenir.\nKaldırmak istediğiniz kurulum?
   sv_SE: Den här mjukvaran är installerad både ”per dator” (alla användare) och ”per användare”.\nVilken installation vill du ta bort?
   pl_PL: To oprogramowanie zostało zainstalowane zarówno dla urządzenia (wszyscy użytkownicy), jak i dla użytkownika.\nKtórą instalację chcesz usunąć?
-  no: Denne programvaren er installert både per-maskin (alle brukere) og per-bruker. Hvilken installasjon vil du fjerne?
+  "no": Denne programvaren er installert både per-maskin (alle brukere) og per-bruker. Hvilken installasjon vil du fjerne?
   nl_NL: Deze software is zowel per apparaat (alle gebruikers) als per gebruiker geïnstalleerd. Welke installatie wil je verwijderen?
   it_IT: Questo software è stato installato sia per computer (tutti gli utenti) sia per utente.\nQuale installazione desideri rimuovere?
   fi: Tämä ohjelmisto on asennettu sekä konekohtaisesti (kaikki käyttäjät) että käyttäjäkohtaisesti.\nMinkä asennuksen haluat poistaa?
@@ -132,7 +132,7 @@ freshInstallForAll:
   tr_TR: Tüm kullanıcılar için yeni yükleme. (yönetici kimlik bilgilerini soracaktır)
   sv_SE: Ny installation för alla användare. (kommer att begära adminbehörighet)
   pl_PL: Nowa instalacja dla wszystkich użytkowników (potrzebne będą dane administratora).
-  no: Ny installasjon for alle brukere. (vil be om administratorlegitimasjon)
+  "no": Ny installasjon for alle brukere. (vil be om administratorlegitimasjon)
   nl_NL: Nieuwe installatie voor alle gebruikers. (zal om beheerder-gegevens vragen)
   it_IT: Re-installa per tutti gli utenti. (Richiede le credenziali di amministratore)
   fi: Uusi asennus kaikille käyttäjille (pyytää ylläpitäjän käyttäjätunnuksia)
@@ -151,7 +151,7 @@ freshInstallForCurrent:
   tr_TR: Sadece mevcut kullanıcı için yeni yükleme.
   sv_SE: Ny installation endast för den aktuella användaren.
   pl_PL: Nowa instalacja wyłącznie dla obecnego użytkownika.
-  no: Ny installasjon kun for nåværende bruker.
+  "no": Ny installasjon kun for nåværende bruker.
   nl_NL: Nieuwe installatie alleen voor huidige gebruiker.
   it_IT: Re-installa solo per l'utente attuale.
   fi: Uusi asennus vain nykyiselle käyttäjälle.
@@ -171,7 +171,7 @@ onlyForMe:
   tr_TR: Sadece benim için
   sv_SE: Endast för &mig
   pl_PL: Tylko dla &mnie
-  no: Kun for &meg
+  "no": Kun for &meg
   nl_NL: Alleen voor &mij
   it_IT: Solo per &me
   fi: Vain minulle
@@ -191,7 +191,7 @@ forAll:
   tr_TR: Bu bilgisayarı kullanan herkes (ve tüm kullanıcılar)
   sv_SE: Alla som använder den här datorn (alla användare)
   pl_PL: Każdy korzystający z tego komputera (wszyscy użytkownicy)
-  no: Alle som bruker denne datamaskinen (alle brukere)
+  "no": Alle som bruker denne datamaskinen (alle brukere)
   nl_NL: Iedereen die deze computer gebruikt (alle gebruikers)
   it_IT: Per chiunque usi questo computer (tutti gli utenti)
   fi: Kaikille, jotka käyttävät tätä tietokonetta (kaikki käyttäjät)
@@ -211,7 +211,7 @@ loginWithAdminAccount:
   tr_TR: Devam etmek için yönetici grubunun üyesi olan bir hesapla giriş yapmanız gerekiyor..
   sv_SE: Du måste logga in med ett konto som är medlem i admingruppen för att fortsätta...
   pl_PL: Musisz się zalogować za pomocą konta będącego członkiem grupy administratora, by kontynuować...
-  no: Du må logge inn med en konto som er medlem av administrasjonsgruppen for å fortsette...
+  "no": Du må logge inn med en konto som er medlem av administrasjonsgruppen for å fortsette...
   nl_NL: Je dient in te loggen met een account dat lid is van de beheerdersgroep om verder te gaan...
   it_IT: Devi accedere con un account incluso nel gruppo amministratore per continuare...
   fi: Jatkaaksesi sinun on kirjauduttava käyttäjätilillä, joka on ylläpitäjäryhmän jäsen...
@@ -230,7 +230,7 @@ perUserInstallExists:
   tr_TR: Her kullanıcı için zaten bir kurulum var.
   sv_SE: Det finns redan en ”per användare”-installation.
   pl_PL: Instalacja dla użytkownika już istnieje.
-  no: Det er allerede en per-bruker-installasjon.
+  "no": Det er allerede en per-bruker-installasjon.
   nl_NL: Er is al een installatie 'per gebruiker'.
   it_IT: È già presente un'installazione per utente.
   fi: Tämä on jo käyttäjäkohtainen asennus.
@@ -249,7 +249,7 @@ perUserInstall:
   tr_TR: Kullanıcı başına bir kurulum var.
   sv_SE: Det finns en ”per användare”-installation.
   pl_PL: Instalacja dla użytkownika istnieje.
-  no: Det er en per-bruker-installasjon.
+  "no": Det er en per-bruker-installasjon.
   nl_NL: Er is een installatie 'per gebruiker'.
   it_IT: È presente un'installazione per utente.
   fi: Käyttäjäkohtainen asennus on olemassa.
@@ -268,7 +268,7 @@ perMachineInstallExists:
   tr_TR: Zaten makine başına bir kurulum var.
   sv_SE: Det finns redan en ”per dator”-installation.
   pl_PL: Instalacja dla urządzenia już istnieje.
-  no: Det er allerede en per-maskin-installasjon.
+  "no": Det er allerede en per-maskin-installasjon.
   nl_NL: Er is al een installatie 'per apparaat'.
   it_IT: È già presente un'installazione per computer.
   fi: Tämä on jo tietokonekohtainen asennus.
@@ -306,7 +306,7 @@ reinstallUpgrade:
   tr_TR: Yeniden yükleme/yükseltme
   sv_SE: Kommer att ominstallera/uppgradera.
   pl_PL: Nastąpi ponowna instalacja/aktualizacja.
-  no: Vil installere på nytt / oppgradere.
+  "no": Vil installere på nytt / oppgradere.
   nl_NL: Zal opnieuw installeren/upgraden.
   it_IT: Re-installa/aggiorna il programma.
   fi: Asennetaan uudelleen/päivitetään.
@@ -325,7 +325,7 @@ uninstall:
   tr_TR: Kaldıralacak.
   sv_SE: Kommer att avinstallera.
   pl_PL: Nastąpi dezinstalacja.
-  no: Vil avinstallere.
+  "no": Vil avinstallere.
   nl_NL: Zal installatie verwijderen.
   it_IT: Disinstalla il programma.
   fi: Poistetaan asennus.
